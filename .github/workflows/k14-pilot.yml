@@ -15,9 +15,11 @@ permissions:
   pull-requests: write
   issues: write
   actions: read
+  checks: read
 
 env:
-  SEEDED_ISSUE: "1"
+  # Assign a fresh issue only after the recorded account preflight is satisfied.
+  SEEDED_ISSUE: "UNASSIGNED"
   EXPIRES_AT: "2026-10-23"
   VERIFIER_LOGIN: "chatgpt-codex-connector[bot]"
   GH_TOKEN: ${{ github.token }}
@@ -76,6 +78,8 @@ jobs:
           ref: job/${{ github.event.issue.number }}
           fetch-depth: 0
       - run: pip install pytest
+      - name: Controller regression checks (offline)
+        run: python -m unittest discover -s tests_pilot -p test_controller_correction.py -v
       - name: Baseline test (expected to fail)
         run: python -m pytest -q 2>&1 | tee "$RUNNER_TEMP/baseline.txt" || true
       - name: Author (Claude Code Action)
@@ -333,3 +337,13 @@ jobs:
           msg="K-14 receipt: evidence/$ISSUE at commit ${RECEIPT_SHA:-NOT WRITTEN}"
           echo "$msg" >> "$GITHUB_STEP_SUMMARY"
           if [ -n "$PR" ]; then gh pr comment "$PR" --body "$msg" || true; fi
+      - name: Enforce transport outcome after saving evidence
+        if: always()
+        env:
+          TRANSPORT: ${{ steps.w.outputs.transport }}
+          RECEIPT_SHA: ${{ steps.w.outputs.receipt_sha }}
+        run: |
+          if [ "$TRANSPORT" != "PASS" ] || [ -z "$RECEIPT_SHA" ]; then
+            echo "Transport failed or receipt was not published; see the saved evidence."
+            exit 1
+          fi

@@ -27,6 +27,27 @@ def main():
     failures = []
     unexercised = []
 
+    def require_evidence(record, verdict, head, name):
+        if record is None:
+            failures.append(f"{name}: verdict artifact missing")
+            return
+        if not head or record.get("expected_head") != head:
+            failures.append(f"{name}: artifact head does not match the expected head")
+        if record.get("verdict") != verdict:
+            failures.append(f"{name}: artifact verdict differs from the job output")
+        if record.get("verifier_login") != E("VERIFIER_LOGIN", ""):
+            failures.append(f"{name}: artifact verifier differs from the pinned login")
+        if verdict in ok_v:
+            if not record.get("bound_by") or not record.get("consumed_ids") or not record.get("quoted"):
+                failures.append(f"{name}: bound review evidence missing")
+
+    if r_v1 == "success":
+        require_evidence(v1, verdict1, head1, "first look")
+    if r_v2 == "success":
+        require_evidence(v2, verdict2, head2, "second look")
+        if v1 and v2 and set(v1.get("consumed_ids", [])) & set(v2.get("consumed_ids", [])):
+            failures.append("second look: reused first-look verdict IDs")
+
     if r_author != "success":
         failures.append(f"author job result: {r_author or 'missing'}")
     else:

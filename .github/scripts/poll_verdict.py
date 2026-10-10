@@ -15,6 +15,7 @@ CLEAN_RE = re.compile(
     re.I,
 )
 HEX_RE = re.compile(r"\b[0-9a-f]{7,40}\b")
+FINDING_RE = re.compile(r"\bP[0-3]\b|Codex Review:\s*Here are some suggestions", re.I)
 
 
 def names_sha(text, sha):
@@ -26,6 +27,11 @@ def bind(kind, post, expected, other_heads):
     body = post.get("body") or ""
     names_expected = names_sha(body, expected)
     names_other = any(names_sha(body, h) for h in other_heads if h)
+    # A structured binding to another revision cannot be overridden by body text.
+    structured_head = (post.get("commit_id") if kind == "review" else
+                       post.get("original_commit_id") if kind == "review_comment" else None)
+    if structured_head and structured_head != expected:
+        return None
     if kind == "review" and post.get("commit_id") == expected:
         # a post that names a different head as reviewed, without the expected one, is unbound
         return None if (names_other and not names_expected) else "commit_id"
@@ -45,9 +51,12 @@ def classify(bound):
     top = [p for p in substantive if p["kind"] != "review_comment"]
     if inline:
         return "REVIEW-WITH-FINDINGS"
-    if top and all(CLEAN_RE.search(p["body"]) for p in top):
+    if not inline and top and all(CLEAN_RE.search(p["body"]) and
+                                 not FINDING_RE.search(p["body"]) for p in top):
         return "REVIEW-CLEAN"
-    return "REVIEW-WITH-FINDINGS"
+    if any(FINDING_RE.search(p["body"]) for p in substantive):
+        return "REVIEW-WITH-FINDINGS"
+    return None  # A bound quota/error/status message is not a review verdict.
 
 
 def gh_json(path, paginate=True):
@@ -150,7 +159,7 @@ def main():
     if verdict is None:
         verdict = "NO-VERDICT"
         reason = reason or ("silence or unbound or empty output after "
-                            f"{minutes:g} minutes" if not bound else "empty review")
+                            f"{minutes:g} minutes" if not bound else "empty or unsupported review output")
     # first-seen diagnostics only; never scores
     first_seen = None
     for a in raw:
