@@ -73,9 +73,7 @@ def gates(c, e, now=None):
     isolated = (len(isolated) == 2 and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
                 and all(x.get("status") == "PASS" and x.get("controller_sha") == sha
                         and x.get("seat") != c.get("controller_author") and x.get("evidence") for x in isolated))
-    green = c.get("keystone_green_main", {})
-    require(isolated or (green.get("status") == "PASS" and SHA.fullmatch(green.get("sha") or "")
-                         and green.get("evidence")), "independent isolation pending; green KEYSTONE prerequisite not met")
+    require(isolated, "independent isolation pending for final main revision")
     checked = utc(e.get("K14_CASH_CHECKED_AT"))
     require(dt.timedelta(0) <= now - checked <= dt.timedelta(hours=2), "cash evidence stale/future/missing")
     require(e.get("K14_CASH_STOP_VERIFIED") == "true" and e.get("K14_INCLUDED_MINUTES", "").isdigit()
@@ -83,17 +81,24 @@ def gates(c, e, now=None):
     for kind in ("author_credential", "request_credential"):
         credential = c.get(kind, {})
         issued = utc(credential.get("created_at"))
-        provider_expiry = utc(credential.get("expires_at"))
+        if kind == "author_credential" and credential.get("expires_at") is None:
+            bound = credential.get("revocation_bound", {})
+            require(bound.get("basis") == "OWNER_REVOCATION_BOUND"
+                    and bound.get("owner") == c.get("launch_login") and bound.get("evidence"),
+                    "author credential unknown expiry requires owner revocation bound")
+            validity_bound = utc(bound.get("revoke_by"))
+        else:
+            validity_bound = utc(credential.get("expires_at"))
         use_until = utc(credential.get("use_until"))
         require(credential.get("evidence") and issued <= now < use_until <= expiry
-                and use_until <= provider_expiry,
+                and use_until <= validity_bound,
                 kind + " missing/expired/outside allowed-use window")
         retirement = credential.get("retirement", {})
         require(retirement.get("owner") == c.get("launch_login") and retirement.get("evidence")
                 and retirement.get("on_terminal") is True and retirement.get("on_cancel") is True,
                 kind + " terminal/cancel/use-until revoke-and-delete plan unverified")
         if kind == "request_credential":
-            require(dt.timedelta(0) < provider_expiry - issued <= dt.timedelta(days=30),
+            require(dt.timedelta(0) < validity_bound - issued <= dt.timedelta(days=30),
                     "request credential exceeds 30 days from issuance")
     require(c["author_credential"].get("fresh") is True, "fresh author OAuth not evidenced")
     for kind, name in (("author_credential", "k14-author-owner-approved"),
@@ -350,6 +355,13 @@ def receipt(c):
             "owner_touches_after_launch": "UNKNOWN_PENDING_INDEPENDENT_AUDIT",
             "api_spend": "NO_API_PATH_INVOKED; billing evidence pending", "actions_minutes": "UNKNOWN_FINAL_USAGE_PENDING",
             "fresh_credential_retirement": "PENDING_OWNER_METADATA",
+            "acceptance_scope": "K14_TRANSPORT_SUBTEST",
+            "final_continuity_acceptance": {
+                "spec_commit": "39e25bb6846a44ea56856d4f1b8af129401ac5f5",
+                "spec_blob": "491bf56be82fa16e2fbbb6226bfdd1d77c678912",
+                "outcome": "BLOCKED", "build_complete": False,
+                "reason": "Kobe current-plan verification, Urahara method approval, Shaq image/QC, Git seat receipts and final-only image delivery not implemented",
+                "alignment_record": "docs/proposals/2026-10-11/final-acceptance-alignment-20261012.md"},
             "outcome": "BLOCKED", "reason": "final usage, owner-touch audit and credential-retirement evidence pending"}
     # An artifact cannot magically verify billing or revocation. Never self-issue PASS.
     emit(data, "receipt")

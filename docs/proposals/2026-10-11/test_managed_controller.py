@@ -201,11 +201,30 @@ class Gates(unittest.TestCase):
                 with self.assertRaises(m.Stop):
                     m.gates(c, e, NOW)
 
-    def test_green_prerequisite_fallback_synthetic(self):
+    def test_green_prerequisite_cannot_bypass_final_sha_isolation(self):
         c, e = fixture()
         c["independent_isolation"] = []
         c["keystone_green_main"] = {"status": "PASS", "sha": B, "evidence": "synthetic"}
+        with self.assertRaisesRegex(m.Stop, "independent isolation pending"):
+            m.gates(c, e, NOW)
+
+    def test_owner_oauth_revocation_bound_is_separate_from_provider_expiry(self):
+        c, e = fixture()
+        c["author_credential"].update(expires_at=None, revocation_bound={
+            "basis": "OWNER_REVOCATION_BOUND", "owner": c["launch_login"],
+            "revoke_by": EXPIRES, "evidence": "synthetic owner acceptance"})
         self.assertEqual(m.gates(c, e, NOW), A)
+        for key, value in (("basis", "PROVIDER_EXPIRY"), ("owner", "Magic"),
+                           ("evidence", None), ("revoke_by", STAMP)):
+            with self.subTest(key=key), self.assertRaises(m.Stop):
+                broken = copy.deepcopy(c)
+                broken["author_credential"]["revocation_bound"][key] = value
+                m.gates(broken, e, NOW)
+        # The PAT cannot use an OAuth owner-bound exception.
+        c["request_credential"].update(expires_at=None,
+            revocation_bound=c["author_credential"]["revocation_bound"])
+        with self.assertRaises(m.Stop):
+            m.gates(c, e, NOW)
 
     def test_default_config_is_unlaunchable(self):
         c = json.loads((ROOT / "pilot-config.json").read_text())
@@ -435,6 +454,11 @@ class Workflow(unittest.TestCase):
             finally:
                 os.chdir(old)
             self.assertEqual(emit.call_args.args[0]["outcome"], "BLOCKED")
+            self.assertEqual(emit.call_args.args[0]["acceptance_scope"], "K14_TRANSPORT_SUBTEST")
+            final = emit.call_args.args[0]["final_continuity_acceptance"]
+            self.assertEqual(final["outcome"], "BLOCKED")
+            self.assertFalse(final["build_complete"])
+            self.assertIn("Shaq", final["reason"])
             self.assertIn("UNKNOWN", emit.call_args.args[0]["owner_touches_after_launch"])
 
 

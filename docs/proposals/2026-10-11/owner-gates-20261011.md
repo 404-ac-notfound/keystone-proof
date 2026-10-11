@@ -1,5 +1,7 @@
 # Owner gates and fresh-seed launch checklist — 11 Oct 2026
 
+> Superseded for current launch preparation by [12 Oct relay and envelope](launch-envelope-20261012.md). Andrew reopened 6efb727 for N1; the green-main bypass is removed and OAuth unknown expiry uses a separate owner revocation bound. Historical freeze/evidence below is retained.
+
 Magic. **Do not launch.** This frozen draft corrects credential expiry gates
 from parent `072b505390a464fd80a594148f3529d4a6e6b795`. The exact frozen commit
 is recorded in PR #3's description; see freeze-record.md. This is not merge,
@@ -95,7 +97,7 @@ values. A repository/organization same-name secret fallback remains forbidden.
    activation diff before their check; bind or recheck the actual final main SHA
    after any merge/installation change, because the guard requires
    main == GITHUB_SHA == K14_APPROVED_SHA. Magic does not run their isolation
-   assessment. Missing evidence follows the agreed green-main prerequisite.
+   assessment. Missing evidence now stops unconditionally; the 12 Oct revision removes the green-main alternative.
 
 6. **Complete the non-secret launch envelope and fresh cash evidence.** Assign
    a new seed issue (>1), unique pilot id and unused claim/attempt slots. Existing

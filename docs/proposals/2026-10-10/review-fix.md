@@ -153,8 +153,9 @@ it. Each records runtime files/refs and a grep/trace showing no KEYSTONE main
 path. Their prior checks on 5f25488 are historical; new-revision receipt slots remain PENDING. Synthetic PASS test fixtures are
 never real isolation evidence. Magic does not run that assessment.
 
-Missing independent evidence makes green KEYSTONE main a proof prerequisite.
-With it, proof may precede repair of KEYSTONE main. Green KEYSTONE is mandatory
+The 12 Oct N1 revision requires both independent PASS receipts at the final main
+SHA. Missing evidence stops; no green-KEYSTONE-main alternative remains.
+With both receipts, proof may precede repair of KEYSTONE main. Green KEYSTONE is mandatory
 before #32 adoption/migrations/cutovers; any baseline re-pin is Andrew's gate.
 
 Order: verify retirement/repo readiness → scoped credentials/reviewed inactive
@@ -205,3 +206,12 @@ provider call is authorized; cash controls remain unchanged.
 
 LeBron's alternative environment wording and VERIFIED/ATTESTED lesson labels
 remain recommendations, not new consensus conditions.
+
+## 12 Oct final acceptance alignment
+
+This calculator run is K14_TRANSPORT_SUBTEST only. The owner-approved K-23 final
+acceptance requires PG plan → Kobe verification → Urahara method approval → Shaq
+image/QC → final-only image delivery, with all Git seat receipts and metrics.
+Those stages remain unimplemented; K-23 stays BLOCKED even if K-14 transport
+passes. See [alignment and gaps](../2026-10-11/final-acceptance-alignment-20261012.md)
+and [Jarvis envelope](../2026-10-11/launch-envelope-20261012.md).
