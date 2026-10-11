@@ -69,6 +69,10 @@ def gates(c, e, now=None):
             and retired.get("evidence"), "old OAuth retirement unverified")
     require(c.get("max_reviews") == 2 and c.get("max_author_revisions") == 1
             and c.get("diff_caps") == {"files": 50, "changed_lines": 1000, "bytes": 131072}, "bounds differ from agreement")
+    controller_author = c.get("controller_author")
+    require(isinstance(controller_author, str) and bool(controller_author.strip())
+            and controller_author.strip().casefold() not in {"urahara", "kobe"},
+            "controller author must be identified and independent of Urahara/Kobe")
     isolated = c.get("independent_isolation", [])
     isolated = (len(isolated) == 2 and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
                 and all(x.get("status") == "PASS" and x.get("controller_sha") == sha

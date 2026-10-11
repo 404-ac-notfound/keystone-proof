@@ -65,3 +65,31 @@ zero/one/two final-SHA rechecks, stale receipts stopping before any API call, an
 valid final-SHA evidence admitting only the matching main revision. These tests
 are synthetic implementation evidence. Independent checks remain with the two
 assigned seats.
+
+## Kobe's N1 PASS and F1 follow-up
+
+[Kobe's posted review](https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6110337171)
+is PASS at `440c947bab6d530e9d63d5674171dbd8e43e0b35`, with 32 independent probes
+and 36 controller / 7 runtime tests. It is candidate implementation evidence
+only; any new commit needs its own check and final-main checks remain pending.
+
+F1 is corrected in this follow-up: controller_author must be a nonblank string
+and may not identify either assigned checker, with case/whitespace normalization
+for that comparison. An omitted/null/empty/whitespace/non-string/checker identity
+stops guard before API calls. The shipped Magic identity remains unchanged.
+
+Two reported limitations are retained explicitly:
+
+- F2: a moved main is rejected after the create-only global pilot claim, consuming
+  that pilot id. No job ref is created. Andrew must use a fresh pilot id; never
+  delete/reuse the consumed claim to retry. This remains intentionally fail-closed.
+- F3: receipt shape and SHA binding do not authenticate the referenced PASS
+  comments. Andrew supplies the non-secret preflight JSON from real checker
+  evidence; both seats must verify the actual final-main records. This correction
+  does not introduce a self-issued PASS or claim runtime comment verification.
+
+No workflow, lock, credential/config scope or launch control changed in F1.
+Validation: 37 controller and 7 locked-runtime tests passed; the new regression
+covers author omissions, invalid types, blank values and assigned-checker names,
+including case/whitespace variants. These are synthetic tests, not isolation QA.
+Urahara owns the independent QA review; Kobe must bind his check to the new SHA.

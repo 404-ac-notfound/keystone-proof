@@ -100,6 +100,22 @@ class Gates(unittest.TestCase):
         c, e = fixture()
         self.assertEqual(m.gates(c, e, NOW), A)
 
+    def test_unidentified_or_checker_author_stops_before_any_api_call(self):
+        missing = object()
+        for value in (missing, None, "", " \t\n", True, 0, [], {},
+                      "Kobe", "Urahara", "kobe", "URAHARA", " Kobe ", " urahara "):
+            with self.subTest(author="omitted" if value is missing else repr(value)):
+                c, e = fixture()
+                if value is missing:
+                    del c["controller_author"]
+                else:
+                    c["controller_author"] = value
+                with patch.dict(os.environ, e), patch.object(m, "api") as api, \
+                        patch.object(m, "now_utc", return_value=NOW):
+                    with self.assertRaisesRegex(m.Stop, "controller author must be identified"):
+                        m.guard(c)
+                    api.assert_not_called()
+
     def test_missing_runtime_gates(self):
         for key in fixture()[1]:
             with self.subTest(key=key):
