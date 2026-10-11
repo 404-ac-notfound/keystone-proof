@@ -1,157 +1,187 @@
-# Draft: author-independent Codex action review
+# Draft review repair — managed K-14 proof first
 
-Status: Andrew review only, 2026-10-10. No activation, merges, account changes,
-secret changes, provider calls, or K-14 relaunch authorized by this proposal.
-The companion workflow has a `.disabled` suffix outside `.github/workflows`.
-Even merging this document would not install it.
+Updated 2026-10-11 by Magic for Andrew. This supersedes the API-first proposal
+in this same draft PR. Nothing is installed, merged, enabled, launched or
+provisioned. KEYSTONE #32 stays draft.
 
-## Verification first
+Baseline: [joint AGREED closure, KEYSTONE #33](https://github.com/404-ac-notfound/KEYSTONE/issues/33#issuecomment-6103037544),
+v2 plus Urahara's item-7 amendment. Andrew assigned **Urahara and Kobe** as the
+independent isolation checkers. Magic authors this revision and performs ordinary
+implementation validation only; Magic does not perform/certify their check.
 
-The useful claim is supported by a real GitHub issue:
-[hide212131/hane #57](https://github.com/hide212131/hane/issues/57),
-“ci: trigger Codex reviews with connected GitHub user token.” Its Context records
-a live test where `github-actions[bot]` posted the review request but the ChatGPT
-Codex integration rejected that actor as not connected to a Codex account.
-The proposed repair used a connected user's token only for posting requests.
-Read through the GitHub API on 2026-10-10; this is third-party reported evidence,
-not an OpenAI promise about every bot on every installation.
+## Verification and admitted scope
 
-Precision: **rejected as an unlinked account**, rather than necessarily silently
-ignored. A second measured report, [GENesis-AGI #2808](https://github.com/WingedGuardian/GENesis-AGI/issues/2808),
-records 31 account-link refusals following Devin bot requests and none following
-81 maintainer requests. These support avoiding bot-posted managed review requests.
-They do not prove the cause of keystone-proof's original first-review timeout,
-or that bot-authored PRs cannot receive automatic reviews. Comment sender and PR
-author are different identities. Do not turn this into a blanket bot-author ban.
+[hane #57](https://github.com/hide212131/hane/issues/57) reports an Actions-bot
+review request rejected because its **comment sender** was not linked to Codex.
+It proposes a connected-user request credential. This is reported evidence,
+not a universal OpenAI guarantee or an explanation of initial automatic-review
+silence on proof PR #2. Request sender and PR author are different identities.
 
-[OpenAI's action README](https://github.com/openai/codex-action#example-create-your-own-pull-request-bot)
-provides the separate review-job/comment-job pattern and requires a provider API
-key. This action runs Codex CLI through the Responses API; it is a different path
-from the managed `@codex review` integration. Its `allow-bots` input is not
-evidence of the managed integration's behavior. No request comment or user PAT
-is needed by this proposal.
+The pilot does not rely on the All PRs toggle (reported HTTP 400) or another
+pull_request workflow waking. [GitHub trigger docs](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)
+describe approval-required runs for some GITHUB_TOKEN PR activities. Polling
+an absent reviewer does not invoke one.
 
-## Proposed behavior and boundaries
+The eventual eligibility target remains any PR author. **Current admission is
+one fresh named seed issue and its one same-repo PR**, two reviews total and one
+author revision. No universal unattended coverage is claimed.
 
-Install `codex-review.yml.disabled` as `.github/workflows/codex-review.yml` only
-in a separately approved activation change. Listen on `pull_request` opened,
-synchronize and ready_for_review. Include draft PRs and all authors: there is
-no author or association filter. The pinned action's `allow-users: '*'` admits
-all triggering actors, including bots; this is confined by the exact repository
-and same-repository head check before the action. Fork PRs are excluded.
+## Inactive implementation
 
-Two jobs, fresh GitHub-hosted Linux runners:
+Files in `docs/proposals/2026-10-11/`:
 
-1. `codex`: GitHub contents/PR/Actions read permissions only; trusted base SHA
-   checkout with credentials not persisted; immutable head fetched without
-   checking out or executing its changed configuration; Codex `:read-only`
-   permission profile with `drop-sudo`. Only static diff review, no test execution.
-   The action is last in the job. Head/base staleness, missing key, expired or
-   missing cash evidence, duplicate results, reruns, and exhausted attempts stop
-   before the model call. A shallow-history merge-base failure also stops.
-2. `post_feedback`: PR write permission, no checkout, no API key or Codex;
-   receives model output as environment data, never executable code. Rechecks
-   open/same-repo/current head AND base, and posts one marked advisory comment.
-   Empty/oversized output fails. Existing bot-authored head marker deduplicates;
-   report @mentions are neutralized to avoid waking another review bot.
+- `k14-managed.yml.disabled`: proposed replacement controller outside
+  `.github/workflows`; installation requires a separately approved activation.
+- `k14_controller.py`: gates, atomic claims, actual request, polling, publication,
+  final test and receipt.
+- `pilot-config.json`: deliberately unlaunchable non-secret preflight template.
+- `environment-status.md`: repo-specific observations and unknowns.
+- `test_managed_controller.py`: synthetic offline behavior/permission checks.
+- `closure-register.md`: requirement/evidence/follow-up mapping.
 
-Action pins resolved 2026-10-10: Codex action `bdf19a4a223ec2549a3e2274a0cf61556bc07675`
-(v1), checkout `fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09` (v5), github-script
-`f28e40c7f34bde8b3046d885e986cb6290c5673b` (v7), CLI 0.162.1.
-The action [actor check](https://github.com/openai/codex-action/blob/bdf19a4a223ec2549a3e2274a0cf61556bc07675/src/checkActorPermissions.ts)
-explicitly accepts `allow-users: '*'` before checking collaborator permissions.
+One run carries:
+`guard → author → publish1 → claim1 → request1 → verify1`.
+On findings only:
+`revise → publish2 → claim2 → request2 → verify2`.
+Final-head test and always-run receipt follow. No leg depends on a second
+workflow event. Posting is a real linked-user managed PR review request;
+keep its literal invocation phrase out of debate comments/PR descriptions.
 
-“Every PR” means author-independent event eligibility, **subject to the existing
-cash and bounded-pilot stops**. It cannot honestly mean unlimited model calls.
-This draft preserves a maximum of two attempts per PR branch, including failed
-runs, no rerun retries, expiry 23 October, and 10+2 minute job timeouts. Duplicate
-events and blocked runs may consume an attempt; branch reuse stops conservatively.
-No counter resets automatically. At most 24 runner minutes for two admitted
-attempts per branch; other workflows and PRs still consume the shared allowance.
-This is a replacement proposal, not a change to the already-consumed K-14 issue.
+Author/revision jobs have read-only GitHub permissions, fresh Claude OAuth,
+Read/Edit tools and no request PAT. The pinned Anthropic base-action avoids the
+wrapper's automatic PR/comment behavior. They upload only calc.py. Separate
+fresh-runner publishers use trusted controller code and publish only calc.py;
+model edits to scripts/config/tests are not transported. Model output is data,
+never inserted into executable shell text. Poll/test/receipt jobs are read-only.
+The PAT exists only in the request POST steps. The external managed Codex review
+uses provider review-mode permissions; this workflow does not enforce the API
+action's sandbox profile on that external service.
 
-There is a separate event-transport limit: [current GitHub documentation](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)
-says PR opened/synchronize events produced by `GITHUB_TOKEN` require a user to
-approve workflows; ready_for_review is not one of those exceptions. Merely
-adding this workflow does not establish unattended Actions-bot coverage. Andrew
-must decide whether to accept the approval step or separately approve a narrowly
-scoped GitHub App/PAT event source. No such credential is requested or created
-here. Test transport separately from author eligibility before declaring PASS.
+Every controller checkout pins the launch SHA and disables persisted credentials.
+Contents write exists only for pilot/attempt claims and publication; PR write
+exists only in publication. No merge path. The pilot PR is opened as a draft;
+manual managed review of that bot-authored draft is a live-proof question.
 
-## Cash and secret decision required from Andrew
+## Runtime gates and durable limits
 
-**`OPENAI_API_KEY` does not exist (owner-reported).** This proposal cannot run.
-The action uses API billing; consumer ChatGPT allowance and “Use credits for
-reviews OFF” do not constitute an API spending control. GitHub's $0 AI-credit
-budget does not cap calls billed directly by OpenAI. A timeout, two-attempt cap,
-or an alert-only project budget cannot guarantee $0. OpenAI documents
-[separate API billing](https://help.openai.com/en/articles/9039756-managing-billing-settings-on-the-chatgpt-web-and-api-platform)
-and [hard spend limits](https://developers.openai.com/api/docs/guides/spend-limits);
-hard-limit enforcement can lag and recorded spend can exceed the configured
-amount. Therefore a $0 API hard limit alone is not permission to make a billable
-review call under the present envelope.
+No variables are set by this revision. Owner-provisioned, non-secret variables:
 
-Leave all gates unset/OFF. Do not buy credits, attach billing, or enable automatic
-recharge. Under the present $0 instruction, activation stays blocked unless
-Andrew establishes an API funding path and enforceable controls consistent with
-that instruction, or explicitly approves a revised cash envelope. If that cannot
-be established, retain the managed consumer review path for connected human
-requests and do not activate this API alternative.
+| Variable | Meaning |
+|---|---|
+| K14_ENABLED | Off switch; missing/OFF stops |
+| K14_APPROVED_SHA | Exact controller/launch commit Andrew approved |
+| K14_EXPIRES_AT | UTC runtime expiry within the authorized ceiling |
+| K14_PREFLIGHT_JSON | Complete owner-approved preflight from the template, original instruction/quote and evidence pointers |
+| K14_CASH_STOP_VERIFIED | Existing $0 cash stops verified, no API fallback |
+| K14_CASH_CHECKED_AT | UTC account check no older than two hours at each invocation |
+| K14_INCLUDED_MINUTES | At least 125 included Actions minutes evidenced |
 
-Proposed later setup, after Andrew's yes:
+The external runtime JSON avoids embedding a file's own final commit SHA inside
+itself. Approval and checker SHAs must match the exact launch revision. Unassigned
+seed, wrong repo/actor, rerun, missing authorization, malformed/expired/extended
+expiry, unverified access/retirement and missing bounded credentials stop.
+Gates repeat before author preparation, publication, claims, requests and polling.
+These are runtime inputs, not magic financial enforcement. For an immediate
+mid-flight stop Andrew cancels the run/stops the provider task; changing a
+variable cannot recall a request already delivered.
 
-- A separate OpenAI project/service credential scoped to this review task, stored
-  as `OPENAI_API_KEY` in the protected `codex-review-owner-approved` environment
-  of keystone-proof only. Do not put its value into a PR, chat, logs or files.
-- Configure the environment's trusted activation branch and owner approval;
-  choose permission restrictions supported by the API provider. Record only
-  credential owner, creation/expiry and retirement metadata. No Claude token
-  is used by this review job.
-- Andrew also approves the model and reasoning effort used by the action;
-  set/pin them in the activation PR rather than accepting a moving default.
-- Verify actual API financial enforcement, all original GitHub $0/Stop usage
-  settings and at least 125 included Actions minutes immediately before a run.
-  The repository variables `CODEX_REVIEW_ENABLED`,
-  `CODEX_REVIEW_API_ENVELOPE_APPROVED`, `CODEX_REVIEW_CASH_STOP_VERIFIED` must each
-  be `true`; `CODEX_REVIEW_CASH_CHECKED_AT` must be an ISO UTC time within one hour
-  and `CODEX_REVIEW_INCLUDED_MINUTES` an integer at least 125. These are owner
-  attestations and off switches, not an API hard spending cap.
-- Disable the old managed automatic review or otherwise explicitly resolve
-  double-review usage when activating the replacement; do not change the
-  HTTP-400 “All PRs” toggle in this draft. The old poller trusts the managed
-  connector bot; this new comment is by `github-actions[bot]` and cannot be
-  accepted as a managed verdict. Any K-14 controller integration needs a
-  separate provenance/head/run binding change and owner-approved pilot.
+A create-only `k14-claims/<pilot_id>` ref admits the pilot once. Atomic
+`k14-attempts/<pilot_id>/1` and `/2` consume slots **before** sending. Failed
+or uncertain sends, reruns and duplicate labels never reset them. Changing ids
+or deleting refs to bypass limits requires Andrew's new scope.
 
-## Overdue Claude token retirement
+Each look checks open/same-repo/expected branch, base/head, and 50 files,
+1,000 added/deleted lines, 128 KiB full diff. Binary/missing/truncated patches
+stop; instruction/lesson Markdown is not silently excluded. Posting rechecks
+claim/run, marker and base/head and validates the returned login; no resend.
 
-Jarvis reported that `CLAUDE_CODE_OAUTH_TOKEN` still exists in keystone-proof,
-last updated 2026-10-09T06:30:31Z. The prior run finished without retirement.
-This is an open lifecycle task, not evidence that the value was exposed.
+Poll only accepts the pinned `chatgpt-codex-connector[bot]` after the request,
+bound by structured commit identity or full SHA. Time/reactions/green checks/
+abbreviated SHAs do not bind. Empty, quota, environment or status output is
+NO-VERDICT. Findings dominate clean text; head/base read-back precedes acceptance.
+Missing/unsupported managed reviews are BLOCKED, with no retry or API fallback.
 
-Andrew's next approved retirement should: disable the old K-14 author workflow,
-check for/cancel in-flight token users, delete the repository secret, and revoke
-the underlying issued OAuth credential through Claude's supported account flow.
-Removing a GitHub secret alone does not revoke copies of the issued credential.
-If only broader session revocation is available, Andrew chooses its impact.
-Verify absence by secret name/metadata and record issuer revocation time or
-UNKNOWN pending owner confirmation; never retrieve the value. A future Claude
-author pilot requires a fresh, bounded token and retirement on PASS, FAIL,
-cancellation or expiry. Do not silently carry the old token forward.
+Worst-case summed job timeouts: **117 Linux runner minutes** within the planning
+reserve of 125. This is not a live remaining counter or final billing evidence;
+other work shares allowance. Polls have 30-minute limits/32-minute job caps.
 
-## Acceptance before activation
+## Scoped credentials — Andrew provisions after approval
 
-`python docs/proposals/2026-10-10/check_draft.py` passed: YAML and two-job
-permission assertions, fetch-shell syntax, and 27 offline guard/posting scenarios
-(missing/stale cash evidence, key absence, forks, changed head/base, duplicate
-results, exhausted/failed attempt counts, history pagination, malformed/empty
-output, mention neutralization and expiry). These do not prove model quality, API billing enforcement,
-GitHub event delivery, environment settings or the missing credential.
+| Credential | Placement/scope | Lifecycle |
+|---|---|---|
+| K14_AUTHOR_OAUTH_TOKEN | Fresh bounded Claude OAuth in keystone-proof only; author/revise inputs only | Freshness/expiry evidence; revoke/delete on terminal outcome, cancel or expiry |
+| K14_REVIEW_REQUEST_TOKEN | Linked GitHub user's fine-grained PAT, keystone-proof only, minimal PR-comment write/implicit metadata read; request POST steps only | At most 30 days, preferably pilot duration; verify actual posting login; retire after pilot |
+| GITHUB_TOKEN | Ephemeral job permissions as listed; never substitutes for the linked-user PAT | GitHub-issued per job |
+| OPENAI_API_KEY | Missing, owner-reported; unnecessary for selected managed path | Do not provision for this pilot; API alternative OFF |
 
-After the separate owner gates, one bounded canary must demonstrate a human and
-an Actions-bot same-repo PR, synchronize/new head, ready_for_review, fork rejection,
-duplicate rejection, stale head/base rejection, missing-key/cash stops and the
-two-attempt ceiling. Stay within two reviews per pilot branch; distribute cases
-without treating blocked cases as successful reviews. No merge or automatic
-repair. The receipt records exact head/base, action/CLI pins, event/actor, run
-URL, terminal report, usage evidence and credential retirement.
+No PAT contents write, Actions administration, secrets/variables access or
+organization-wide scope; never use it to create PRs. If the minimal supported
+permission cannot be established, BLOCKED and Andrew owns the decision. Account
+linking/environment/App setup remain owner gates. Values never enter evidence.
+
+**Old CLAUDE_CODE_OAUTH_TOKEN retirement is unverified.** Jarvis earlier reported
+present; Urahara's newer evidence reports deletion but lacks verification and
+issuer revocation. Do not assert it is definitely still present. Andrew checks
+absence by metadata and revokes at issuer; deletion alone does not revoke issued
+copies. Broader session-revocation impact is his choice. This draft neither
+reads values nor changes/deletes secrets, disables workflows or cancels runs.
+A fresh bounded author token replaces the old one; no silent carry-forward.
+
+## Independent isolation and proof-first order
+
+**Urahara and Kobe** check the exact approved revision, provided neither authored
+it. Each records runtime files/refs and a grep/trace showing no KEYSTONE main
+path. Their receipt slots remain PENDING. Synthetic PASS test fixtures are
+never real isolation evidence. Magic does not run that assessment.
+
+Missing independent evidence makes green KEYSTONE main a proof prerequisite.
+With it, proof may precede repair of KEYSTONE main. Green KEYSTONE is mandatory
+before #32 adoption/migrations/cutovers; any baseline re-pin is Andrew's gate.
+
+Order: verify retirement/repo readiness → scoped credentials/reviewed inactive
+controller → independent checks → Andrew-authorized fresh-seed run → K-14 PASS
+→ approved low-risk second-repo canary → green KEYSTONE/#32 adoption/migration
+→ safe vendor cleanup. #32 stays draft/unmerged; PASS grants no merge permission.
+
+## Receipt and validation limits
+
+The same run saves request/reviewer ids/logins, attempt slots, exact base/head/
+read-back, verdict/check evidence, final-head test result, controller/config/
+environment provenance, old retirement metadata and run/job timings as artifacts
+and summary. No transport leg depends on Andrew after his launch tap.
+
+Final Actions usage, billing evidence, owner-touch audit and fresh credential
+retirement cannot be verified by a receipt job still running. Its output remains
+**BLOCKED pending final evidence**. An independent post-run read/audit may resolve
+those fields without supplying a missing transport step. Clean review/tests
+alone never self-issue PASS; zero owner transport touches and $0 API spend need
+evidence. Preserve FAIL/BLOCKED artifacts instead of retrying.
+
+Offline validation commands:
+
+```sh
+python docs/proposals/2026-10-11/test_managed_controller.py
+python docs/proposals/2026-10-10/check_draft.py
+```
+
+These validate controller behavior, job/secret boundaries and permission
+structure. They do not invoke models, certify live billing/transport or perform
+the assigned isolation check.
+
+## Retained API alternative — OFF
+
+`codex-review.yml.disabled` retains the two-job openai/codex-action design:
+read-only model job, separate poster, opened/synchronize/ready_for_review with no
+author filter. **Both jobs have hard-false guards**, even if copied. Its helper
+now has runtime expiry, a named PR, workflow-global attempt counting and agreed
+diff caps. It is not the managed controller or activation-ready. Removing OFF
+needs a separately approved revision with funding/financial enforcement,
+model/effort pins, protected credential placement and an approved envelope.
+
+[OpenAI's action](https://github.com/openai/codex-action) requires API credentials;
+consumer allowance and GitHub's $0 AI-credit budget do not fund/cap API calls.
+No automatic fallback, credit purchase, auto-reload, secret provisioning or
+provider call is authorized; cash controls remain unchanged.
+
+LeBron's alternative environment wording and VERIFIED/ATTESTED lesson labels
+remain recommendations, not new consensus conditions.

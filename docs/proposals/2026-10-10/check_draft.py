@@ -9,6 +9,8 @@ w = yaml.load(path.read_text(), Loader=yaml.BaseLoader)
 assert w['on']['pull_request']['types'] == ['opened', 'synchronize', 'ready_for_review']
 assert set(w['jobs']) == {'codex', 'post_feedback'}
 assert w['permissions'] == {}
+assert w['jobs']['codex']['if'] == '${{ false }}'
+assert w['jobs']['post_feedback']['if'] == '${{ false }}'
 read = w['jobs']['codex']
 post = w['jobs']['post_feedback']
 assert set(read['permissions'].values()) == {'read'}
@@ -38,6 +40,8 @@ const context = {repo:{owner:'404-ac-notfound', repo:'keystone-proof'}, runId:10
 let count = 0;
 async function exercise(fn, spec={}, error='') {
   process.env.HAS_OPENAI_API_KEY='true';
+  process.env.EXPIRES_AT='2026-10-23T00:00:00Z';
+  process.env.PILOT_PR='7';
   process.env.CASH_CHECKED_AT=new Date().toISOString();
   process.env.INCLUDED_MINUTES='125';
   process.env.REVIEWED_HEAD=head;
@@ -48,8 +52,9 @@ async function exercise(fn, spec={}, error='') {
   const current={...structuredClone(p), state:'open', ...spec.current};
   const comments = spec.comments || [];
   let pages=0;
-  const github={paginate:async()=>comments, rest:{
-    pulls:{get:async()=>({data:current})},
+  const github={paginate:async(fn)=>fn===github.rest.pulls.listFiles ? (spec.files || [{additions:1,deletions:1,patch:'diff'}]) : comments,
+    request:async()=>({data:spec.diff || 'diff'}), rest:{
+    pulls:{listFiles:()=>{},get:async()=>({data:current})},
     issues:{listComments:()=>{}, createComment:async x=>posts.push(x)},
     actions:{getWorkflowRun:async()=>({data:{workflow_id:4}}),
       listWorkflowRuns:async()=>({data:{workflow_runs: spec.many ? Array.from({length:100},()=>({id:101})) : spec.runs || []}})}
@@ -99,6 +104,12 @@ async function exercise(fn, spec={}, error='') {
   assert.equal((await exercise(post,{comments:[{user:{login:'404-ac-notfound'},body:marker}]})).posts.length,1);
   await exercise(post,{env:{REVIEW_TEXT:'   '}},'empty');
   await exercise(post,{env:{REVIEW_TEXT:'x'.repeat(12001)}},'oversized');
+  await exercise(guard,{env:{PILOT_PR:'8'}},'named');
+  await exercise(guard,{env:{EXPIRES_AT:''}},'expired');
+  await exercise(guard,{files:Array.from({length:51},()=>({additions:0,deletions:0,patch:'diff'}))},'size');
+  await exercise(guard,{files:[{additions:1001,deletions:0,patch:'diff'}]},'size');
+  await exercise(guard,{files:[{additions:1,deletions:0}]},'binary');
+  await exercise(guard,{diff:'x'.repeat(131073)},'byte');
   const RealDate=Date;
   global.Date=class extends RealDate { static now(){return RealDate.parse('2026-10-23T00:00:00Z');} };
   await exercise(guard,{},'expired');
