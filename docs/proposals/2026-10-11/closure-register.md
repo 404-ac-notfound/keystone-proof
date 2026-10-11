@@ -10,8 +10,8 @@ Author: Magic. Scope: inactive drafts only. No live proof or isolation PASS.
 | Items 3/6: credentials and API OFF | IMPLEMENTED / OWNER PROVISIONED | Read-only author/poll; independent publisher; PAT only request POST; fresh OAuth plan; API jobs hard OFF | Exact expiry/lifecycle and selected-route readiness still needed; provisioning OWNER ATTESTED |
 | Item 3: environment/access readiness | BLOCKED | environment-status.md; template UNKNOWN; actual KEYSTONE connector reply linked | Authorized read-only readiness record; Andrew account decisions |
 | Item 6: old OAuth retirement | CLEARED, OWNER ATTESTED | Andrew 21:42 MYT GitHub deletion; about 22:03 MYT both old issuer tokens revoked, new K-14 kept | Record new-token metadata and owner retirement acceptance |
-| Item 7: independent isolation evidence | OPEN | Both runtime receipt slots PENDING; author has not performed the check | **Urahara and Kobe**, assigned by Andrew, inspect exact revision/runtime files/refs |
-| Item 7: proof/green-main/canary/adoption order | IMPLEMENTED, plan only | review-fix.md; independent evidence absent makes green main a proof prerequisite | Andrew gates; #32 stays draft |
+| Item 7: independent isolation evidence | CANDIDATE PASS; FINAL MAIN PENDING | Both seats' static PASS at frozen 6efb727; runtime slots remain PENDING | **Urahara and Kobe** recheck this change and final installed main SHA; Magic does not assess isolation |
+| Item 7 / N1: proof/canary/adoption order | HARD ISOLATION GATE, draft only | Green-KEYSTONE alternative removed; both assigned PASS receipts must bind to final launch SHA | Andrew gates; green KEYSTONE retained only for later #32 adoption/migration |
 | Exact-head review/tests/final usage/owner-touch/retirement receipt | PARTIAL | Poll/final-check/receipt implementation; no live verdict, billing or retirement proof | Independent post-run audit; unknowns never self-issue PASS |
 
 Lesson migration and vendor cleanup belong to #32's later gated draft work.
@@ -41,3 +41,11 @@ repository review settings. Exact new-token UTC metadata/lifecycle acceptance
 remain pending. The controller now separates provider expiry from allowed use,
 measures PAT lifetime from issuance and enforces the unchanged 23 Oct UTC ceiling.
 See freeze-record.md; no activation or launch is granted.
+
+## Installation preparation — N1
+
+Andrew's instruction after Kobe's 6efb727 PASS removes the fallback in the next
+revision. Both final-main checker receipts are mandatory. Candidate PASS comments
+are historical evidence, not permission to fill this new revision's runtime slots.
+The separate installation draft leaves frozen PR #3 and main unchanged; all
+managed/API workflow candidates remain inactive. See installation-n1.md.

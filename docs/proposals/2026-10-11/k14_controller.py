@@ -73,9 +73,10 @@ def gates(c, e, now=None):
     isolated = (len(isolated) == 2 and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
                 and all(x.get("status") == "PASS" and x.get("controller_sha") == sha
                         and x.get("seat") != c.get("controller_author") and x.get("evidence") for x in isolated))
-    green = c.get("keystone_green_main", {})
-    require(isolated or (green.get("status") == "PASS" and SHA.fullmatch(green.get("sha") or "")
-                         and green.get("evidence")), "independent isolation pending; green KEYSTONE prerequisite not met")
+    # Installation/merge produces the final launch SHA. Candidate checks cannot
+    # substitute for both assigned checkers' receipts bound to that exact SHA.
+    # KEYSTONE status supplies no alternative route through this hard gate.
+    require(isolated, "Urahara/Kobe isolation PASS required at final approved launch SHA")
     checked = utc(e.get("K14_CASH_CHECKED_AT"))
     require(dt.timedelta(0) <= now - checked <= dt.timedelta(hours=2), "cash evidence stale/future/missing")
     require(e.get("K14_CASH_STOP_VERIFIED") == "true" and e.get("K14_INCLUDED_MINUTES", "").isdigit()

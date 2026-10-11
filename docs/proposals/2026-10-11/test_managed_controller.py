@@ -201,11 +201,28 @@ class Gates(unittest.TestCase):
                 with self.assertRaises(m.Stop):
                     m.gates(c, e, NOW)
 
-    def test_green_prerequisite_fallback_synthetic(self):
+    def test_green_main_cannot_replace_missing_isolation(self):
         c, e = fixture()
         c["independent_isolation"] = []
         c["keystone_green_main"] = {"status": "PASS", "sha": B, "evidence": "synthetic"}
-        self.assertEqual(m.gates(c, e, NOW), A)
+        with self.assertRaisesRegex(m.Stop, "isolation PASS required"):
+            m.gates(c, e, NOW)
+
+    def test_green_main_cannot_replace_final_sha_rechecks(self):
+        c, e = fixture()
+        # Synthetic installation changed main's launch SHA from A to B.
+        e.update(GITHUB_SHA=B, K14_APPROVED_SHA=B)
+        c["owner_authorization"]["approved_sha"] = B
+        c["keystone_green_main"] = {"status": "PASS", "sha": B, "evidence": "synthetic"}
+        for rechecked_count in range(3):
+            with self.subTest(rechecked=rechecked_count):
+                for i, receipt in enumerate(c["independent_isolation"]):
+                    receipt["controller_sha"] = B if i < rechecked_count else A
+                if rechecked_count == 2:
+                    self.assertEqual(m.gates(c, e, NOW), B)
+                else:
+                    with self.assertRaisesRegex(m.Stop, "isolation PASS required"):
+                        m.gates(c, e, NOW)
 
     def test_default_config_is_unlaunchable(self):
         c = json.loads((ROOT / "pilot-config.json").read_text())
@@ -245,6 +262,45 @@ class Transport(unittest.TestCase):
                 self.assertEqual(emit.call_args.args[0]["admitted"], "true")
                 with self.assertRaises(m.Stop):
                     m.guard(c)
+
+    def test_stale_candidate_receipts_stop_launch_before_any_api_call(self):
+        c, e = fixture()
+        e.update(GITHUB_SHA=B, K14_APPROVED_SHA=B)
+        c["owner_authorization"]["approved_sha"] = B
+        c["keystone_green_main"] = {"status": "PASS", "sha": B, "evidence": "synthetic"}
+        with patch.dict(os.environ, e), patch.object(m, "api", self.api), \
+                patch.object(m, "now_utc", return_value=NOW):
+            with self.assertRaisesRegex(m.Stop, "isolation PASS required"):
+                m.guard(c)
+        self.assertEqual(self.api.calls, [])
+
+    def test_final_sha_rechecks_allow_only_that_main_revision(self):
+        c, e = fixture()
+        e.update(GITHUB_SHA=B, K14_APPROVED_SHA=B)
+        c["owner_authorization"]["approved_sha"] = B
+        for receipt in c["independent_isolation"]:
+            receipt["controller_sha"] = B
+        event = {"action": "labeled", "label": {"name": "ready"},
+                 "sender": {"login": "404-ac-notfound"}, "issue": {"number": 9}}
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "event.json"
+            path.write_text(json.dumps(event))
+            for main_sha in (A, B):
+                self.api = FakeAPI()
+                self.api.refs["refs/heads/main"] = main_sha
+                with self.subTest(main=main_sha), \
+                        patch.dict(os.environ, {**e, "GITHUB_EVENT_PATH": str(path)}), \
+                        patch.object(m, "api", self.api), patch.object(m, "emit") as emit, \
+                        patch.object(m, "now_utc", return_value=NOW):
+                    if main_sha == B:
+                        m.guard(c)
+                        self.assertEqual(emit.call_args.args[0]["base"], B)
+                        self.assertEqual(self.api.refs["refs/heads/job/9"], B)
+                    else:
+                        with self.assertRaisesRegex(m.Stop, "main moved"):
+                            m.guard(c)
+                        self.assertNotIn("refs/heads/job/9", self.api.refs)
+                        emit.assert_not_called()
 
     def test_wrong_launch_sender_seed_and_activity_stop_before_claim(self):
         c, e = fixture()

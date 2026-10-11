@@ -1,9 +1,10 @@
 # Owner gates and fresh-seed launch checklist — 11 Oct 2026
 
-Magic. **Do not launch.** This frozen draft corrects credential expiry gates
-from parent `072b505390a464fd80a594148f3529d4a6e6b795`. The exact frozen commit
-is recorded in PR #3's description; see freeze-record.md. This is not merge,
-activation or launch approval. KEYSTONE #32 remains draft.
+Magic. **Do not launch.** This installation preparation follows Andrew's N1
+instruction from frozen candidate `6efb7276e3b45d707458fb59647369c604d5ab98`.
+PR #3 stays frozen; freeze-record.md is its historical record. This separate
+draft removes the green-KEYSTONE isolation bypass; see installation-n1.md.
+This is not merge, activation or launch approval. KEYSTONE #32 remains draft.
 
 ## Andrew's authenticated owner report
 
@@ -89,13 +90,14 @@ values. A repository/organization same-name secret fallback remains forbidden.
    Environment main-only rules mean the credential jobs cannot be tested on a
    draft/PR branch. No need to broaden those environment rules.
 
-5. **Independent checks on the final launch revision.** Urahara and Kobe must
-   assess the completed fixes; their comments fetched now still concern 5f25488.
-   This records commit creates no isolation PASS. Freeze the intended code and
-   activation diff before their check; bind or recheck the actual final main SHA
-   after any merge/installation change, because the guard requires
-   main == GITHUB_SHA == K14_APPROVED_SHA. Magic does not run their isolation
-   assessment. Missing evidence follows the agreed green-main prerequisite.
+5. **Independent final-main rechecks are a hard launch gate.** Urahara and Kobe
+   both posted static PASS on frozen 6efb727. This separate N1 revision and any
+   installation/merge change need their own evidence. After Andrew-approved
+   installation/merge, both recheck the actual final main SHA and supply PASS
+   receipts with controller_sha equal to GITHUB_SHA and K14_APPROVED_SHA. The
+   guard also requires main == that SHA. Missing/stale receipts stop before
+   launch admission; green KEYSTONE status grants no exception. Runtime template
+   slots remain PENDING. Magic does not run their isolation assessment.
 
 6. **Complete the non-secret launch envelope and fresh cash evidence.** Assign
    a new seed issue (>1), unique pilot id and unused claim/attempt slots. Existing

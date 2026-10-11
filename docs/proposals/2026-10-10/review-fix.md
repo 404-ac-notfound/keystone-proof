@@ -150,12 +150,16 @@ Managed controller files remain inactive outside .github/workflows.
 
 **Urahara and Kobe** check the exact approved revision, provided neither authored
 it. Each records runtime files/refs and a grep/trace showing no KEYSTONE main
-path. Their prior checks on 5f25488 are historical; new-revision receipt slots remain PENDING. Synthetic PASS test fixtures are
-never real isolation evidence. Magic does not run that assessment.
+path. Both assigned seats posted static PASS at frozen candidate 6efb727;
+those results do not certify this installation preparation or final main.
+Runtime receipt slots stay PENDING. Synthetic fixtures are never real isolation
+evidence. Magic does not run that assessment.
 
-Missing independent evidence makes green KEYSTONE main a proof prerequisite.
-With it, proof may precede repair of KEYSTONE main. Green KEYSTONE is mandatory
-before #32 adoption/migrations/cutovers; any baseline re-pin is Andrew's gate.
+Andrew's N1 instruction removes the green-KEYSTONE alternative: both seats
+must recheck and record PASS bound to the final installed main SHA. Missing or
+stale evidence stops K-14; green KEYSTONE cannot bypass this gate. Green KEYSTONE
+remains mandatory before later #32 adoption/migrations/cutovers; any baseline
+re-pin is Andrew's gate. See installation-n1.md for the exact handoff.
 
 Order: verify retirement/repo readiness → scoped credentials/reviewed inactive
 controller → independent checks → Andrew-authorized fresh-seed run → K-14 PASS

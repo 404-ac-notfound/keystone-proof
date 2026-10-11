@@ -35,11 +35,6 @@
       "evidence": null
     }
   ],
-  "keystone_green_main": {
-    "status": "UNKNOWN",
-    "sha": null,
-    "evidence": null
-  },
   "author_credential": {
     "fresh": true,
     "expires_at": null,
