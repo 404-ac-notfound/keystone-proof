@@ -56,9 +56,22 @@ Urahara passed static isolation/four checks at 0df1a61; that evidence does not
 certify this new revision. F4 is addressed by the code-pinned `{Magic}` author
 list and matching owner authorization. F3's text-only receipt gap is hardened
 with canonical same-repo comment URLs, pinned body SHA-256 and read-only checks
-of the real comment's ID/parent/owner publisher/seat/full SHA/PASS before
-admission and non-receipt controller stages. Human reviewer provenance remains
+of the real comment's ID/parent/owner publisher/raw-body digest and exact
+`Seat: PASS <full approved SHA>` first line before admission and non-receipt controller stages. Human reviewer provenance remains
 Andrew's trust boundary. Template slots stay PENDING with null evidence/hashes.
 PyYAML is hash-locked for offline QA only; production locks and workflows are
-unchanged. 44 controller + 7 runtime tests passed in the clean QA venv. Both
+unchanged. 48 controller + 7 runtime tests passed in the clean QA venv. Both
 assigned seats recheck the changed revision and final installed main.
+
+
+## Kobe FAIL: strict review-comment protocol
+
+[Kobe's FAIL at 205fb9c](https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6110786143)
+found ambiguous verdict and stale-SHA acceptance, a CRLF paragraph escape, and
+malformed API records raising AttributeError. The draft replaces permissive
+paragraph/Isolation-label matching with one exact seat/PASS/approved-SHA first
+line. Raw UTF-8 hashes remain exact; CRLF is normalized only for parsing, other
+full SHAs in the opening paragraph stop, and malformed records raise Stop.
+The 48 controller + 7 runtime tests are synthetic author validation, not a new
+checker verdict. Both assigned seats review this SHA and later final main;
+Andrew's installation, credential, cash and launch gates remain unchanged.

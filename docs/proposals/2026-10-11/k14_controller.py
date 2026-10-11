@@ -156,23 +156,29 @@ def verify_isolation_comments(c, sha, get=None):
         require(link is not None, "invalid isolation comment URL")
         issue, comment_id = link.groups()
         comment = get(f"repos/{REPO}/issues/comments/{comment_id}")
-        require(comment.get("id") == int(comment_id)
+        require(isinstance(comment, dict), "isolation comment payload must be an object")
+        publisher = comment.get("user")
+        require(isinstance(publisher, dict), "isolation comment user must be an object")
+        require(type(comment.get("id")) is int and comment["id"] == int(comment_id)
                 and comment.get("issue_url") == f"https://api.github.com/repos/{REPO}/issues/{issue}"
-                and comment.get("user", {}).get("login") == REVIEW_PUBLISHER,
+                and publisher.get("login") == REVIEW_PUBLISHER,
                 "isolation comment identity/repository/publisher mismatch")
         body = comment.get("body")
         require(isinstance(body, str) and body.strip(), "isolation comment body missing")
         require(hashlib.sha256(body.encode("utf-8")).hexdigest() == receipt["comment_body_sha256"],
                 "isolation comment changed or body digest mismatched")
-        first_paragraph = body.lstrip().split("\n\n", 1)[0]
-        first_line = first_paragraph.splitlines()[0]
+        # Hash the exact API body above; normalise only the text used for parsing.
+        # One canonical headline binds the verdict directly to its subject SHA.
+        normalised = body.replace("\r\n", "\n")
+        require("\r" not in normalised, "isolation comment has unsupported line endings")
+        first_paragraph = normalised.split("\n\n", 1)[0]
+        first_line = normalised.split("\n", 1)[0]
         seat = receipt["seat"]
-        require(first_line.startswith(seat + ":")
-                and re.search(r"(?<![0-9a-f])" + sha + r"(?![0-9a-f])", first_paragraph),
-                "isolation comment seat or opening-paragraph SHA mismatch")
-        pass_first = re.match(re.escape(seat) + r":\s*(?:\*\*)?PASS\b", first_line)
-        pass_label = re.search(r"(?im)^\s*(?:\*\*)?Isolation[^\n]{0,160}:\s*(?:\*\*)?PASS\b", body)
-        require(pass_first or pass_label, "isolation comment has no explicit PASS verdict")
+        require(first_line == f"{seat}: PASS {sha}",
+                "isolation comment must begin with canonical Seat: PASS full-approved-SHA")
+        subjects = re.findall(r"(?<![0-9a-fA-F])[0-9a-fA-F]{40}(?![0-9a-fA-F])", first_paragraph)
+        require(subjects and all(subject == sha for subject in subjects),
+                "isolation comment opening paragraph contains another revision")
         verified.append({"seat": seat, "comment_id": int(comment_id), "controller_sha": sha,
                          "evidence": receipt["evidence"], "comment_body_sha256": receipt["comment_body_sha256"]})
     return verified

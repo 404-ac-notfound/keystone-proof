@@ -96,7 +96,9 @@ values. A repository/organization same-name secret fallback remains forbidden.
    installation/merge, both recheck the actual final main SHA and supply PASS
    receipts with controller_sha equal to GITHUB_SHA and K14_APPROVED_SHA, real
    same-repo comment URLs and exact body SHA-256s. The read-only gate verifies
-   the actual comments' owner publisher, seat, opening-paragraph SHA and PASS.
+   the actual comments' owner publisher, raw-body hash and exact first line
+   `Seat: PASS <full approved SHA>` (Kobe or Urahara). Parsing normalizes CRLF;
+   other full SHAs in the opening paragraph and alternative verdict labels stop.
    The guard also requires main == that SHA. Missing/stale receipts stop before
    launch admission; green KEYSTONE status grants no exception. Runtime template
    slots remain PENDING. Magic does not run their isolation assessment.

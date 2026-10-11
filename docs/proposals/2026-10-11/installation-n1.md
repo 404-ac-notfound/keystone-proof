@@ -121,11 +121,16 @@ controller CLI stage, read-only GitHub GETs verify both real comments:
 - The publisher must be the code-pinned owner login `404-ac-notfound`; this is
   how both existing seats' review comments are published. A new publisher needs
   a reviewed revision, with no silent fallback.
-- The body must match its owner-pinned SHA-256, start with the assigned seat name
-  followed by a colon, and name the full approved SHA in its opening paragraph.
-- An explicit PASS must occur immediately after the opening seat name or in a
-  labelled Isolation verdict. A QA heading with an Isolation PASS and separate
-  launch BLOCKED is supported.
+- The raw UTF-8 body must match its owner-pinned SHA-256. CRLF is normalized to
+  LF for parsing only; lone carriage returns are rejected.
+- The very first line must be exactly `Kobe: PASS <FINAL_MAIN_SHA>` or
+  `Urahara: PASS <FINAL_MAIN_SHA>`, matching the assigned seat. Replace the
+  placeholder with the full 40-character approved SHA. No Markdown, backticks,
+  padding, suffix, leading blank line or alternative Isolation label is accepted.
+- The opening paragraph must contain no other full SHA. Put historical revisions
+  and any separate QA/launch status after a blank line; these cannot establish PASS.
+- API comment and user payloads must be objects, and the comment ID must be an
+  integer. Malformed payloads raise the controller's `Stop` exception.
 
 Missing/unreadable/edited comments, wrong publisher, wrong repository/parent,
 wrong seat/SHA or missing PASS stop before claim writes or provider invocation.
@@ -142,7 +147,7 @@ wheel URL and SHA-256. The test-only lock was installed in an empty local venv
 with --require-hashes --only-binary=:all: --no-deps --no-cache-dir. Production
 pytest-requirements.lock, runtime-lock.json and k14_runtime.py are unchanged.
 
-Validation: 44 controller and 7 locked-runtime tests pass in the clean locked QA
+Validation: 48 controller and 7 locked-runtime tests pass in the clean locked QA
 venv with an isolated interpreter and no credentials. Only standard PATH and
 the unchanged HOME were retained for the existing runtime test fixture. New synthetic probes cover
 author aliases and owner-binding, URL/digest requirements, real-comment read
@@ -157,3 +162,25 @@ retirement acceptance; real final-main comment URLs/body hashes; approved author
 and SHA; target readiness, cash/envelope/seed evidence and launch switches under
 separate approval. Both seats recheck final installed main. Image rotation needs
 a reviewed re-pin if the admitted version is unavailable; no automatic fallback.
+
+
+## Kobe FAIL at 205fb9c: strict receipt grammar
+
+[Kobe's independent FAIL](https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6110786143)
+binds to `205fb9ced09bc63ef1c7dca476cba149f8eb029b`. His hash-locked QA reproduced
+44 controller and 7 runtime tests, then found 10 failures among 131 independent
+probes. The earlier opening-paragraph/label parser admitted ambiguous verdicts,
+stale-SHA PASS text and CRLF scope escapes. Malformed API records raised
+AttributeError instead of the intended Stop. Author approval and scope passed.
+
+This draft implements the strict headline contract above and removes the label
+fallback. Regressions cover LF and CRLF, FAIL headlines with later PASS text,
+withheld/undecided verdicts, stale subject SHAs, different SHAs in the opening
+paragraph, raw-versus-normalized digests, lone carriage returns, malformed API
+objects and the CLI BLOCKED receipt path. Both existing final-main receipt and
+main-equality gates remain mandatory. No workflow, runtime or lock file changes.
+
+The 48 controller and 7 runtime tests are author implementation evidence only.
+Kobe's FAIL remains historical evidence until he reviews this new SHA; no current
+independent PASS is claimed. Urahara must also review the new revision. Both seats
+still recheck the final installed main SHA after Andrew approves installation.

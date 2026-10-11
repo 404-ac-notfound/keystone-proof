@@ -22,7 +22,7 @@ EXPIRES = "2026-10-11T03:15:00Z"
 
 
 def isolation_body(seat, sha):
-    return f"{seat}: PASS — synthetic item-7 isolation at `{sha}`."
+    return f"{seat}: PASS {sha}\n\nSynthetic item-7 isolation evidence only."
 
 
 def isolation_receipt(seat, sha):
@@ -349,9 +349,9 @@ class IsolationEvidence(unittest.TestCase):
                     self.assertTrue(all(call[1] == "GET" for call in api.calls))
                     self.assertEqual(api.refs, {})
 
-    def test_labelled_isolation_pass_after_qa_heading_is_supported(self):
+    def test_canonical_isolation_pass_with_separate_launch_blockers_is_supported(self):
         c, _ = fixture()
-        body = f"Urahara: independent QA at {A}.\n\n**Isolation (item 7): PASS**\n\nLaunch readiness: BLOCKED."
+        body = f"Urahara: PASS {A}\n\nIndependent QA.\n\nLaunch readiness: BLOCKED."
         c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(body.encode()).hexdigest()
         def get(path):
             comment = FakeAPI()(path)
@@ -359,6 +359,65 @@ class IsolationEvidence(unittest.TestCase):
                 comment["body"] = body
             return comment
         self.assertEqual(len(m.verify_isolation_comments(c, A, get)), 2)
+
+    def test_ambiguous_stale_and_label_only_verdicts_stop_with_lf_or_crlf(self):
+        bodies = [f"Urahara: FAIL {A}\n\nIsolation re-check: PASS",
+                  f"Urahara: PASS withheld {A}", f"Urahara: PASS/FAIL undecided {A}",
+                  f"Urahara: PASS on {B}; {A} pending",
+                  f"Urahara: PASS {B}\nApproved {A} pending",
+                  f"Urahara: PASS {B}\n\nApproved {A} pending",
+                  f"Urahara: PASS {B}\n\nHistory.\n\nApproved {A} pending",
+                  f"Urahara: independent QA at {A}\n\nIsolation: PASS",
+                  f"Urahara: **PASS** {A}", f"Urahara: PASS {A} withheld",
+                  f"Urahara: PASS {A}\nPrevious {B}",
+                  f" Urahara: PASS {A}", f"Urahara: PASS {A}\rStale {B}"]
+        for body in bodies:
+            for crlf in (False, True):
+                text = body.replace("\n", "\r\n") if crlf else body
+                with self.subTest(body=body, crlf=crlf), self.assertRaises(m.Stop):
+                    c, _ = fixture()
+                    c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(text.encode()).hexdigest()
+                    def get(path):
+                        comment = FakeAPI()(path)
+                        if path.endswith("/101"):
+                            comment["body"] = text
+                        return comment
+                    m.verify_isolation_comments(c, A, get)
+
+    def test_crlf_hash_is_raw_while_paragraph_parsing_is_normalised(self):
+        c, _ = fixture()
+        text = f"Urahara: PASS {A}\r\n\r\nPrevious candidate {B}; launch remains BLOCKED."
+        c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(text.encode()).hexdigest()
+        def get(path):
+            comment = FakeAPI()(path)
+            if path.endswith("/101"):
+                comment["body"] = text
+            return comment
+        self.assertEqual(len(m.verify_isolation_comments(c, A, get)), 2)
+        c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(text.replace("\r\n", "\n").encode()).hexdigest()
+        with self.assertRaisesRegex(m.Stop, "digest mismatched"):
+            m.verify_isolation_comments(c, A, get)
+
+    def test_malformed_api_payloads_raise_stop(self):
+        c, _ = fixture()
+        for payload in (None, [], "text", 1, {}, {"user": None}, {"user": []},
+                        {"user": "owner"}, {"user": {}},
+                        {"id": 101.0, "user": {"login": "404-ac-notfound"}}):
+            with self.subTest(payload=payload), self.assertRaises(m.Stop):
+                m.verify_isolation_comments(c, A, lambda path: payload)
+
+    def test_malformed_api_response_uses_cli_blocked_receipt_path(self):
+        c, e = fixture()
+        with patch.dict(os.environ, {**e, "K14_PREFLIGHT_JSON": json.dumps(c)}), \
+                patch("sys.argv", ["controller", "author"]), \
+                patch.object(m, "now_utc", return_value=NOW), \
+                patch.object(m, "api", return_value=None), \
+                patch.object(m, "finish_author") as author, patch.object(m, "emit") as emit, \
+                patch("builtins.print"):
+            self.assertEqual(m.main(), 1)
+            self.assertEqual(emit.call_args.args[0]["outcome"], "BLOCKED")
+            self.assertIn("payload must be an object", emit.call_args.args[0]["reason"])
+            author.assert_not_called()
 
     def test_cli_verifies_comments_before_author_invocation(self):
         c, e = fixture()

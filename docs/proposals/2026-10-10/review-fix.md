@@ -215,9 +215,13 @@ remain recommendations, not new consensus conditions.
 The current installation preparation permits only the code-pinned author Magic,
 matching owner_authorization.controller_author. Both final-main PASS receipts
 need canonical same-repo issue-comment URLs and exact UTF-8 body SHA-256s.
-Read-only GitHub GETs verify the actual records' ID/parent/owner publisher, seat,
-opening-paragraph full approved SHA and explicit PASS before admission or each
-non-receipt controller CLI stage. Missing or changed evidence fails closed.
+Read-only GitHub GETs verify the actual records' ID/parent/owner publisher,
+raw-body digest and exact first line `Seat: PASS <full approved SHA>` before
+admission or each non-receipt controller CLI stage. The assigned seat is Kobe or
+Urahara; no Markdown or alternative Isolation verdict is accepted. CRLF is
+normalized for parsing only; any other full SHA in the opening paragraph stops.
+Malformed API objects, missing or changed evidence fail closed. Kobe's FAIL at
+205fb9c prompted this strict protocol; both seats must review the new revision.
 This verifies comment records; Andrew still attests reviewer provenance and
 author identity. No new token scope/model API route is introduced. See
 installation-n1.md for F3/F4, test-only QA hashes and remaining owner gates.
