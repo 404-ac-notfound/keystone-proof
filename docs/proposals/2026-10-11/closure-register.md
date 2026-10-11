@@ -49,3 +49,16 @@ revision. Both final-main checker receipts are mandatory. Candidate PASS comment
 are historical evidence, not permission to fill this new revision's runtime slots.
 The separate installation draft leaves frozen PR #3 and main unchanged; all
 managed/API workflow candidates remain inactive. See installation-n1.md.
+
+## Urahara QA: F3/F4 follow-up
+
+Urahara passed static isolation/four checks at 0df1a61; that evidence does not
+certify this new revision. F4 is addressed by the code-pinned `{Magic}` author
+list and matching owner authorization. F3's text-only receipt gap is hardened
+with canonical same-repo comment URLs, pinned body SHA-256 and read-only checks
+of the real comment's ID/parent/owner publisher/seat/full SHA/PASS before
+admission and non-receipt controller stages. Human reviewer provenance remains
+Andrew's trust boundary. Template slots stay PENDING with null evidence/hashes.
+PyYAML is hash-locked for offline QA only; production locks and workflows are
+unchanged. 44 controller + 7 runtime tests passed in the clean QA venv. Both
+assigned seats recheck the changed revision and final installed main.

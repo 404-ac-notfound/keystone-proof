@@ -209,3 +209,15 @@ provider call is authorized; cash controls remain unchanged.
 
 LeBron's alternative environment wording and VERIFIED/ATTESTED lesson labels
 remain recommendations, not new consensus conditions.
+
+### QA follow-up: approved author and authentic comment records
+
+The current installation preparation permits only the code-pinned author Magic,
+matching owner_authorization.controller_author. Both final-main PASS receipts
+need canonical same-repo issue-comment URLs and exact UTF-8 body SHA-256s.
+Read-only GitHub GETs verify the actual records' ID/parent/owner publisher, seat,
+opening-paragraph full approved SHA and explicit PASS before admission or each
+non-receipt controller CLI stage. Missing or changed evidence fails closed.
+This verifies comment records; Andrew still attests reviewer provenance and
+author identity. No new token scope/model API route is introduced. See
+installation-n1.md for F3/F4, test-only QA hashes and remaining owner gates.

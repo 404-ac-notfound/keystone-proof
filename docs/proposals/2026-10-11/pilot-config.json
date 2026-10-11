@@ -26,13 +26,15 @@
       "seat": "Urahara",
       "status": "PENDING",
       "controller_sha": null,
-      "evidence": null
+      "evidence": null,
+      "comment_body_sha256": null
     },
     {
       "seat": "Kobe",
       "status": "PENDING",
       "controller_sha": null,
-      "evidence": null
+      "evidence": null,
+      "comment_body_sha256": null
     }
   ],
   "author_credential": {

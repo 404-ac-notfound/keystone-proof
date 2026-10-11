@@ -94,15 +94,19 @@ values. A repository/organization same-name secret fallback remains forbidden.
    both posted static PASS on frozen 6efb727. This separate N1 revision and any
    installation/merge change need their own evidence. After Andrew-approved
    installation/merge, both recheck the actual final main SHA and supply PASS
-   receipts with controller_sha equal to GITHUB_SHA and K14_APPROVED_SHA. The
-   guard also requires main == that SHA. Missing/stale receipts stop before
+   receipts with controller_sha equal to GITHUB_SHA and K14_APPROVED_SHA, real
+   same-repo comment URLs and exact body SHA-256s. The read-only gate verifies
+   the actual comments' owner publisher, seat, opening-paragraph SHA and PASS.
+   The guard also requires main == that SHA. Missing/stale receipts stop before
    launch admission; green KEYSTONE status grants no exception. Runtime template
    slots remain PENDING. Magic does not run their isolation assessment.
 
 6. **Complete the non-secret launch envelope and fresh cash evidence.** Assign
    a new seed issue (>1), unique pilot id and unused claim/attempt slots. Existing
    job/1 and evidence/1 were observed; seed 1 cannot be reused. Fill the preflight
-   with source/quote, exact approved main SHA, checker evidence, readiness,
+   with source/quote, owner_authorization.controller_author=Magic matching the
+   code-pinned author list, exact approved main SHA, real checker comments/body
+   hashes, readiness,
    credential lifecycle and UTC expiry ceiling. Set the owner-approved
    K14_APPROVED_SHA, K14_PREFLIGHT_JSON and K14_EXPIRES_AT only under the applicable
    owner authorization. Record cash stops, current included provider headroom and

@@ -4,6 +4,7 @@ Offline tests inject APIs. This is implementation validation, never an isolation
 """
 import argparse
 import datetime as dt
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -13,10 +14,15 @@ import time
 
 REPO = "404-ac-notfound/keystone-proof"
 VERIFIER = "chatgpt-codex-connector[bot]"
+APPROVED_CONTROLLER_AUTHORS = frozenset({"Magic"})
+REVIEW_PUBLISHER = "404-ac-notfound"
 # Preserve the original UTC pilot boundary; provider lifetime cannot extend it.
 PILOT_CEILING = "2026-10-23T00:00:00Z"
 ROOT = Path(__file__).resolve().parent
 SHA = re.compile(r"^[0-9a-f]{40}$")
+BODY_DIGEST = re.compile(r"^[0-9a-f]{64}$")
+ISOLATION_COMMENT = re.compile(
+    r"https://github\.com/404-ac-notfound/keystone-proof/(?:pull|issues)/([1-9][0-9]*)#issuecomment-([1-9][0-9]*)")
 CLEAN = re.compile(r"no (?:major )?(?:issues|problems)(?: found)?|found no (?:major )?issues|did(?:n't| not) find any (?:major )?(?:issues|problems)", re.I)
 FINDING = re.compile(r"\bP[0-3]\b|Codex Review:\s*Here are some suggestions", re.I)
 
@@ -70,9 +76,9 @@ def gates(c, e, now=None):
     require(c.get("max_reviews") == 2 and c.get("max_author_revisions") == 1
             and c.get("diff_caps") == {"files": 50, "changed_lines": 1000, "bytes": 131072}, "bounds differ from agreement")
     controller_author = c.get("controller_author")
-    require(isinstance(controller_author, str) and bool(controller_author.strip())
-            and controller_author.strip().casefold() not in {"urahara", "kobe"},
-            "controller author must be identified and independent of Urahara/Kobe")
+    require(isinstance(controller_author, str) and controller_author in APPROVED_CONTROLLER_AUTHORS
+            and approval.get("controller_author") == controller_author,
+            "controller author must be identified, approved and bound to owner authorization")
     isolated = c.get("independent_isolation", [])
     isolated = (len(isolated) == 2 and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
                 and all(x.get("status") == "PASS" and x.get("controller_sha") == sha
@@ -81,6 +87,12 @@ def gates(c, e, now=None):
     # substitute for both assigned checkers' receipts bound to that exact SHA.
     # KEYSTONE status supplies no alternative route through this hard gate.
     require(isolated, "Urahara/Kobe isolation PASS required at final approved launch SHA")
+    for receipt in c["independent_isolation"]:
+        evidence = receipt.get("evidence")
+        digest = receipt.get("comment_body_sha256")
+        require(isinstance(evidence, str) and ISOLATION_COMMENT.fullmatch(evidence)
+                and isinstance(digest, str) and BODY_DIGEST.fullmatch(digest),
+                "isolation evidence requires same-repo comment URL and exact body SHA-256")
     checked = utc(e.get("K14_CASH_CHECKED_AT"))
     require(dt.timedelta(0) <= now - checked <= dt.timedelta(hours=2), "cash evidence stale/future/missing")
     require(e.get("K14_CASH_STOP_VERIFIED") == "true" and e.get("K14_INCLUDED_MINUTES", "").isdigit()
@@ -133,6 +145,37 @@ def api(path, method="GET", payload=None, token=None, paginate=False, raw=False)
         return result.stdout
     data = json.loads(result.stdout)
     return [x for page in data for x in page] if paginate else data
+
+
+def verify_isolation_comments(c, sha, get=None):
+    """Read real pinned comments. Their publisher is owner-trusted, not a proof of seat independence."""
+    get = get or api
+    verified = []
+    for receipt in c["independent_isolation"]:
+        link = ISOLATION_COMMENT.fullmatch(receipt["evidence"])
+        require(link is not None, "invalid isolation comment URL")
+        issue, comment_id = link.groups()
+        comment = get(f"repos/{REPO}/issues/comments/{comment_id}")
+        require(comment.get("id") == int(comment_id)
+                and comment.get("issue_url") == f"https://api.github.com/repos/{REPO}/issues/{issue}"
+                and comment.get("user", {}).get("login") == REVIEW_PUBLISHER,
+                "isolation comment identity/repository/publisher mismatch")
+        body = comment.get("body")
+        require(isinstance(body, str) and body.strip(), "isolation comment body missing")
+        require(hashlib.sha256(body.encode("utf-8")).hexdigest() == receipt["comment_body_sha256"],
+                "isolation comment changed or body digest mismatched")
+        first_paragraph = body.lstrip().split("\n\n", 1)[0]
+        first_line = first_paragraph.splitlines()[0]
+        seat = receipt["seat"]
+        require(first_line.startswith(seat + ":")
+                and re.search(r"(?<![0-9a-f])" + sha + r"(?![0-9a-f])", first_paragraph),
+                "isolation comment seat or opening-paragraph SHA mismatch")
+        pass_first = re.match(re.escape(seat) + r":\s*(?:\*\*)?PASS\b", first_line)
+        pass_label = re.search(r"(?im)^\s*(?:\*\*)?Isolation[^\n]{0,160}:\s*(?:\*\*)?PASS\b", body)
+        require(pass_first or pass_label, "isolation comment has no explicit PASS verdict")
+        verified.append({"seat": seat, "comment_id": int(comment_id), "controller_sha": sha,
+                         "evidence": receipt["evidence"], "comment_body_sha256": receipt["comment_body_sha256"]})
+    return verified
 
 
 def emit(data, name):
@@ -272,6 +315,9 @@ def guard(c):
             and event.get("sender", {}).get("login") == c["launch_login"]
             and event.get("issue", {}).get("number") == c["seed_issue"]
             and not event["issue"].get("pull_request"), "wrong launch event/seed/actor")
+    # Both pure gates pass before read-only evidence calls; all comments verify
+    # before the first claim write or any author/review provider invocation.
+    verify_isolation_comments(c, sha)
     # This global pilot claim stops duplicate labels and new issues reusing the pilot id.
     api(f"repos/{REPO}/git/refs", "POST", {"ref": f"refs/heads/k14-claims/{c['pilot_id']}", "sha": sha})
     base = api(f"repos/{REPO}/git/ref/heads/main")["object"]["sha"]
@@ -374,6 +420,8 @@ def main():
         # Owner-provisioned non-secret JSON keeps approval/evidence out of a self-hash loop.
         # Default template is deliberately unlaunchable. The code revision is independently pinned.
         c = json.loads(os.environ.get("K14_PREFLIGHT_JSON") or (ROOT / "pilot-config.json").read_text())
+        if args.mode not in {"guard", "receipt"}:
+            verify_isolation_comments(c, gates(c, os.environ))
         if args.mode == "guard":
             guard(c)
         elif args.mode == "prepare":

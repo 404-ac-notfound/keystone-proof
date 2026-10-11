@@ -11,7 +11,9 @@ This separate draft chooses deletion. Frozen PR #3 stays at its checked SHA.
   keystone_green_main field from the inactive template. Supplying the old field
   cannot restore a bypass; regression tests deliberately try it.
 - Both Urahara and Kobe must supply PASS, evidence and controller_sha equal to
-  the exact GITHUB_SHA / K14_APPROVED_SHA. Neither checker may be the author.
+  the exact GITHUB_SHA / K14_APPROVED_SHA. controller_author must be exactly
+  Magic, in the code-pinned approved-author list, and match the author named in
+  owner_authorization. Adding an author requires a reviewed code revision.
 - After any Andrew-approved installation/merge, both seats recheck that actual
   final main SHA. Candidate receipts cannot be copied to a different SHA.
   The guard additionally requires main == GITHUB_SHA == K14_APPROVED_SHA.
@@ -85,11 +87,73 @@ Two reported limitations are retained explicitly:
   delete/reuse the consumed claim to retry. This remains intentionally fail-closed.
 - F3: receipt shape and SHA binding do not authenticate the referenced PASS
   comments. Andrew supplies the non-secret preflight JSON from real checker
-  evidence; both seats must verify the actual final-main records. This correction
-  does not introduce a self-issued PASS or claim runtime comment verification.
+  evidence; both seats must verify the actual final-main records. The F1-only
+  revision did not claim runtime comment verification. The F3
+  follow-up below supersedes that implementation limitation.
 
 No workflow, lock, credential/config scope or launch control changed in F1.
 Validation: 37 controller and 7 locked-runtime tests passed; the new regression
 covers author omissions, invalid types, blank values and assigned-checker names,
 including case/whitespace variants. These are synthetic tests, not isolation QA.
 Urahara owns the independent QA review; Kobe must bind his check to the new SHA.
+
+## Urahara QA follow-up: F4 author approval and F3 comment verification
+
+[Urahara's independent QA](https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6110568629)
+passed isolation and four checks at `0df1a6159f2b78ff47219a3a15bf8de6d1543cd5`,
+then identified author aliases (F4), recommended closing F3, and recorded an
+unhashed test-only PyYAML installation. That review is historical for this new
+revision; both assigned seats must recheck the changed code.
+
+**F4 implemented:** the approved controller-author list is pinned in code to
+`{Magic}`. Exact membership and matching `owner_authorization.controller_author`
+are required. Unknown authors, checker aliases, misspellings and altered case or
+whitespace fail closed. The owner JSON cannot expand this list. The author
+identity remains an owner-attested claim; name matching does not discover who
+physically authored a commit.
+
+**F3 hardened in code:** each final-main receipt needs a canonical same-repo
+GitHub issue-comment URL and the SHA-256 of its exact UTF-8 body. No fabricated
+values are filled in the template. On guard admission and each non-receipt
+controller CLI stage, read-only GitHub GETs verify both real comments:
+
+- ID and parent issue must match the URL in keystone-proof.
+- The publisher must be the code-pinned owner login `404-ac-notfound`; this is
+  how both existing seats' review comments are published. A new publisher needs
+  a reviewed revision, with no silent fallback.
+- The body must match its owner-pinned SHA-256, start with the assigned seat name
+  followed by a colon, and name the full approved SHA in its opening paragraph.
+- An explicit PASS must occur immediately after the opening seat name or in a
+  labelled Isolation verdict. A QA heading with an Isolation PASS and separate
+  launch BLOCKED is supported.
+
+Missing/unreadable/edited comments, wrong publisher, wrong repository/parent,
+wrong seat/SHA or missing PASS stop before claim writes or provider invocation.
+Malformed receipt fields still stop pure gates without API calls. These GETs use
+existing read permissions; the linked-user PAT remains confined to request POST.
+They do not invoke a model, add a review slot, or expand credential scopes.
+GitHub comment verification proves existence/content binding, not that a persona
+actually performed independent work; Andrew still owns reviewer provenance and
+launch approval. No current isolation PASS is inferred or authored by Magic.
+
+**QA dependency closure:** qa-requirements.lock includes the unchanged four
+production pytest wheels plus PyYAML 6.0.2's published CPython 3.12 Linux x86_64
+wheel URL and SHA-256. The test-only lock was installed in an empty local venv
+with --require-hashes --only-binary=:all: --no-deps --no-cache-dir. Production
+pytest-requirements.lock, runtime-lock.json and k14_runtime.py are unchanged.
+
+Validation: 44 controller and 7 locked-runtime tests pass in the clean locked QA
+venv with an isolated interpreter and no credentials. Only standard PATH and
+the unchanged HOME were retained for the existing runtime test fixture. New synthetic probes cover
+author aliases and owner-binding, URL/digest requirements, real-comment read
+contracts, wrong identity/publisher/seat/SHA/verdict, edits/missing comments
+stopping before writes, and CLI evidence failure preventing author invocation.
+No live workflow, model, provider, comment-authentication gate, environment or
+final-main check was run. Local Python 3.12.14 is implementation validation;
+the hosted production interpreter/image admission stays unchanged.
+
+Before launch Andrew supplies real credential issuance/expiry/use_until and
+retirement acceptance; real final-main comment URLs/body hashes; approved author
+and SHA; target readiness, cash/envelope/seed evidence and launch switches under
+separate approval. Both seats recheck final installed main. Image rotation needs
+a reviewed re-pin if the admitted version is unavailable; no automatic fallback.

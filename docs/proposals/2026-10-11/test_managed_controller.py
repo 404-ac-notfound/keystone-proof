@@ -1,6 +1,7 @@
 """Offline behavioral tests. Synthetic evidence ONLY; no isolation assessment."""
 import copy
 import datetime as dt
+import hashlib
 import importlib.util
 import json
 import os
@@ -20,15 +21,26 @@ STAMP = "2026-10-11T01:15:00Z"
 EXPIRES = "2026-10-11T03:15:00Z"
 
 
+def isolation_body(seat, sha):
+    return f"{seat}: PASS — synthetic item-7 isolation at `{sha}`."
+
+
+def isolation_receipt(seat, sha):
+    comment_id = 101 if seat == "Urahara" else 102
+    return {"seat": seat, "status": "PASS", "controller_sha": sha,
+            "evidence": f"https://github.com/{m.REPO}/pull/4#issuecomment-{comment_id}",
+            "comment_body_sha256": hashlib.sha256(isolation_body(seat, sha).encode()).hexdigest()}
+
+
 def fixture():
     c = json.loads((ROOT / "pilot-config.json").read_text())
     c.update(pilot_id="SYNTHETIC_TEST_ONLY", seed_issue=9, approved_expiry_ceiling=EXPIRES,
-             owner_authorization={"source": "synthetic receipt", "quote": "synthetic assent", "approved_sha": A},
+             owner_authorization={"source": "synthetic receipt", "quote": "synthetic assent",
+                                  "approved_sha": A, "controller_author": "Magic"},
              environment={"status": "READY", "evidence": "synthetic"}, connected_user_access="VERIFIED",
              managed_review_configuration="VERIFIED", paid_review_credits="OFF_VERIFIED",
              old_oauth_retirement={"secret_absence": "VERIFIED", "issuer_revocation": "VERIFIED", "evidence": "synthetic"},
-             independent_isolation=[{"seat": seat, "status": "PASS", "controller_sha": A, "evidence": "synthetic"}
-                                    for seat in ("Urahara", "Kobe")],
+             independent_isolation=[isolation_receipt(seat, A) for seat in ("Urahara", "Kobe")],
              author_credential={"fresh": True, "created_at": STAMP, "expires_at": EXPIRES,
                                 "use_until": EXPIRES, "evidence": "synthetic"},
              request_credential={"created_at": STAMP, "expires_at": EXPIRES,
@@ -59,9 +71,18 @@ class FakeAPI:
         self.inline = []
         self.after_current = None
         self.current_reads = 0
+        self.isolation_sha = A
+        self.isolation_overrides = {}
 
     def __call__(self, path, method="GET", payload=None, token=None, paginate=False, raw=False):
         self.calls.append((path, method, payload, token))
+        if path in (f"repos/{m.REPO}/issues/comments/101", f"repos/{m.REPO}/issues/comments/102"):
+            comment_id = int(path.rsplit("/", 1)[1])
+            seat = "Urahara" if comment_id == 101 else "Kobe"
+            comment = {"id": comment_id, "issue_url": f"https://api.github.com/repos/{m.REPO}/issues/4",
+                       "user": {"login": "404-ac-notfound"}, "body": isolation_body(seat, self.isolation_sha)}
+            comment.update(self.isolation_overrides)
+            return comment
         if path.endswith("/git/refs"):
             if payload["ref"] in self.refs:
                 raise m.Stop("slot already consumed")
@@ -115,6 +136,32 @@ class Gates(unittest.TestCase):
                     with self.assertRaisesRegex(m.Stop, "controller author must be identified"):
                         m.guard(c)
                     api.assert_not_called()
+
+    def test_only_approved_owner_bound_author_can_admit(self):
+        for value in ("Kisuke Urahara", "Urahara (Grok Bot)", "kobe-bot", "Magic-team",
+                      "magic", " Magic ", "Other Author"):
+            with self.subTest(author=value), self.assertRaises(m.Stop):
+                c, e = fixture()
+                c["controller_author"] = c["owner_authorization"]["controller_author"] = value
+                m.gates(c, e, NOW)
+        for value in (None, "Other Author"):
+            with self.subTest(approval_author=value), self.assertRaises(m.Stop):
+                c, e = fixture()
+                c["owner_authorization"]["controller_author"] = value
+                m.gates(c, e, NOW)
+
+    def test_noncanonical_comment_links_and_missing_digest_stop(self):
+        for value in ("synthetic", None, "https://github.com/other/repo/pull/4#issuecomment-101",
+                      f"https://github.com/{m.REPO}/pull/4#issuecomment-101?x=1",
+                      f"https://github.com/{m.REPO}/pull/4#discussion_r101"):
+            with self.subTest(evidence=value), self.assertRaises(m.Stop):
+                c, e = fixture()
+                c["independent_isolation"][0]["evidence"] = value
+                m.gates(c, e, NOW)
+        c, e = fixture()
+        del c["independent_isolation"][0]["comment_body_sha256"]
+        with self.assertRaises(m.Stop):
+            m.gates(c, e, NOW)
 
     def test_missing_runtime_gates(self):
         for key in fixture()[1]:
@@ -255,6 +302,75 @@ class Gates(unittest.TestCase):
                     m.gates(c, e, NOW)
 
 
+class IsolationEvidence(unittest.TestCase):
+    def test_real_comment_reads_bind_both_seats(self):
+        c, e = fixture()
+        api = FakeAPI()
+        records = m.verify_isolation_comments(c, m.gates(c, e, NOW), api)
+        self.assertEqual([r["seat"] for r in records], ["Urahara", "Kobe"])
+        self.assertEqual(len(api.calls), 2)
+        self.assertTrue(all(call[1] == "GET" and call[3] is None for call in api.calls))
+
+    def test_wrong_comment_identity_publisher_or_body_stops(self):
+        changes = [{"id": 999}, {"issue_url": f"https://api.github.com/repos/{m.REPO}/issues/5"},
+                   {"issue_url": "https://api.github.com/repos/other/repo/issues/4"},
+                   {"user": {"login": "someone-else"}}, {"body": None}, {"body": ""},
+                   {"body": isolation_body("Kobe", A)}, {"body": isolation_body("Urahara", B)},
+                   {"body": f"Urahara: FAIL at {A}"},
+                   {"body": f"Urahara: reviewing {A}\n\nNo verdict yet."}]
+        for change in changes:
+            with self.subTest(change=change), self.assertRaises(m.Stop):
+                c, _ = fixture()
+                api = FakeAPI()
+                api.isolation_overrides = change
+                if isinstance(change.get("body"), str):
+                    c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(change["body"].encode()).hexdigest()
+                m.verify_isolation_comments(c, A, api)
+
+    def test_edited_or_missing_comment_stops_before_claim_write(self):
+        c, e = fixture()
+        event = {"action": "labeled", "label": {"name": "ready"},
+                 "sender": {"login": "404-ac-notfound"}, "issue": {"number": 9}}
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "event.json"
+            path.write_text(json.dumps(event))
+            for missing in (False, True):
+                api = FakeAPI()
+                api.isolation_overrides = {"body": isolation_body("Urahara", A) + " edited"}
+                def get(*args, **kwargs):
+                    if missing:
+                        raise m.Stop("synthetic comment missing")
+                    return api(*args, **kwargs)
+                with self.subTest(missing=missing), \
+                        patch.dict(os.environ, {**e, "GITHUB_EVENT_PATH": str(path)}), \
+                        patch.object(m, "api", get), patch.object(m, "now_utc", return_value=NOW):
+                    with self.assertRaises(m.Stop):
+                        m.guard(c)
+                    self.assertTrue(all(call[1] == "GET" for call in api.calls))
+                    self.assertEqual(api.refs, {})
+
+    def test_labelled_isolation_pass_after_qa_heading_is_supported(self):
+        c, _ = fixture()
+        body = f"Urahara: independent QA at {A}.\n\n**Isolation (item 7): PASS**\n\nLaunch readiness: BLOCKED."
+        c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(body.encode()).hexdigest()
+        def get(path):
+            comment = FakeAPI()(path)
+            if path.endswith("/101"):
+                comment["body"] = body
+            return comment
+        self.assertEqual(len(m.verify_isolation_comments(c, A, get)), 2)
+
+    def test_cli_verifies_comments_before_author_invocation(self):
+        c, e = fixture()
+        with patch.dict(os.environ, {**e, "K14_PREFLIGHT_JSON": json.dumps(c)}), \
+                patch("sys.argv", ["controller", "author"]), \
+                patch.object(m, "now_utc", return_value=NOW), \
+                patch.object(m, "verify_isolation_comments", side_effect=m.Stop("synthetic invalid evidence")), \
+                patch.object(m, "finish_author") as author, patch.object(m, "emit"), patch("builtins.print"):
+            self.assertEqual(m.main(), 1)
+            author.assert_not_called()
+
+
 class Transport(unittest.TestCase):
     def setUp(self):
         self.c, _ = fixture()
@@ -295,7 +411,7 @@ class Transport(unittest.TestCase):
         e.update(GITHUB_SHA=B, K14_APPROVED_SHA=B)
         c["owner_authorization"]["approved_sha"] = B
         for receipt in c["independent_isolation"]:
-            receipt["controller_sha"] = B
+            receipt.update(isolation_receipt(receipt["seat"], B))
         event = {"action": "labeled", "label": {"name": "ready"},
                  "sender": {"login": "404-ac-notfound"}, "issue": {"number": 9}}
         with tempfile.TemporaryDirectory() as d:
@@ -303,6 +419,7 @@ class Transport(unittest.TestCase):
             path.write_text(json.dumps(event))
             for main_sha in (A, B):
                 self.api = FakeAPI()
+                self.api.isolation_sha = B
                 self.api.refs["refs/heads/main"] = main_sha
                 with self.subTest(main=main_sha), \
                         patch.dict(os.environ, {**e, "GITHUB_EVENT_PATH": str(path)}), \
