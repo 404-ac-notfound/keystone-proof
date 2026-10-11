@@ -85,11 +85,14 @@ secret metadata, inspect values or authenticate either credential. The PAT is
 reported single-repo, Pull requests and Issues read/write, 30 days. No further
 publication, plan change or provisioning is needed for this capability gate.
 
-Codex account environment existence/ID and target review route/settings remain
-UNKNOWN/UNVERIFIED. Old issuer-side revocation and exact new-token UTC expiries
-remain unreported. The current draft's expires_at <= pilot-expiry constraint
-must be resolved honestly for the 30-day PAT before activation; no expiry is
-invented and no controller logic is changed in this records-only update.
+Andrew's about 22:03 MYT update confirms both old issuer tokens revoked and
+the new K-14 token kept, plus current repository review settings (OWNER ATTESTED).
+Codex cloud environment existence/ID, linked-requester readiness, current credits
+OFF and exact new-token UTC metadata remain UNKNOWN/UNVERIFIED. The corrected
+controller now separates provider expiry from use_until; a PAT may outlive the
+pilot but not exceed 30 days from issuance. Both allowed-use windows and runtime
+expiry remain bounded by 2026-10-23T00:00:00Z. No expiry is invented. See
+freeze-record.md for the correction and frozen handoff.
 
 The managed controller remains inactive, main retains the legacy workflow, and
 new final-revision Urahara/Kobe checks plus Andrew's installation/merge and launch
@@ -100,8 +103,10 @@ approvals are still required. See the gate receipt for the exact remaining order
 Offline controller and runtime tests exercise stops, tampered downloads, secret
 boundary enforcement and exact-image admission failures. The retained API
 candidate's offline tests remain separate. Local zizmor 1.30.1 (offline, strict collection, no ignores/config) reported zero
-findings across managed/API/legacy workflow YAML copies. Validation passed 27
-controller tests, 7 runtime tests and 33 API guard/posting scenarios. All four
+findings across managed/API/legacy workflow YAML copies. Prior validation passed 27 controller tests, 7 runtime tests and 33 API
+guard/posting scenarios. The expiry-correction freeze passed 33 controller and
+7 runtime tests; no workflow YAML/bootstrap/dependency pins changed in that
+correction. All four
 locked pytest wheels installed successfully into an empty local Python 3.12 venv.
 The complete production Python 3.12.3/native author run was not executed. No
 model was invoked. Lint cannot prove hosted environment rules,

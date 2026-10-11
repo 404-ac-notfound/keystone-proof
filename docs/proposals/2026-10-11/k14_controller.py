@@ -13,6 +13,8 @@ import time
 
 REPO = "404-ac-notfound/keystone-proof"
 VERIFIER = "chatgpt-codex-connector[bot]"
+# Preserve the original UTC pilot boundary; provider lifetime cannot extend it.
+PILOT_CEILING = "2026-10-23T00:00:00Z"
 ROOT = Path(__file__).resolve().parent
 SHA = re.compile(r"^[0-9a-f]{40}$")
 CLEAN = re.compile(r"no (?:major )?(?:issues|problems)(?: found)?|found no (?:major )?issues|did(?:n't| not) find any (?:major )?(?:issues|problems)", re.I)
@@ -51,7 +53,8 @@ def gates(c, e, now=None):
     require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{2,80}", c.get("pilot_id", ""))
             and c["pilot_id"] != "UNASSIGNED", "pilot not assigned")
     expiry = utc(e.get("K14_EXPIRES_AT"))
-    require(now < expiry <= utc(c.get("approved_expiry_ceiling")), "expired or extended beyond approved envelope")
+    require(now < expiry <= utc(c.get("approved_expiry_ceiling")) <= utc(PILOT_CEILING),
+            "expired or extended beyond approved envelope / 23 October ceiling")
     approval = c.get("owner_authorization") or {}
     require(approval.get("source") and approval.get("quote") and approval.get("approved_sha") == sha,
             "owner authorization absent or wrong revision")
@@ -79,8 +82,19 @@ def gates(c, e, now=None):
             and int(e["K14_INCLUDED_MINUTES"]) >= 125, "$0 cash stops / 125-minute reserve unverified")
     for kind in ("author_credential", "request_credential"):
         credential = c.get(kind, {})
-        require(credential.get("evidence") and now < utc(credential.get("expires_at")) <= expiry,
-                kind + " missing/expired/outside pilot")
+        issued = utc(credential.get("created_at"))
+        provider_expiry = utc(credential.get("expires_at"))
+        use_until = utc(credential.get("use_until"))
+        require(credential.get("evidence") and issued <= now < use_until <= expiry
+                and use_until <= provider_expiry,
+                kind + " missing/expired/outside allowed-use window")
+        retirement = credential.get("retirement", {})
+        require(retirement.get("owner") == c.get("launch_login") and retirement.get("evidence")
+                and retirement.get("on_terminal") is True and retirement.get("on_cancel") is True,
+                kind + " terminal/cancel/use-until revoke-and-delete plan unverified")
+        if kind == "request_credential":
+            require(dt.timedelta(0) < provider_expiry - issued <= dt.timedelta(days=30),
+                    "request credential exceeds 30 days from issuance")
     require(c["author_credential"].get("fresh") is True, "fresh author OAuth not evidenced")
     for kind, name in (("author_credential", "k14-author-owner-approved"),
                        ("request_credential", "k14-review-owner-approved")):
@@ -90,7 +104,6 @@ def gates(c, e, now=None):
                 and protected.get("deployment_branch") == "main"
                 and protected.get("unattended_policy") == "VERIFIED",
                 kind + " protected environment unavailable/unverified; no repository-secret fallback")
-    require(utc(c["request_credential"]["expires_at"]) <= now + dt.timedelta(days=30), "request credential exceeds 30 days")
     return sha
 
 

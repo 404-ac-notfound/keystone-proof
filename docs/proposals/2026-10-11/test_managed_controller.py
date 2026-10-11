@@ -29,12 +29,16 @@ def fixture():
              old_oauth_retirement={"secret_absence": "VERIFIED", "issuer_revocation": "VERIFIED", "evidence": "synthetic"},
              independent_isolation=[{"seat": seat, "status": "PASS", "controller_sha": A, "evidence": "synthetic"}
                                     for seat in ("Urahara", "Kobe")],
-             author_credential={"fresh": True, "expires_at": EXPIRES, "evidence": "synthetic"},
-             request_credential={"expires_at": EXPIRES, "evidence": "synthetic"})
+             author_credential={"fresh": True, "created_at": STAMP, "expires_at": EXPIRES,
+                                "use_until": EXPIRES, "evidence": "synthetic"},
+             request_credential={"created_at": STAMP, "expires_at": EXPIRES,
+                                 "use_until": EXPIRES, "evidence": "synthetic"})
     for kind, name in (("author_credential", "k14-author-owner-approved"),
                        ("request_credential", "k14-review-owner-approved")):
         c[kind]["protected_environment"] = {"name": name, "status": "VERIFIED", "environment_only": True,
                                              "deployment_branch": "main", "unattended_policy": "VERIFIED", "evidence": "synthetic"}
+        c[kind]["retirement"] = {"owner": "404-ac-notfound", "on_terminal": True,
+                                  "on_cancel": True, "evidence": "synthetic"}
     e = {"GH_REPO": m.REPO, "GITHUB_RUN_ATTEMPT": "1", "GITHUB_SHA": A,
          "K14_APPROVED_SHA": A, "K14_ENABLED": "true", "K14_EXPIRES_AT": EXPIRES,
          "K14_CASH_CHECKED_AT": STAMP, "K14_CASH_STOP_VERIFIED": "true", "K14_INCLUDED_MINUTES": "125"}
@@ -120,6 +124,63 @@ class Gates(unittest.TestCase):
         for value in ("garbage", "2026-10-11T01:15:00Z", "2026-10-11T00:15:00Z"):
             with self.subTest(expiry=value), self.assertRaises(m.Stop):
                 m.gates(c, {**e, "K14_EXPIRES_AT": value}, NOW)
+
+    def test_thirty_day_pat_can_outlive_october_pilot(self):
+        c, e = fixture()
+        c["approved_expiry_ceiling"] = e["K14_EXPIRES_AT"] = m.PILOT_CEILING
+        for kind in ("author_credential", "request_credential"):
+            c[kind].update(use_until=m.PILOT_CEILING, expires_at="2026-11-10T01:15:00Z")
+        self.assertEqual(m.gates(c, e, NOW), A)
+
+    def test_pat_lifetime_measured_from_issuance_not_invocation(self):
+        for issued, expiry in (("2026-10-01T01:15:00Z", "2026-10-31T01:15:00Z"),
+                               (STAMP, "2026-11-10T01:15:00Z")):
+            with self.subTest(issued=issued):
+                c, e = fixture()
+                c["request_credential"].update(created_at=issued, expires_at=expiry)
+                self.assertEqual(m.gates(c, e, NOW), A)
+                c["request_credential"]["expires_at"] = (
+                    m.utc(expiry) + dt.timedelta(seconds=1)).isoformat().replace("+00:00", "Z")
+                with self.assertRaisesRegex(m.Stop, "30 days from issuance"):
+                    m.gates(c, e, NOW)
+
+    def test_invalid_credential_clocks_stop(self):
+        for kind in ("author_credential", "request_credential"):
+            for key, value in (("created_at", None), ("created_at", "2026-10-11T01:15:01Z"),
+                               ("expires_at", None), ("expires_at", STAMP),
+                               ("expires_at", "2026-10-11T03:14:59Z"),
+                               ("use_until", None), ("use_until", STAMP),
+                               ("use_until", "2026-10-11T03:15:01Z")):
+                with self.subTest(kind=kind, key=key, value=value), self.assertRaises(m.Stop):
+                    c, e = fixture()
+                    c[kind][key] = value
+                    m.gates(c, e, NOW)
+
+    def test_earlier_credential_use_deadline_stops_at_boundary(self):
+        c, e = fixture()
+        c["request_credential"]["use_until"] = "2026-10-11T02:15:00Z"
+        self.assertEqual(m.gates(c, e, NOW), A)
+        with self.assertRaises(m.Stop):
+            m.gates(c, e, m.utc(c["request_credential"]["use_until"]))
+
+    def test_october_ceiling_cannot_be_extended_by_config(self):
+        c, e = fixture()
+        c["approved_expiry_ceiling"] = e["K14_EXPIRES_AT"] = "2026-10-23T00:00:01Z"
+        with self.assertRaisesRegex(m.Stop, "23 October ceiling"):
+            m.gates(c, e, NOW)
+        c["approved_expiry_ceiling"] = "2026-10-23T00:00:01Z"
+        e["K14_EXPIRES_AT"] = EXPIRES
+        with self.assertRaises(m.Stop):
+            m.gates(c, e, NOW)
+
+    def test_missing_or_unowned_retirement_plan_stops(self):
+        for kind in ("author_credential", "request_credential"):
+            for key, value in (("owner", "Magic"), ("evidence", None),
+                               ("on_terminal", False), ("on_cancel", False)):
+                with self.subTest(kind=kind, key=key), self.assertRaises(m.Stop):
+                    c, e = fixture()
+                    c[kind]["retirement"][key] = value
+                    m.gates(c, e, NOW)
 
     def test_pending_evidence(self):
         mutations = [lambda c: c.update(owner_authorization=None),

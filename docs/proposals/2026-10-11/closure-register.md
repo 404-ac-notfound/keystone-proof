@@ -9,7 +9,7 @@ Author: Magic. Scope: inactive drafts only. No live proof or isolation PASS.
 | Item 4: global two reviews, one revision, diff limits | VERIFIED, offline only | Synthetic tests; create-only refs and bounds before requests | Live provider/run evidence needed |
 | Items 3/6: credentials and API OFF | IMPLEMENTED / OWNER PROVISIONED | Read-only author/poll; independent publisher; PAT only request POST; fresh OAuth plan; API jobs hard OFF | Exact expiry/lifecycle and selected-route readiness still needed; provisioning OWNER ATTESTED |
 | Item 3: environment/access readiness | BLOCKED | environment-status.md; template UNKNOWN; actual KEYSTONE connector reply linked | Authorized read-only readiness record; Andrew account decisions |
-| Item 6: old OAuth retirement | BLOCKED | Andrew OWNER ATTESTED GitHub deletion at 21:42 MYT; issuer revocation UNKNOWN | Record issuer revocation and lifecycle evidence |
+| Item 6: old OAuth retirement | CLEARED, OWNER ATTESTED | Andrew 21:42 MYT GitHub deletion; about 22:03 MYT both old issuer tokens revoked, new K-14 kept | Record new-token metadata and owner retirement acceptance |
 | Item 7: independent isolation evidence | OPEN | Both runtime receipt slots PENDING; author has not performed the check | **Urahara and Kobe**, assigned by Andrew, inspect exact revision/runtime files/refs |
 | Item 7: proof/green-main/canary/adoption order | IMPLEMENTED, plan only | review-fix.md; independent evidence absent makes green main a proof prerequisite | Andrew gates; #32 stays draft |
 | Exact-head review/tests/final usage/owner-touch/retirement receipt | PARTIAL | Poll/final-check/receipt implementation; no live verdict, billing or retirement proof | Independent post-run audit; unknowns never self-issue PASS |
@@ -28,13 +28,16 @@ changes, exact sources and limitations. Fresh OAuth/PAT jobs now reference
 protected environments; the earlier Free/private capability blocker was superseded by Andrew's public
 repo decision at 21:42 MYT. Public visibility and main-only environment rules
 are now API verified. Secret placement/deletion is OWNER ATTESTED. Magic made
-no account changes. Codex route, expiry mismatch and final independent checks
-remain in owner-gates-20261011.md.
+no account changes. Remaining Codex route/lifecycle and final independent checks
+are in owner-gates-20261011.md. The expiry mismatch is now corrected in draft.
 
 ## Owner gate update — 21:42 MYT
 
 Public capability RESOLVED; two credential environments exist, main-only policy
 verified through public GETs. Admin bypass remains enabled. Provisioning and
-old GitHub-secret removal are OWNER ATTESTED; issuer revocation/exact expiry
-remain pending. This revision changes records/config evidence only and grants
-no activation or launch. Controller/workflow code is unchanged from 5ebba9a.
+old GitHub-secret removal are OWNER ATTESTED. The subsequent about 22:03 MYT
+report confirms both old issuer tokens revoked, new K-14 kept, and current
+repository review settings. Exact new-token UTC metadata/lifecycle acceptance
+remain pending. The controller now separates provider expiry from allowed use,
+measures PAT lifetime from issuance and enforces the unchanged 23 Oct UTC ceiling.
+See freeze-record.md; no activation or launch is granted.

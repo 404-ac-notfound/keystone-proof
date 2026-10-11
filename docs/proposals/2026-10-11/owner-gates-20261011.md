@@ -1,9 +1,9 @@
 # Owner gates and fresh-seed launch checklist — 11 Oct 2026
 
-Magic. **Do not launch.** This is a records-only revision of draft PR #3 from
-parent `5ebba9a865acfb8f3502a33487c1beff434c67a6`. Controller/runtime/workflow
-implementations are unchanged. This record is not merge, activation or launch
-approval. KEYSTONE #32 remains draft.
+Magic. **Do not launch.** This frozen draft corrects credential expiry gates
+from parent `072b505390a464fd80a594148f3529d4a6e6b795`. The exact frozen commit
+is recorded in PR #3's description; see freeze-record.md. This is not merge,
+activation or launch approval. KEYSTONE #32 remains draft.
 
 ## Andrew's authenticated owner report
 
@@ -19,6 +19,17 @@ The scan, accepted historical email exposure and email-privacy change are owner
 reported; Magic did not rerun the publication scan or inspect account email
 settings. No historical email address is copied into this receipt.
 
+## Additional owner evidence — about 22:03 MYT / 14:03 UTC
+
+Source: Andrew's typed report in this chat, followed by explicit authorization
+for the expiry correction and draft freeze:
+
+> Old OAuth retired: both inference-only Claude Code tokens from 9 Oct revoked on claude.ai (Authorization tokens). New K-14 token (created ~9:41 PM) kept.
+> Codex for keystone-proof (chatgpt.com/settings/code-review): Automatic review ON, Review = Follow personal preferences, Trigger = On PR open, Exhaustive review = Follow personal preferences.
+
+Both reports are **OWNER ATTESTED**; no issuer/account probe or token read by
+Magic. The timestamps are approximate, not exact credential issuance metadata.
+
 ## What is now cleared
 
 | Gate | Evidence basis | Disposition |
@@ -29,7 +40,9 @@ settings. No historical email address is copied into this receipt.
 | Unattended environment rules | Each protection_rules contains branch_policy only | VERIFIED current configuration: no required reviewer or wait timer |
 | Environment-only fresh credentials | Andrew's original report above | OWNER ATTESTED; no secret metadata/value read |
 | Single-repo PAT and actual rights | Andrew's report: Pull requests and Issues read/write, 30 days | OWNER ATTESTED; no test POST or token authentication |
-| Old GitHub secret removal | Andrew's report | OWNER ATTESTED deletion; issuer revocation still UNKNOWN |
+| Old OAuth retirement | Andrew's 21:42 and about 22:03 reports | OWNER ATTESTED GitHub deletion and both old issuer tokens revoked; new K-14 token kept |
+| Codex repository review settings | Andrew's about 22:03 report above | OWNER ATTESTED current four settings; no live review claim |
+| PAT/pilot expiry mismatch | Controller correction and offline boundary tests | RESOLVED in draft; provider lifetime separated from use-until; ceiling unchanged |
 | Admin bypass | Each environment GET: can_admins_bypass=true | OBSERVED limitation; not changed or invented as a new consensus gate |
 
 Raw, non-secret API metadata and verification times are in
@@ -39,28 +52,29 @@ values. A repository/organization same-name secret fallback remains forbidden.
 
 ## Still needed before launch — concrete order
 
-1. **Finish issuer retirement and expiry evidence.** Record revocation of the
-   old issued OAuth, not just its GitHub-secret deletion. If issuer revocation
-   invalidates the fresh token too, Andrew controls replacement after revocation.
-   Supply exact UTC expiry for both fresh credentials and the terminal/cancel/
-   expiry revoke-and-delete owner. Token values must never enter the receipt.
+1. **Complete exact credential metadata and retirement acceptance.** Old-token
+   issuer retirement is now recorded as cleared by Andrew. Supply real UTC
+   created_at and expires_at for both fresh credentials; no values in receipts.
+   Approve each use_until (runtime stop no later than K14_EXPIRES_AT) and Andrew's
+   revoke-and-delete responsibility on terminal outcome, cancellation or by
+   use_until, whichever comes first. Fresh-token issuance is currently only
+   approximate; the runtime template remains unlaunchable until completed.
 
-2. **Resolve the draft's credential-expiry mismatch.** Current k14_controller.py
-   gates require each credential expires_at to be no later than K14_EXPIRES_AT,
-   and the request credential no later than 30 days from invocation. The
-   provisioned 30-day PAT runs beyond the old 23 October pilot envelope; the
-   fresh setup-token's expiry is not reported. Do not enter an invented short
-   expires_at just to pass. A reviewed draft correction can separate provider
-   expiry from the allowed-use/revocation deadline while preserving the pilot's
-   runtime stop and 30-day PAT ceiling. Alternatively Andrew supplies credentials
-   whose actual expiries fit the approved pilot window. No code/lifetime/secret
-   change is made by this records revision; an extended pilot window is not
-   authorized by the setup message.
+2. **Expiry correction is prepared and frozen.** A 30-day PAT may have actual
+   provider expiry beyond 23 Oct, without extending the pilot. Its positive
+   issuance-to-provider-expiry duration must be at most 30 days. Both credentials
+   must be valid through their allowed-use deadline, with now < use_until <=
+   K14_EXPIRES_AT <= approved_expiry_ceiling <= 2026-10-23T00:00:00Z. This preserves
+   the original UTC cutoff (23 Oct 08:00 MYT), rather than extending to that day's
+   end. Gates stop at a shorter use_until too. No automatic issuer revocation or
+   secret deletion is claimed: Andrew performs and records lifecycle retirement.
+   This code correction needs the assigned independent checks below.
 
 3. **Codex target readiness, read-only.** An authorized account seat records
    keystone-proof's repository connection, linked requester access, selected
-   managed review path/configuration and credit continuation OFF, with time and
-   source. Codex cloud environment existence/ID remains UNKNOWN here. Official
+   managed review route applicability and credit continuation OFF, with time and
+   source. The four current repository settings are already OWNER ATTESTED by
+   Andrew; they do not establish linked-requester access or bot-draft-PR support. Codex cloud environment existence/ID remains UNKNOWN here. Official
    automatic cloud reviews do not require a newly managed cloud environment;
    record applicability for the actual route rather than creating one by default.
    Bot-authored draft-PR coverage is the experiment's outcome, not a claim to

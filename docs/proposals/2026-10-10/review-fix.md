@@ -120,22 +120,29 @@ organization-wide scope; never use it to create PRs. If the minimal supported
 permission cannot be established, BLOCKED and Andrew owns the decision. Account
 linking/environment/App setup remain owner gates. Values never enter evidence.
 
-**Old CLAUDE_CODE_OAUTH_TOKEN: GitHub deletion OWNER ATTESTED by Andrew at
-21:42 MYT; issuer revocation remains UNKNOWN.** Fresh author OAuth and the
+**Old CLAUDE_CODE_OAUTH_TOKEN: GitHub deletion OWNER ATTESTED at 21:42 MYT;
+both 9 Oct inference-only issuer tokens revoked, OWNER ATTESTED by Andrew at
+about 22:03 MYT. New K-14 token created about 21:41 MYT kept.** Fresh author OAuth and the
 single-repo 30-day request PAT are owner-reported in their separate environments,
 with no repository copies. Main-only deployment rules and public repo capability
 are API verified; actual secret values/metadata were not inspected. See
 [owner gate receipt](../2026-10-11/owner-gates-20261011.md) for remaining steps.
 
-Exact UTC credential expiry is unreported. The current draft's credential-expiry
-check is stricter than the allowed 30-day PAT lifetime when the pilot expires
-23 October; resolve that draft constraint before activation rather than inventing
-an expires_at. No secret or code change is made in this records-only update.
+Exact UTC issuance/provider expiry is unreported and must not be invented.
+The corrected gates distinguish actual expires_at from pilot use_until and an
+owner-attested terminal/cancel/by-use_until revoke-and-delete plan. A PAT may
+outlive the pilot, with lifetime at most 30 days from issuance; allowed use and
+runtime expiry cannot exceed 2026-10-23T00:00:00Z (23 Oct 08:00 MYT). Any shorter
+use_until also stops the controller. Andrew owns actual lifecycle retirement.
+The template retains null timestamps and missing retirement acceptance evidence
+until owner preflight. No secret changes or launch occur in this correction.
 
 Runtime bootstrap/runner pins are documented in
 [the fix-up record](../2026-10-11/runtime-and-environment-fixups.md). The private/
-Free capability blocker is closed. Codex-account route/readiness remains
-unverified, separately from the verified GitHub credential environments.
+Free capability blocker is closed. The four current Codex repository review
+settings are OWNER ATTESTED; linked-requester access, route applicability,
+current credits OFF and live bot-draft-PR support remain unverified, separately
+from the verified GitHub credential environments.
 Legacy workflow retirement is a draft-branch change only; main is unchanged.
 Managed controller files remain inactive outside .github/workflows.
 
