@@ -69,38 +69,31 @@ infrastructure/cash decision; this draft does not provision self-hosted runners
 or claim an immutable VM digest. The runner agent/service and remote model
 inference remain provider-managed, not a reproducible local OS/model build.
 
-## Protected environment capability is BLOCKED
+## Protected environment capability — RESOLVED at 21:42 MYT
 
-keystone-proof was confirmed private in PR metadata on 11 Oct. The supplied
-account evidence says GitHub Free. [GitHub's environment documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments)
-states that Free supports environment secrets only for public repositories;
-private environment secrets and branch restrictions require an eligible paid
-plan. Required reviewers on private repos require further capability beyond
-Free/Pro/Team. Merely adding environment: to YAML does not create protection.
+Andrew reports the repo was made public after Urahara's scan; GitHub metadata
+now verifies public visibility. The previous private/Free limitation is closed.
+Both named environments were independently read via the public API: exactly
+one selected branch policy, main only; branch_policy protection, no reviewer or
+wait timer. Admin bypass is enabled and recorded. No protection was modified.
+See [updated status](environment-status.md), [owner gate receipt](owner-gates-20261011.md)
+and [raw non-secret evidence](owner-environment-evidence.json).
 
-No environments, secrets, repository visibility or subscription were changed.
-The config marks capability UNAVAILABLE_ON_REPORTED_PRIVATE_FREE_PLAN and the
-controller refuses launch without evidence. Andrew must decide whether and how
-to obtain the necessary capability within his cash controls. There is no
-repository-secret workaround, automatic paid upgrade or automatic publication
-of the private repo. Codex's separate repository environment/access readiness
-remains UNKNOWN as recorded in environment-status.md.
+Fresh OAuth/PAT placement, no repository copies and deletion of the old GitHub
+secret are OWNER ATTESTED by Andrew at 2026-10-11T13:42Z. Magic did not query
+secret metadata, inspect values or authenticate either credential. The PAT is
+reported single-repo, Pull requests and Issues read/write, 30 days. No further
+publication, plan change or provisioning is needed for this capability gate.
 
-After an authorized capability decision: restrict each environment to the trusted
-main branch, store only its named credential there, verify protections and remove
-same-name repository/organization fallback copies under separate authorization.
-The requester environment never holds author OAuth, and the author environment
-never holds the PAT. Avoid a broad protected-branches-only rule that admits all
-branches when none has protection. Any deployment approval required after the
-launch tap would break the agreed zero-touch transport; owner-approved automated
-protection must be verified, or the pilot stays BLOCKED. Do not weaken protections
-to make it run. Required reviewer policies, if selected, need an explicitly
-approved revised launch protocol. Secret provisioning and policy changes remain
-Andrew's gates.
+Codex account environment existence/ID and target review route/settings remain
+UNKNOWN/UNVERIFIED. Old issuer-side revocation and exact new-token UTC expiries
+remain unreported. The current draft's expires_at <= pilot-expiry constraint
+must be resolved honestly for the 30-day PAT before activation; no expiry is
+invented and no controller logic is changed in this records-only update.
 
-Old CLAUDE_CODE_OAUTH_TOKEN retirement is still unverified: record metadata
-absence and issuer revocation before provisioning any fresh bounded token. This
-revision does not read, replace, revoke or delete it.
+The managed controller remains inactive, main retains the legacy workflow, and
+new final-revision Urahara/Kobe checks plus Andrew's installation/merge and launch
+approvals are still required. See the gate receipt for the exact remaining order.
 
 ## Validation and review handoff
 

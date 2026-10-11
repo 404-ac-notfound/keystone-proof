@@ -1,8 +1,9 @@
 # Draft review repair — managed K-14 proof first
 
 Updated 2026-10-11 by Magic for Andrew. This supersedes the API-first proposal
-in this same draft PR. Nothing is installed, merged, enabled, launched or
-provisioned. KEYSTONE #32 stays draft.
+in this same draft PR. No controller is installed, merged or launched by this draft. Andrew
+reports owner provisioning complete at 21:42 MYT; public visibility and main-only
+environment rules are API verified. KEYSTONE #32 stays draft.
 
 Baseline: [joint AGREED closure, KEYSTONE #33](https://github.com/404-ac-notfound/KEYSTONE/issues/33#issuecomment-6103037544),
 v2 plus Urahara's item-7 amendment. Andrew assigned **Urahara and Kobe** as the
@@ -105,12 +106,12 @@ Worst-case summed job timeouts: **117 Linux runner minutes** within the planning
 reserve of 125. This is not a live remaining counter or final billing evidence;
 other work shares allowance. Polls have 30-minute limits/32-minute job caps.
 
-## Scoped credentials — Andrew provisions after approval
+## Scoped credentials — provisioned by Andrew, lifecycle still gated
 
 | Credential | Placement/scope | Lifecycle |
 |---|---|---|
 | K14_AUTHOR_OAUTH_TOKEN | Fresh bounded Claude OAuth in keystone-proof only; protected environment k14-author-owner-approved; author/revise steps only | Freshness/expiry evidence; revoke/delete on terminal outcome, cancel or expiry |
-| K14_REVIEW_REQUEST_TOKEN | Linked GitHub user's fine-grained PAT, keystone-proof only, minimal PR-comment write/implicit metadata read; protected environment k14-review-owner-approved; request POST steps only | At most 30 days, preferably pilot duration; verify actual posting login; retire after pilot |
+| K14_REVIEW_REQUEST_TOKEN | Owner-reported fine-grained PAT, keystone-proof only, Pull requests and Issues read/write; protected environment k14-review-owner-approved; request POST steps only | At most 30 days, preferably pilot duration; verify actual posting login; retire after pilot |
 | GITHUB_TOKEN | Ephemeral job permissions as listed; never substitutes for the linked-user PAT | GitHub-issued per job |
 | OPENAI_API_KEY | Missing, owner-reported; unnecessary for selected managed path | Do not provision for this pilot; API alternative OFF |
 
@@ -119,20 +120,24 @@ organization-wide scope; never use it to create PRs. If the minimal supported
 permission cannot be established, BLOCKED and Andrew owns the decision. Account
 linking/environment/App setup remain owner gates. Values never enter evidence.
 
-**Old CLAUDE_CODE_OAUTH_TOKEN retirement is unverified.** Jarvis earlier reported
-present; Urahara's newer evidence reports deletion but lacks verification and
-issuer revocation. Do not assert it is definitely still present. Andrew checks
-absence by metadata and revokes at issuer; deletion alone does not revoke issued
-copies. Broader session-revocation impact is his choice. This draft neither
-reads values nor changes/deletes secrets, disables workflows or cancels runs.
-A fresh bounded author token replaces the old one; no silent carry-forward.
+**Old CLAUDE_CODE_OAUTH_TOKEN: GitHub deletion OWNER ATTESTED by Andrew at
+21:42 MYT; issuer revocation remains UNKNOWN.** Fresh author OAuth and the
+single-repo 30-day request PAT are owner-reported in their separate environments,
+with no repository copies. Main-only deployment rules and public repo capability
+are API verified; actual secret values/metadata were not inspected. See
+[owner gate receipt](../2026-10-11/owner-gates-20261011.md) for remaining steps.
 
-Runtime bootstrap/runner pins and the protected-environment capability blocker
-are detailed in [the fix-up record](../2026-10-11/runtime-and-environment-fixups.md).
-The legacy workflow retirement stub is a draft-branch change only; main is not
-changed or disabled by publishing this revision. Managed controller files stay
-inactive outside .github/workflows. Private GitHub Free environment secrets
-are unavailable; the launch remains blocked pending Andrew's capability decision.
+Exact UTC credential expiry is unreported. The current draft's credential-expiry
+check is stricter than the allowed 30-day PAT lifetime when the pilot expires
+23 October; resolve that draft constraint before activation rather than inventing
+an expires_at. No secret or code change is made in this records-only update.
+
+Runtime bootstrap/runner pins are documented in
+[the fix-up record](../2026-10-11/runtime-and-environment-fixups.md). The private/
+Free capability blocker is closed. Codex-account route/readiness remains
+unverified, separately from the verified GitHub credential environments.
+Legacy workflow retirement is a draft-branch change only; main is unchanged.
+Managed controller files remain inactive outside .github/workflows.
 
 ## Independent isolation and proof-first order
 

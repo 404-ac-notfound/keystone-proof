@@ -16,9 +16,10 @@
   "managed_review_configuration": "UNVERIFIED",
   "paid_review_credits": "OFF_UNVERIFIED",
   "old_oauth_retirement": {
-    "secret_absence": "REPORTED",
+    "secret_absence": "VERIFIED",
     "issuer_revocation": "UNKNOWN",
-    "evidence": null
+    "evidence": "Andrew authenticated report 2026-10-11T13:42:00Z: old GitHub secret deleted; issuer revocation not reported",
+    "verification_basis": "OWNER_ATTESTED by Andrew; not an independent API secret-metadata check"
   },
   "independent_isolation": [
     {
@@ -40,28 +41,40 @@
     "evidence": null
   },
   "author_credential": {
-    "fresh": false,
+    "fresh": true,
     "expires_at": null,
-    "evidence": null,
+    "evidence": "OWNER_ATTESTED: Andrew authenticated report 2026-10-11T13:42:00Z; owner-gates-20261011.md",
     "protected_environment": {
       "name": "k14-author-owner-approved",
-      "status": "UNAVAILABLE_ON_REPORTED_PRIVATE_FREE_PLAN",
-      "environment_only": false,
+      "status": "VERIFIED",
+      "environment_only": true,
       "deployment_branch": "main",
-      "unattended_policy": "UNVERIFIED",
-      "evidence": null
-    }
+      "unattended_policy": "VERIFIED",
+      "evidence": "API_VERIFIED main-only/branch_policy only; OWNER_ATTESTED environment-only placement; owner-environment-evidence.json",
+      "can_admins_bypass": true,
+      "id": 24011236134
+    },
+    "verification_basis": "OWNER_ATTESTED; exact UTC expiry unreported"
   },
   "request_credential": {
     "expires_at": null,
-    "evidence": null,
+    "evidence": "OWNER_ATTESTED: Andrew authenticated report 2026-10-11T13:42:00Z; owner-gates-20261011.md",
     "protected_environment": {
       "name": "k14-review-owner-approved",
-      "status": "UNAVAILABLE_ON_REPORTED_PRIVATE_FREE_PLAN",
-      "environment_only": false,
+      "status": "VERIFIED",
+      "environment_only": true,
       "deployment_branch": "main",
-      "unattended_policy": "UNVERIFIED",
-      "evidence": null
+      "unattended_policy": "VERIFIED",
+      "evidence": "API_VERIFIED main-only/branch_policy only; OWNER_ATTESTED environment-only placement; owner-environment-evidence.json",
+      "can_admins_bypass": true,
+      "id": 24011239056
+    },
+    "verification_basis": "OWNER_ATTESTED; exact UTC expiry unreported",
+    "reported_scope": {
+      "repository": "404-ac-notfound/keystone-proof",
+      "pull_requests": "read/write",
+      "issues": "read/write",
+      "validity_days": 30
     }
   },
   "max_reviews": 2,
