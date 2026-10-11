@@ -82,6 +82,14 @@ def gates(c, e, now=None):
         require(credential.get("evidence") and now < utc(credential.get("expires_at")) <= expiry,
                 kind + " missing/expired/outside pilot")
     require(c["author_credential"].get("fresh") is True, "fresh author OAuth not evidenced")
+    for kind, name in (("author_credential", "k14-author-owner-approved"),
+                       ("request_credential", "k14-review-owner-approved")):
+        protected = c[kind].get("protected_environment", {})
+        require(protected.get("name") == name and protected.get("status") == "VERIFIED"
+                and protected.get("environment_only") is True and protected.get("evidence")
+                and protected.get("deployment_branch") == "main"
+                and protected.get("unattended_policy") == "VERIFIED",
+                kind + " protected environment unavailable/unverified; no repository-secret fallback")
     require(utc(c["request_credential"]["expires_at"]) <= now + dt.timedelta(days=30), "request credential exceeds 30 days")
     return sha
 
@@ -309,7 +317,9 @@ def finalcheck(c):
         blob = api(f"repos/{REPO}/contents/{path}?ref={ref}")
         (work / path).write_bytes(base64.b64decode(blob["content"]))
     # No author OAuth or request PAT in this job; child receives no GitHub credentials.
-    run = subprocess.run(["python", "-m", "pytest", "-q", "test_calc.py"], cwd=work, capture_output=True,
+    test_python = str(Path(os.environ["RUNNER_TEMP"]) / "k14-tests/bin/python")
+    require(Path(test_python).is_file(), "hash-locked test venv missing")
+    run = subprocess.run([test_python, "-m", "pytest", "-q", "test_calc.py"], cwd=work, capture_output=True,
                          text=True, timeout=60, env={"PATH": os.environ["PATH"], "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"})
     current(c, os.environ["PR"], os.environ["HEAD_SHA"], os.environ["BASE_SHA"])
     emit({"tests_green": "true" if run.returncode == 0 else "false", "head": os.environ["HEAD_SHA"],

@@ -9,8 +9,8 @@ w = yaml.load(path.read_text(), Loader=yaml.BaseLoader)
 assert w['on']['pull_request']['types'] == ['opened', 'synchronize', 'ready_for_review']
 assert set(w['jobs']) == {'codex', 'post_feedback'}
 assert w['permissions'] == {}
-assert w['jobs']['codex']['if'] == '${{ false }}'
-assert w['jobs']['post_feedback']['if'] == '${{ false }}'
+assert w['jobs']['codex']['if'] == 'false'
+assert w['jobs']['post_feedback']['if'] == 'false'
 read = w['jobs']['codex']
 post = w['jobs']['post_feedback']
 assert set(read['permissions'].values()) == {'read'}
@@ -23,8 +23,8 @@ assert 'pull_request_target' not in w['on']
 assert path.name.endswith('.yml.disabled')
 assert not str(path.relative_to(root.parents[2])).startswith('.github/workflows/')
 scripts = {
-    'guard': read['steps'][0]['with']['script'],
-    'post': post['steps'][0]['with']['script'],
+    'guard': next(s['with']['script'] for s in read['steps'] if s.get('id') == 'guard'),
+    'post': next(s['with']['script'] for s in post['steps'] if 'script' in s.get('with', {})),
 }
 harness = r'''
 const fs = require('fs');

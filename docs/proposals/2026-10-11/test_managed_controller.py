@@ -31,6 +31,10 @@ def fixture():
                                     for seat in ("Urahara", "Kobe")],
              author_credential={"fresh": True, "expires_at": EXPIRES, "evidence": "synthetic"},
              request_credential={"expires_at": EXPIRES, "evidence": "synthetic"})
+    for kind, name in (("author_credential", "k14-author-owner-approved"),
+                       ("request_credential", "k14-review-owner-approved")):
+        c[kind]["protected_environment"] = {"name": name, "status": "VERIFIED", "environment_only": True,
+                                             "deployment_branch": "main", "unattended_policy": "VERIFIED", "evidence": "synthetic"}
     e = {"GH_REPO": m.REPO, "GITHUB_RUN_ATTEMPT": "1", "GITHUB_SHA": A,
          "K14_APPROVED_SHA": A, "K14_ENABLED": "true", "K14_EXPIRES_AT": EXPIRES,
          "K14_CASH_CHECKED_AT": STAMP, "K14_CASH_STOP_VERIFIED": "true", "K14_INCLUDED_MINUTES": "125"}
@@ -146,6 +150,15 @@ class Gates(unittest.TestCase):
         c = json.loads((ROOT / "pilot-config.json").read_text())
         with self.assertRaises(m.Stop):
             m.gates(c, fixture()[1], NOW)
+
+    def test_environment_secret_fallback_or_unprotected_deployment_stops(self):
+        for kind in ("author_credential", "request_credential"):
+            for key, value in (("status", "UNAVAILABLE"), ("environment_only", False), ("deployment_branch", "*"),
+                               ("unattended_policy", "UNVERIFIED"), ("name", "wrong"), ("evidence", None)):
+                with self.subTest(credential=kind, field=key), self.assertRaises(m.Stop):
+                    c, e = fixture()
+                    c[kind]["protected_environment"][key] = value
+                    m.gates(c, e, NOW)
 
 
 class Transport(unittest.TestCase):
@@ -329,12 +342,19 @@ class Workflow(unittest.TestCase):
         self.assertLessEqual(sum(int(j["timeout-minutes"]) for j in jobs.values()), 125)
         for name, j in jobs.items():
             with self.subTest(job=name):
+                self.assertEqual(j["runs-on"], "ubuntu-24.04")
+                self.assertIn('test "${ImageVersion:-}" = 20261004.327.1', j["steps"][0]["run"])
+                self.assertNotIn("uses", j["steps"][0])
                 if name in ("request1", "request2", "verify1", "verify2", "author", "revise", "finalcheck", "receipt"):
                     self.assertEqual(set(j["permissions"].values()), {"read"})
                 request_secret = "secrets.K14_REVIEW_REQUEST_TOKEN" in json.dumps(j)
                 self.assertEqual(request_secret, name in ("request1", "request2"))
                 oauth_secret = "secrets.K14_AUTHOR_OAUTH_TOKEN" in json.dumps(j)
                 self.assertEqual(oauth_secret, name in ("author", "revise"))
+                if oauth_secret:
+                    self.assertEqual(j["environment"], "k14-author-owner-approved")
+                if request_secret:
+                    self.assertEqual(j["environment"], "k14-review-owner-approved")
                 for s in j["steps"]:
                     if "uses" in s:
                         self.assertRegex(s["uses"], r"@[0-9a-f]{40}$")

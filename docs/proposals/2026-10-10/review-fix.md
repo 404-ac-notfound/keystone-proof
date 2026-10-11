@@ -48,8 +48,8 @@ workflow event. Posting is a real linked-user managed PR review request;
 keep its literal invocation phrase out of debate comments/PR descriptions.
 
 Author/revision jobs have read-only GitHub permissions, fresh Claude OAuth,
-Read/Edit tools and no request PAT. The pinned Anthropic base-action avoids the
-wrapper's automatic PR/comment behavior. They upload only calc.py. Separate
+Read/Edit tools and no request PAT. The hash-verified native Claude CLI avoids the
+base-action bootstrap downloads and wrapper PR/comment behavior. They upload only calc.py. Separate
 fresh-runner publishers use trusted controller code and publish only calc.py;
 model edits to scripts/config/tests are not transported. Model output is data,
 never inserted into executable shell text. Poll/test/receipt jobs are read-only.
@@ -109,8 +109,8 @@ other work shares allowance. Polls have 30-minute limits/32-minute job caps.
 
 | Credential | Placement/scope | Lifecycle |
 |---|---|---|
-| K14_AUTHOR_OAUTH_TOKEN | Fresh bounded Claude OAuth in keystone-proof only; author/revise inputs only | Freshness/expiry evidence; revoke/delete on terminal outcome, cancel or expiry |
-| K14_REVIEW_REQUEST_TOKEN | Linked GitHub user's fine-grained PAT, keystone-proof only, minimal PR-comment write/implicit metadata read; request POST steps only | At most 30 days, preferably pilot duration; verify actual posting login; retire after pilot |
+| K14_AUTHOR_OAUTH_TOKEN | Fresh bounded Claude OAuth in keystone-proof only; protected environment k14-author-owner-approved; author/revise steps only | Freshness/expiry evidence; revoke/delete on terminal outcome, cancel or expiry |
+| K14_REVIEW_REQUEST_TOKEN | Linked GitHub user's fine-grained PAT, keystone-proof only, minimal PR-comment write/implicit metadata read; protected environment k14-review-owner-approved; request POST steps only | At most 30 days, preferably pilot duration; verify actual posting login; retire after pilot |
 | GITHUB_TOKEN | Ephemeral job permissions as listed; never substitutes for the linked-user PAT | GitHub-issued per job |
 | OPENAI_API_KEY | Missing, owner-reported; unnecessary for selected managed path | Do not provision for this pilot; API alternative OFF |
 
@@ -127,11 +127,18 @@ copies. Broader session-revocation impact is his choice. This draft neither
 reads values nor changes/deletes secrets, disables workflows or cancels runs.
 A fresh bounded author token replaces the old one; no silent carry-forward.
 
+Runtime bootstrap/runner pins and the protected-environment capability blocker
+are detailed in [the fix-up record](../2026-10-11/runtime-and-environment-fixups.md).
+The legacy workflow retirement stub is a draft-branch change only; main is not
+changed or disabled by publishing this revision. Managed controller files stay
+inactive outside .github/workflows. Private GitHub Free environment secrets
+are unavailable; the launch remains blocked pending Andrew's capability decision.
+
 ## Independent isolation and proof-first order
 
 **Urahara and Kobe** check the exact approved revision, provided neither authored
 it. Each records runtime files/refs and a grep/trace showing no KEYSTONE main
-path. Their receipt slots remain PENDING. Synthetic PASS test fixtures are
+path. Their prior checks on 5f25488 are historical; new-revision receipt slots remain PENDING. Synthetic PASS test fixtures are
 never real isolation evidence. Magic does not run that assessment.
 
 Missing independent evidence makes green KEYSTONE main a proof prerequisite.
@@ -161,6 +168,7 @@ Offline validation commands:
 
 ```sh
 python docs/proposals/2026-10-11/test_managed_controller.py
+python docs/proposals/2026-10-11/test_locked_runtime.py
 python docs/proposals/2026-10-10/check_draft.py
 ```
 

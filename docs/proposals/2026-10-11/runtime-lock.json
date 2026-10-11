@@ -1,0 +1,18 @@
+{
+  "runner": {
+    "label": "ubuntu-24.04",
+    "image_os": "ubuntu24",
+    "image_version": "20261004.327.1",
+    "source_commit": "e3fe113a581eb9a44ca43f479b69f9c93f36df34"
+  },
+  "python": {
+    "executable": "/usr/bin/python3",
+    "version": "3.12.3"
+  },
+  "claude": {
+    "version": "2.1.296",
+    "url": "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.296/linux-x64/claude",
+    "sha256": "24972e3bc859fab2b46ed4c1e51f7d6130f06d3bd550811a114640de3370d0de",
+    "manifest_url": "https://storage.googleapis.com/claude-code-dist-86c565f3-f756-42ad-8dfa-d59b1c096819/claude-code-releases/2.1.296/manifest.json"
+  }
+}

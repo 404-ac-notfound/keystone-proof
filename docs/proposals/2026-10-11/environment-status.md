@@ -39,3 +39,13 @@ environment if the verified route does not require one.
 Urahara/Kobe isolation checks and issuer-side OAuth retirement are separate
 pending preflight entries. Missing OPENAI_API_KEY belongs only to the hard-OFF
 API alternative. This record grants no setup, credentials, spend or activation.
+
+## GitHub credential environments — separate prerequisite
+
+The draft now names k14-author-owner-approved and k14-review-owner-approved.
+These are proposed GitHub credential environments, distinct from a Codex cloud
+environment. No creation or protection was observed/performed. PR metadata
+confirms private keystone-proof; supplied account evidence says Free. Environment
+secrets on that combination are unavailable under the current documented plan.
+See runtime-and-environment-fixups.md for primary source and Andrew's capability
+gate. Preflight remains unlaunchable; no repository-secret fallback is allowed.

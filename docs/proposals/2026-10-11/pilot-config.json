@@ -7,19 +7,68 @@
   "controller_author": "Magic",
   "approved_expiry_ceiling": null,
   "owner_authorization": null,
-  "environment": {"status": "UNKNOWN", "id": null, "evidence": null},
+  "environment": {
+    "status": "UNKNOWN",
+    "id": null,
+    "evidence": null
+  },
   "connected_user_access": "UNKNOWN",
   "managed_review_configuration": "UNVERIFIED",
   "paid_review_credits": "OFF_UNVERIFIED",
-  "old_oauth_retirement": {"secret_absence": "REPORTED", "issuer_revocation": "UNKNOWN", "evidence": null},
+  "old_oauth_retirement": {
+    "secret_absence": "REPORTED",
+    "issuer_revocation": "UNKNOWN",
+    "evidence": null
+  },
   "independent_isolation": [
-    {"seat": "Urahara", "status": "PENDING", "controller_sha": null, "evidence": null},
-    {"seat": "Kobe", "status": "PENDING", "controller_sha": null, "evidence": null}
+    {
+      "seat": "Urahara",
+      "status": "PENDING",
+      "controller_sha": null,
+      "evidence": null
+    },
+    {
+      "seat": "Kobe",
+      "status": "PENDING",
+      "controller_sha": null,
+      "evidence": null
+    }
   ],
-  "keystone_green_main": {"status": "UNKNOWN", "sha": null, "evidence": null},
-  "author_credential": {"fresh": false, "expires_at": null, "evidence": null},
-  "request_credential": {"expires_at": null, "evidence": null},
+  "keystone_green_main": {
+    "status": "UNKNOWN",
+    "sha": null,
+    "evidence": null
+  },
+  "author_credential": {
+    "fresh": false,
+    "expires_at": null,
+    "evidence": null,
+    "protected_environment": {
+      "name": "k14-author-owner-approved",
+      "status": "UNAVAILABLE_ON_REPORTED_PRIVATE_FREE_PLAN",
+      "environment_only": false,
+      "deployment_branch": "main",
+      "unattended_policy": "UNVERIFIED",
+      "evidence": null
+    }
+  },
+  "request_credential": {
+    "expires_at": null,
+    "evidence": null,
+    "protected_environment": {
+      "name": "k14-review-owner-approved",
+      "status": "UNAVAILABLE_ON_REPORTED_PRIVATE_FREE_PLAN",
+      "environment_only": false,
+      "deployment_branch": "main",
+      "unattended_policy": "UNVERIFIED",
+      "evidence": null
+    }
+  },
   "max_reviews": 2,
   "max_author_revisions": 1,
-  "diff_caps": {"files": 50, "changed_lines": 1000, "bytes": 131072}
+  "diff_caps": {
+    "files": 50,
+    "changed_lines": 1000,
+    "bytes": 131072
+  }
 }

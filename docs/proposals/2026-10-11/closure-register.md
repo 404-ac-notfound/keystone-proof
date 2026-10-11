@@ -16,3 +16,14 @@ Author: Magic. Scope: inactive drafts only. No live proof or isolation PASS.
 
 Lesson migration and vendor cleanup belong to #32's later gated draft work.
 This register records this controller revision, not a new shop constitution.
+
+## 11 Oct review fix-ups
+
+Urahara's static PASS and Kobe's FAIL at 5f25488 are historical. Andrew permits
+external full-SHA actions and downgraded Kobe's FAIL to fix-ups. Both new-revision
+checker slots remain PENDING; Magic has not performed their check.
+
+Runtime-and-environment-fixups.md maps the bootstrap/image/pytest/legacy-workflow
+changes, exact sources and limitations. Fresh OAuth/PAT jobs now reference
+protected environments; live protection is BLOCKED by reported Free/private
+capability, not certified by a YAML declaration. No account changes were made.
