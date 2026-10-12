@@ -1,0 +1,666 @@
+# DRAFT ONLY: outside .github/workflows; no workflow is installed or enabled.
+# An Andrew-approved activation revision and exact-revision independent checks are still required.
+name: k14-managed-candidate
+'on':
+  issues:
+    types:
+    - labeled
+permissions: {}
+concurrency:
+  group: k14-managed-one-pilot
+  cancel-in-progress: false
+env:
+  GH_REPO: ${{ github.repository }}
+  GH_TOKEN: ${{ github.token }}
+  K14_ENABLED: ${{ vars.K14_ENABLED }}
+  K14_APPROVED_SHA: ${{ vars.K14_APPROVED_SHA }}
+  K14_EXPIRES_AT: ${{ vars.K14_EXPIRES_AT }}
+  K14_PREFLIGHT_JSON: ${{ vars.K14_PREFLIGHT_JSON }}
+  K14_CASH_CHECKED_AT: ${{ vars.K14_CASH_CHECKED_AT }}
+  K14_CASH_STOP_VERIFIED: ${{ vars.K14_CASH_STOP_VERIFIED }}
+  K14_INCLUDED_MINUTES: ${{ vars.K14_INCLUDED_MINUTES }}
+jobs:
+  guard:
+    needs: []
+    if: github.repository == '404-ac-notfound/keystone-proof' && github.event.label.name == 'ready'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      issues: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - id: guard
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py guard
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: guard
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    outputs:
+      admitted: ${{ steps.guard.outputs.admitted }}
+      base: ${{ steps.guard.outputs.base }}
+  author:
+    needs:
+    - guard
+    if: needs.guard.outputs.admitted == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py prepare --look 1
+    - name: Download and verify locked native CLI; no live installer
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_runtime.py install-claude
+    - name: Fresh Claude author invocation; no request credential
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_runtime.py author --look 1
+      env:
+        GH_TOKEN: ''
+        GITHUB_TOKEN: ''
+        K14_PREFLIGHT_JSON: ''
+        CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.K14_AUTHOR_OAUTH_TOKEN }}
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: author-calc-1
+        path: calc.py
+        if-no-files-found: error
+        retention-days: 14
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: author-runtime-1
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      BASE_SHA: ${{ needs.guard.outputs.base }}
+    environment: k14-author-owner-approved
+  publish1:
+    needs:
+    - guard
+    - author
+    if: needs.author.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: author-calc-1
+        path: .pilot/changed
+    - id: author
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py author --look 1
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: publish1
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      BASE_SHA: ${{ needs.guard.outputs.base }}
+    outputs:
+      pr: ${{ steps.author.outputs.pr }}
+      head: ${{ steps.author.outputs.head }}
+      base: ${{ steps.author.outputs.base }}
+  claim1:
+    needs:
+    - guard
+    - publish1
+    if: needs.publish1.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py reserve --look 1
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: claim1
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      PR: ${{ needs.publish1.outputs.pr }}
+      HEAD_SHA: ${{ needs.publish1.outputs.head }}
+      BASE_SHA: ${{ needs.publish1.outputs.base }}
+  request1:
+    needs:
+    - claim1
+    if: needs.claim1.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: claim1
+        path: .pilot/claim
+    - name: Exactly one linked-user managed review request
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py request
+      env:
+        K14_REVIEW_REQUEST_TOKEN: ${{ secrets.K14_REVIEW_REQUEST_TOKEN }}
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: request1
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    environment: k14-review-owner-approved
+  verify1:
+    needs:
+    - request1
+    if: needs.request1.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 32
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: request1
+        path: .pilot/request
+    - id: poll
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py poll
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: verdict-first
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    outputs:
+      verdict: ${{ steps.poll.outputs.verdict }}
+  revise:
+    needs:
+    - guard
+    - publish1
+    - verify1
+    if: needs.verify1.outputs.verdict == 'REVIEW-WITH-FINDINGS'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: verdict-first
+        path: .pilot/first
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py prepare --look 2
+    - name: Download and verify locked native CLI; no live installer
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_runtime.py install-claude
+    - name: Fresh Claude author invocation; no request credential
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_runtime.py author --look 2
+      env:
+        GH_TOKEN: ''
+        GITHUB_TOKEN: ''
+        K14_PREFLIGHT_JSON: ''
+        CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.K14_AUTHOR_OAUTH_TOKEN }}
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      with:
+        name: author-calc-2
+        path: calc.py
+        if-no-files-found: error
+        retention-days: 14
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: author-runtime-2
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      BASE_SHA: ${{ needs.guard.outputs.base }}
+      PR: ${{ needs.publish1.outputs.pr }}
+    environment: k14-author-owner-approved
+  publish2:
+    needs:
+    - guard
+    - revise
+    - publish1
+    - verify1
+    if: needs.revise.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: author-calc-2
+        path: .pilot/changed
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: verdict-first
+        path: .pilot/first
+    - id: author
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py author --look 2
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: publish2
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      BASE_SHA: ${{ needs.guard.outputs.base }}
+      PR: ${{ needs.publish1.outputs.pr }}
+    outputs:
+      pr: ${{ steps.author.outputs.pr }}
+      head: ${{ steps.author.outputs.head }}
+      base: ${{ steps.author.outputs.base }}
+  claim2:
+    needs:
+    - guard
+    - publish2
+    if: needs.publish2.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: write
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py reserve --look 2
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: claim2
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      PR: ${{ needs.publish2.outputs.pr }}
+      HEAD_SHA: ${{ needs.publish2.outputs.head }}
+      BASE_SHA: ${{ needs.publish2.outputs.base }}
+  request2:
+    needs:
+    - claim2
+    if: needs.claim2.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: claim2
+        path: .pilot/claim
+    - name: Exactly one linked-user managed review request
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py request
+      env:
+        K14_REVIEW_REQUEST_TOKEN: ${{ secrets.K14_REVIEW_REQUEST_TOKEN }}
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: request2
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    environment: k14-review-owner-approved
+  verify2:
+    needs:
+    - request2
+    if: needs.request2.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 32
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      with:
+        name: request2
+        path: .pilot/request
+    - id: poll
+      run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py poll
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: verdict-second
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    outputs:
+      verdict: ${{ steps.poll.outputs.verdict }}
+  finalcheck:
+    needs:
+    - guard
+    - publish1
+    - verify1
+    - publish2
+    - verify2
+    if: always() && needs.guard.outputs.admitted == 'true' && (needs.verify1.outputs.verdict == 'REVIEW-CLEAN' || needs.verify2.outputs.verdict == 'REVIEW-CLEAN')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_runtime.py install-tests
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py finalcheck
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: finalcheck
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
+    env:
+      PR: ${{ needs.publish1.outputs.pr }}
+      HEAD_SHA: ${{ needs.publish2.outputs.head || needs.publish1.outputs.head }}
+      BASE_SHA: ${{ needs.guard.outputs.base }}
+  receipt:
+    needs:
+    - guard
+    - author
+    - publish1
+    - claim1
+    - request1
+    - verify1
+    - revise
+    - publish2
+    - claim2
+    - request2
+    - verify2
+    - finalcheck
+    if: always() && github.event.label.name == 'ready'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+      checks: read
+    steps:
+    - name: Admit exact hosted runner image before actions or credentials are used
+      shell: bash
+      run: 'set -euo pipefail
+
+        test "${ImageOS:-}" = ubuntu24
+
+        test "${ImageVersion:-}" = 20261004.327.1
+
+        test "$(uname -m)" = x86_64
+
+        test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
+
+        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+
+        '
+    - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      with:
+        ref: ${{ github.sha }}
+        persist-credentials: false
+    - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+      continue-on-error: true
+      with:
+        path: arts
+    - run: /usr/bin/python3 docs/proposals/2026-10-11/k14_controller.py receipt
+    - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      if: always()
+      with:
+        name: receipt
+        path: out/
+        if-no-files-found: warn
+        retention-days: 14
