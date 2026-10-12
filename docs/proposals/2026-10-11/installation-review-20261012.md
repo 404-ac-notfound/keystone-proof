@@ -58,3 +58,21 @@ separate launch yes; set it last only after all other envelope values read back.
 Full closure/follow-up state and next owners: closure-register.md. It is the only
 K14 truth record; follow-up checklist below its register is a view. K23 proposal
 R2 remains KEYSTONE draft PR #37; approved R1 is not silently superseded.
+
+## Installation-review documentation follow-up
+
+Kobe passed dffc80e in comment 6117443221 and identified non-blocking register
+gaps to reconcile before final-main checking. The next revision changes only
+this handoff, closure-register.md and launch-envelope-20261012.md. It restores
+proof/canary/adoption order, consumed-claim and admin-bypass limitations, separate
+old-OAuth retirement, exact runtime files/refs plus grep/trace done-test, correct
+API-OFF source and bidirectional follow-up links. Workflow/controller/locks are
+byte-identical to dffc80e. Both seats must bind a current-head verdict; a scoped
+documentation delta review may carry forward their own exact-code evidence.
+
+Final-main isolation asks must explicitly record the files and refs read at
+runtime and include a grep/trace showing no KEYSTONE main path. Missing evidence
+stops launch; no green-KEYSTONE fallback is restored. After merge, the historical
+installed-header wording is interpreted as draft preparation provenance, not a
+claim that deployment has yet to happen. Current state is recorded here and in
+the closure register.

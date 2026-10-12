@@ -5,6 +5,17 @@ at `6efb7276e3b45d707458fb59647369c604d5ab98` to fix Kobe N1 and prepare this
 handoff. This revision authorizes draft preparation/push only. No merge,
 installation, activation, variables, secrets, seed creation or label launch.
 
+## Current installation state (supersedes earlier preparation-only wording)
+
+Andrew approved the installation revision and review dispatch on 12 Oct.
+The installed workflow is now .github/workflows/k14-managed.yml on draft PR #4;
+main remains unchanged, K14_ENABLED remains unset, and merge/launch remain separate
+owner gates. Earlier statements below that no installation occurred describe
+the earlier envelope-preparation phase, not the current draft-branch state.
+The seven-variable contract is unchanged and now read by the installed copy.
+Kobe's dffc80e PASS is candidate-only; current-head and actual final-main checks
+remain required.
+
 ## Final acceptance scope and hard gap
 
 [Final acceptance alignment and full PASS contract](final-acceptance-alignment-20261012.md)
@@ -22,7 +33,7 @@ all stages and metrics before a final-test launch. No image is generated now.
 The green-KEYSTONE-main alternative is deleted from the controller and template.
 Urahara **and** Kobe must each provide PASS with evidence and `controller_sha`
 equal to the **actual final merged main SHA**, independently of author Magic.
-Missing, stale or partial receipts stop the run. The two PASS comments on
+Each final-main check records the files and refs read at runtime and a grep/trace showing no KEYSTONE main path. Missing, stale or partial receipts or isolation evidence stop the run. The two PASS comments on
 6efb727 are historical evidence only:
 [Urahara](https://github.com/404-ac-notfound/keystone-proof/pull/3#issuecomment-6110063779),
 [Kobe/N1](https://github.com/404-ac-notfound/keystone-proof/pull/3#issuecomment-6110080967).
