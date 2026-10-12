@@ -51,7 +51,7 @@
       "can_admins_bypass": true,
       "id": 24011236134
     },
-    "verification_basis": "OWNER_ATTESTED provisioning; exact UTC issuance/provider expiry and owner-approved use-until/retirement acceptance still unreported",
+    "verification_basis": "OWNER_ATTESTED provisioning; provider expiry unknown; owner revocation bound recorded separately. Exact issuance, use-until and terminal/cancel retirement acceptance still pending.",
     "created_at": null,
     "use_until": null,
     "retirement": {
@@ -59,6 +59,12 @@
       "on_terminal": true,
       "on_cancel": true,
       "evidence": null
+    },
+    "revocation_bound": {
+      "basis": "OWNER_REVOCATION_BOUND",
+      "owner": "404-ac-notfound",
+      "revoke_by": "2026-10-22T00:00:00Z",
+      "evidence": "Andrew K-14 relay KEYSTONE-K14-RELAY-20261010, 12 Oct 2026: \"Andrew revokes by 2026-10-22\". Conservative stop at 22 Oct 08:00 MYT; provider expiry is not shown on claude.ai and remains unknown."
     }
   },
   "request_credential": {

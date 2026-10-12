@@ -1,5 +1,7 @@
 # Owner gates and fresh-seed launch checklist — 11 Oct 2026
 
+> Current reconciliation: [12 Oct handoff](reconciliation-20261012.md). PR #3 e3bbab1 and PR #4 d712b74 are joined in one inactive draft; the author allowlist and strict comment verification are retained. OAuth unknown expiry uses its separate owner revocation bound. See launch-envelope-20261012.md and final-acceptance-alignment-20261012.md for current scope and gaps. Earlier SHA/check counts below are historical.
+
 Magic. **Do not launch.** This installation preparation follows Andrew's N1
 instruction from frozen candidate `6efb7276e3b45d707458fb59647369c604d5ab98`.
 PR #3 stays frozen; freeze-record.md is its historical record. This separate

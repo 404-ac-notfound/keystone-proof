@@ -1,5 +1,7 @@
 # Review repair closure register
 
+> Current reconciliation: [12 Oct handoff](reconciliation-20261012.md). PR #3 e3bbab1 and PR #4 d712b74 are joined in one inactive draft; the author allowlist and strict comment verification are retained. OAuth unknown expiry uses its separate owner revocation bound. See launch-envelope-20261012.md and final-acceptance-alignment-20261012.md for current scope and gaps. Earlier SHA/check counts below are historical.
+
 Baseline: [KEYSTONE #33 final AGREED closure](https://github.com/404-ac-notfound/KEYSTONE/issues/33#issuecomment-6103037544).
 Author: Magic. Scope: inactive drafts only. No live proof or isolation PASS.
 

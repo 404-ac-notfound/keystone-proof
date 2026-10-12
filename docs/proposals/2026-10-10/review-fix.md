@@ -1,5 +1,7 @@
 # Draft review repair — managed K-14 proof first
 
+> Current reconciliation: [12 Oct handoff](../2026-10-11/reconciliation-20261012.md). PR #3 e3bbab1 and PR #4 d712b74 are joined in one inactive draft; the author allowlist and strict comment verification are retained. OAuth unknown expiry uses its separate owner revocation bound. See launch-envelope-20261012.md and final-acceptance-alignment-20261012.md for current scope and gaps. Earlier SHA/check counts below are historical.
+
 Updated 2026-10-11 by Magic for Andrew. This supersedes the API-first proposal
 in this same draft PR. No controller is installed, merged or launched by this draft. Andrew
 reports owner provisioning complete at 21:42 MYT; public visibility and main-only
