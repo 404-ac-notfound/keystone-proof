@@ -73,6 +73,8 @@ def gates(c, e, now=None):
     require(e.get("K14_ENABLED") == "true", "kill switch is OFF")
     require(e.get("GH_REPO") == REPO == c.get("repository"), "wrong repository")
     require(e.get("GITHUB_RUN_ATTEMPT") == "1", "rerun forbidden")
+    require(c.get("request_login") == REVIEW_PUBLISHER and c.get("launch_login") == REVIEW_PUBLISHER,
+            "request and launch identities must match the approved owner")
     sha = e.get("GITHUB_SHA", "")
     require(SHA.fullmatch(sha) and e.get("K14_APPROVED_SHA") == sha, "unapproved controller revision")
     require(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{2,80}", c.get("pilot_id", ""))
