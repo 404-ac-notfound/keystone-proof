@@ -80,7 +80,9 @@ def gates(c, e, now=None):
             and approval.get("controller_author") == controller_author,
             "controller author must be identified, approved and bound to owner authorization")
     isolated = c.get("independent_isolation", [])
-    isolated = (len(isolated) == 2 and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
+    isolated = (isinstance(isolated, list) and len(isolated) == 2
+                and all(isinstance(x, dict) for x in isolated)
+                and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
                 and all(x.get("status") == "PASS" and x.get("controller_sha") == sha
                         and x.get("seat") != c.get("controller_author") and x.get("evidence") for x in isolated))
     # Installation/merge produces the final launch SHA. Candidate checks cannot
@@ -100,17 +102,24 @@ def gates(c, e, now=None):
     for kind in ("author_credential", "request_credential"):
         credential = c.get(kind, {})
         issued = utc(credential.get("created_at"))
-        provider_expiry = utc(credential.get("expires_at"))
+        if kind == "author_credential" and credential.get("expires_at") is None:
+            bound = credential.get("revocation_bound", {})
+            require(bound.get("basis") == "OWNER_REVOCATION_BOUND"
+                    and bound.get("owner") == c.get("launch_login") and bound.get("evidence"),
+                    "author credential unknown expiry requires owner revocation bound")
+            validity_bound = utc(bound.get("revoke_by"))
+        else:
+            validity_bound = utc(credential.get("expires_at"))
         use_until = utc(credential.get("use_until"))
         require(credential.get("evidence") and issued <= now < use_until <= expiry
-                and use_until <= provider_expiry,
+                and use_until <= validity_bound,
                 kind + " missing/expired/outside allowed-use window")
         retirement = credential.get("retirement", {})
         require(retirement.get("owner") == c.get("launch_login") and retirement.get("evidence")
                 and retirement.get("on_terminal") is True and retirement.get("on_cancel") is True,
                 kind + " terminal/cancel/use-until revoke-and-delete plan unverified")
         if kind == "request_credential":
-            require(dt.timedelta(0) < provider_expiry - issued <= dt.timedelta(days=30),
+            require(dt.timedelta(0) < validity_bound - issued <= dt.timedelta(days=30),
                     "request credential exceeds 30 days from issuance")
     require(c["author_credential"].get("fresh") is True, "fresh author OAuth not evidenced")
     for kind, name in (("author_credential", "k14-author-owner-approved"),
@@ -176,6 +185,7 @@ def verify_isolation_comments(c, sha, get=None):
         seat = receipt["seat"]
         require(first_line == f"{seat}: PASS {sha}",
                 "isolation comment must begin with canonical Seat: PASS full-approved-SHA")
+        require(first_paragraph == first_line, "isolation PASS must have a standalone headline paragraph")
         subjects = re.findall(r"(?<![0-9a-fA-F])[0-9a-fA-F]{40}(?![0-9a-fA-F])", first_paragraph)
         require(subjects and all(subject == sha for subject in subjects),
                 "isolation comment opening paragraph contains another revision")
@@ -407,6 +417,13 @@ def receipt(c):
             "owner_touches_after_launch": "UNKNOWN_PENDING_INDEPENDENT_AUDIT",
             "api_spend": "NO_API_PATH_INVOKED; billing evidence pending", "actions_minutes": "UNKNOWN_FINAL_USAGE_PENDING",
             "fresh_credential_retirement": "PENDING_OWNER_METADATA",
+            "acceptance_scope": "K14_TRANSPORT_SUBTEST",
+            "final_continuity_acceptance": {
+                "spec_commit": "39e25bb6846a44ea56856d4f1b8af129401ac5f5",
+                "spec_blob": "491bf56be82fa16e2fbbb6226bfdd1d77c678912",
+                "outcome": "BLOCKED", "build_complete": False,
+                "reason": "Kobe current-plan verification, Urahara method approval, Shaq image/QC, Git seat receipts and final-only image delivery not implemented",
+                "alignment_record": "docs/proposals/2026-10-11/final-acceptance-alignment-20261012.md"},
             "outcome": "BLOCKED", "reason": "final usage, owner-touch audit and credential-retirement evidence pending"}
     # An artifact cannot magically verify billing or revocation. Never self-issue PASS.
     emit(data, "receipt")

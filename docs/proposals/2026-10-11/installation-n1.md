@@ -3,7 +3,7 @@
 Magic. Scope authorized by Andrew on 11 Oct after Kobe's static PASS at
 `6efb7276e3b45d707458fb59647369c604d5ab98`: fix N1 in the installation revision,
 either hard-gate the final-main recheck or delete the green-KEYSTONE alternative.
-This separate draft chooses deletion. Frozen PR #3 stays at its checked SHA.
+This installation line chose deletion. PR #3 subsequently advanced to e3bbab1; the 12 Oct unified reconciliation draft now carries both lines. Neither PR has merged.
 
 ## Code change and launch contract
 
@@ -184,3 +184,17 @@ The 48 controller and 7 runtime tests are author implementation evidence only.
 Kobe's FAIL remains historical evidence until he reviews this new SHA; no current
 independent PASS is claimed. Urahara must also review the new revision. Both seats
 still recheck the final installed main SHA after Andrew approves installation.
+
+
+## 12 October reconciliation addendum — superseding handoff
+
+See `docs/proposals/2026-10-11/reconciliation-20261012.md`. The combined draft
+inherits the strict F1/F3/F4/F5 review-record and author gates from PR #4 and
+the provider-expiry-unknown, owner-bound author OAuth exception from PR #3.
+Only author OAuth may use `OWNER_REVOCATION_BOUND` with a recorded
+`revoke_by` of `2026-10-22T00:00:00Z`; the PAT still requires real
+issuance/provider expiry and a positive lifetime ≤30 days. Runtime admission
+enforces the author use-until, but issuer revocation itself is an Andrew action.
+The revised receipt explicitly separates K14_TRANSPORT_SUBTEST from the
+unpassed K-23 image continuity test. Historical review PASSes on PR #3/#4 are
+not valid for the unified revision or eventual final merged main SHA.

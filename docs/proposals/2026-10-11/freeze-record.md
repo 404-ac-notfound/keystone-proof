@@ -1,5 +1,7 @@
 # K-14 draft freeze — 11 Oct 2026
 
+> Superseded for current launch preparation by [12 Oct relay and envelope](launch-envelope-20261012.md). Andrew reopened 6efb727 for N1; the green-main bypass is removed and OAuth unknown expiry uses a separate owner revocation bound. Historical freeze/evidence below is retained.
+
 Magic. Andrew authorized the expiry correction and freeze following his owner
 report at approximately 22:03 MYT / 14:03 UTC. Parent:
 `072b505390a464fd80a594148f3529d4a6e6b795`. The immutable candidate commit SHA is

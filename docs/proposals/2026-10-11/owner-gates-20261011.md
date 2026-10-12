@@ -131,3 +131,15 @@ approval does not authorize launch. Keep runtime trace/files/refs, exact review
 head/read-back, verdict/check evidence, timing/usage, zero owner transport touches
 and post-run credential retirement in the receipt. Final billing/retirement
 unknowns remain BLOCKED until independent evidence resolves them.
+
+
+## 12 October unified-line clarification
+
+The final K-14 draft carries both the owner-bound author OAuth policy and
+PR #4's strict code-pinned author and cryptographically bound GitHub comment
+receipts. Author OAuth provider expiry may remain unknown; the owner-bound
+revoke-by is `2026-10-22T00:00:00Z` (08:00 MYT). This is a runtime stop,
+not proof of issuer-side revocation. PAT expiry/issuance and both retirement
+acceptances are still pending. Fresh reviews of the unified SHA and the
+installed-main SHA are separate approval events. The one-image Shaq continuity
+test is deferred as a distinct K-23 final acceptance obligation.

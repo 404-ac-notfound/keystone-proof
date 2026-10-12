@@ -302,6 +302,33 @@ class Gates(unittest.TestCase):
                     m.gates(c, e, NOW)
 
 
+    def test_owner_oauth_revocation_bound_is_separate_from_provider_expiry(self):
+        c, e = fixture()
+        c["author_credential"].update(expires_at=None, revocation_bound={
+            "basis": "OWNER_REVOCATION_BOUND", "owner": c["launch_login"],
+            "revoke_by": EXPIRES, "evidence": "synthetic owner acceptance"})
+        self.assertEqual(m.gates(c, e, NOW), A)
+        for key, value in (("basis", "PROVIDER_EXPIRY"), ("owner", "Magic"),
+                           ("evidence", None), ("revoke_by", STAMP)):
+            with self.subTest(key=key), self.assertRaises(m.Stop):
+                broken = copy.deepcopy(c)
+                broken["author_credential"]["revocation_bound"][key] = value
+                m.gates(broken, e, NOW)
+        # The PAT cannot use an OAuth owner-bound exception.
+        c["request_credential"].update(expires_at=None,
+            revocation_bound=c["author_credential"]["revocation_bound"])
+        with self.assertRaises(m.Stop):
+            m.gates(c, e, NOW)
+
+    def test_non_object_isolation_receipts_raise_stop(self):
+        for receipts in (None, [None, {}], ["Urahara", "Kobe"], [[], []], {}):
+            with self.subTest(receipts=receipts):
+                c, e = fixture()
+                c["independent_isolation"] = receipts
+                with self.assertRaises(m.Stop):
+                    m.gates(c, e, NOW)
+
+
 class IsolationEvidence(unittest.TestCase):
     def test_real_comment_reads_bind_both_seats(self):
         c, e = fixture()
@@ -397,6 +424,22 @@ class IsolationEvidence(unittest.TestCase):
         c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(text.replace("\r\n", "\n").encode()).hexdigest()
         with self.assertRaisesRegex(m.Stop, "digest mismatched"):
             m.verify_isolation_comments(c, A, get)
+
+
+    def test_contradictory_second_line_in_verdict_paragraph_stops(self):
+        for body in (f"Urahara: PASS {A}\nFAIL: withdrawn",
+                     f"Urahara: PASS {A}\nPASS withdrawn.",
+                     f"Urahara: PASS {A}\r\nFAIL: withdrawn"):
+            with self.subTest(body=body):
+                c, _ = fixture()
+                c["independent_isolation"][0]["comment_body_sha256"] = hashlib.sha256(body.encode()).hexdigest()
+                def get(path):
+                    comment = FakeAPI()(path)
+                    if path.endswith("/101"):
+                        comment["body"] = body
+                    return comment
+                with self.assertRaises(m.Stop):
+                    m.verify_isolation_comments(c, A, get)
 
     def test_malformed_api_payloads_raise_stop(self):
         c, _ = fixture()
@@ -683,6 +726,11 @@ class Workflow(unittest.TestCase):
             finally:
                 os.chdir(old)
             self.assertEqual(emit.call_args.args[0]["outcome"], "BLOCKED")
+            self.assertEqual(emit.call_args.args[0]["acceptance_scope"], "K14_TRANSPORT_SUBTEST")
+            final = emit.call_args.args[0]["final_continuity_acceptance"]
+            self.assertEqual(final["outcome"], "BLOCKED")
+            self.assertFalse(final["build_complete"])
+            self.assertIn("Shaq", final["reason"])
             self.assertIn("UNKNOWN", emit.call_args.args[0]["owner_touches_after_launch"])
 
 
