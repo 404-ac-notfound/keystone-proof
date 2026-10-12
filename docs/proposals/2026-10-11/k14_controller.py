@@ -48,8 +48,27 @@ def now_utc():
     return dt.datetime.now(dt.timezone.utc)
 
 
+def validate_config_shape(c):
+    """Reject malformed owner JSON before any dispatch, including receipt mode."""
+    require(isinstance(c, dict), "preflight must be an object")
+    for key in ("environment", "old_oauth_retirement", "author_credential", "request_credential"):
+        require(isinstance(c.get(key), dict), key + " must be an object")
+    require(c.get("owner_authorization") is None or isinstance(c["owner_authorization"], dict),
+            "owner authorization must be an object")
+    receipts = c.get("independent_isolation")
+    require(isinstance(receipts, list) and all(isinstance(x, dict) for x in receipts),
+            "isolation receipts must be a list of objects")
+    require(all(isinstance(x.get("seat"), str) for x in receipts), "isolation seat must be a string")
+    for key in ("author_credential", "request_credential"):
+        for field in ("retirement", "protected_environment"):
+            require(isinstance(c[key].get(field), dict), key + " " + field + " must be an object")
+        if "revocation_bound" in c[key]:
+            require(isinstance(c[key]["revocation_bound"], dict), key + " revocation bound must be an object")
+
+
 def gates(c, e, now=None):
     """Validate pinned owner config and runtime variables. No provider or isolation probes."""
+    validate_config_shape(c)
     now = now or now_utc()
     require(e.get("K14_ENABLED") == "true", "kill switch is OFF")
     require(e.get("GH_REPO") == REPO == c.get("repository"), "wrong repository")
@@ -131,7 +150,7 @@ def gates(c, e, now=None):
     return sha
 
 
-def api(path, method="GET", payload=None, token=None, paginate=False, raw=False):
+def api(path, method="GET", payload=None, token=None, paginate=False, raw=False, page_key=None):
     env = os.environ.copy()
     env.pop("K14_REVIEW_REQUEST_TOKEN", None)
     if token:
@@ -151,7 +170,18 @@ def api(path, method="GET", payload=None, token=None, paginate=False, raw=False)
     if raw:
         return result.stdout
     data = json.loads(result.stdout)
-    return [x for page in data for x in page] if paginate else data
+    if not paginate:
+        return data
+    require(isinstance(data, list), "paginated API payload must be a page list")
+    rows = []
+    for page in data:
+        if page_key is not None:
+            require(isinstance(page, dict), "paginated API page must be an object")
+            page = page.get(page_key)
+        require(isinstance(page, list) and all(isinstance(x, dict) for x in page),
+                "paginated API items must be objects in a list")
+        rows.extend(page)
+    return rows
 
 
 def verify_isolation_comments(c, sha, get=None):
@@ -180,6 +210,7 @@ def verify_isolation_comments(c, sha, get=None):
         require("\r" not in normalised, "isolation comment has unsupported line endings")
         first_paragraph = normalised.split("\n\n", 1)[0]
         first_line = normalised.split("\n", 1)[0]
+        require(first_paragraph == first_line, "isolation headline must be its own paragraph")
         seat = receipt["seat"]
         require(first_line == f"{seat}: PASS {sha}",
                 "isolation comment must begin with canonical Seat: PASS full-approved-SHA")
@@ -406,7 +437,7 @@ def finalcheck(c):
 def receipt(c):
     arts = Path("arts")
     records = {str(p.relative_to(arts)): json.loads(p.read_text()) for p in arts.rglob("*.json")}
-    jobs = api(f"repos/{REPO}/actions/runs/{os.environ['GITHUB_RUN_ID']}/jobs?per_page=100", paginate=True)
+    jobs = api(f"repos/{REPO}/actions/runs/{os.environ['GITHUB_RUN_ID']}/jobs?per_page=100", paginate=True, page_key="jobs")
     data = {"pilot_id": c["pilot_id"], "controller_sha": os.environ["GITHUB_SHA"], "environment": c["environment"],
             "records": records, "jobs": [{k: j.get(k) for k in ("id", "name", "started_at", "completed_at", "conclusion")}
                                         for j in jobs], "independent_isolation": c["independent_isolation"],
@@ -440,6 +471,7 @@ def main():
         # Owner-provisioned non-secret JSON keeps approval/evidence out of a self-hash loop.
         # Default template is deliberately unlaunchable. The code revision is independently pinned.
         c = json.loads(os.environ.get("K14_PREFLIGHT_JSON") or (ROOT / "pilot-config.json").read_text())
+        validate_config_shape(c)
         if args.mode not in {"guard", "receipt"}:
             verify_isolation_comments(c, gates(c, os.environ))
         if args.mode == "guard":
@@ -462,7 +494,7 @@ def main():
             finalcheck(c)
         else:
             receipt(c)
-    except (Stop, KeyError, ValueError, OSError, subprocess.TimeoutExpired) as exc:
+    except (Stop, KeyError, ValueError, TypeError, AttributeError, OSError, subprocess.TimeoutExpired) as exc:
         # No exception bodies: a library/process message could contain credential material.
         reason = str(exc) if isinstance(exc, Stop) else type(exc).__name__
         emit({"outcome": "BLOCKED", "reason": reason, "mode": args.mode}, "stop")

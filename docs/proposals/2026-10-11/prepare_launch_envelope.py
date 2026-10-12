@@ -4,11 +4,12 @@ import argparse
 import json
 from pathlib import Path
 
-from k14_controller import gates, require, utc
+from k14_controller import gates, require, utc, validate_config_shape
 
 
 def build(preflight, main_sha, expires_at, cash_checked_at, included_minutes,
           cash_stop_verified, now=None):
+    validate_config_shape(preflight)
     require(cash_stop_verified is True, "fresh cash-stop verification required")
     require(type(included_minutes) is int, "included minutes must be an integer")
     author = preflight.get("author_credential", {})

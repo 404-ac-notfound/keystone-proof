@@ -56,7 +56,15 @@ remain implementation gaps. See final-acceptance-alignment-20261012.md.
 not claimed as installation of the Linux x86_64 QA lock. Existing Linux QA lock,
 production runtime/pytest locks, native CLI hash, runner guard, workflow files,
 credential permissions and review/revision/diff caps are unchanged byte-for-byte
-from both candidate parents. Conflict resolution retains PR #4's two N1 tests,
+from both candidate parents. The QA lock is retained from d712b74 only; it was
+absent on the e3bbab1 side. Conflict resolution retains PR #4's two N1 tests,
 strict parser tests and PR #3's OAuth/envelope/final-acceptance tests. Whitespace
 checks pass. Tests are synthetic author implementation evidence, not independent
 isolation, real comment verification, billing, model or live workflow proof.
+
+## 12 Oct follow-up after both candidate PASS reviews
+
+Kobe and Urahara both PASSED 7c548e1, candidate only. Kobe then identified QA-1
+Actions jobs pagination and QA-2 malformed preflight errors, plus parser/hash-helper
+and doc notes. See qa-followup-20261012.md for the corrected candidate and next gates.
+These historical PASS comments do not certify any subsequent code change.

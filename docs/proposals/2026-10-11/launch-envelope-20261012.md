@@ -151,3 +151,15 @@ or API key. No secret changes are part of this handoff.
 
 Current launch disposition: **NOT YET**. PAT dates, exact issuance, actual final
 main SHA/checker evidence, fresh seed/readiness/cash and launch yes are unresolved.
+
+## 12 Oct QA follow-up — current strict receipt contract
+
+The canonical Seat: PASS full-SHA first line must be its own paragraph, followed
+by a blank line before any body text. Multi-line opening paragraphs stop, including
+retraction text. Later paragraphs remain owner-read scope/context; the parser
+does not establish reviewer provenance or semantic approval of the whole body.
+Use prepare_isolation_record.py --url <canonical-comment-URL> --seat <seat>
+--sha <actual-final-main-SHA> to read one comment and emit its exact raw UTF-8
+body hash/record. The helper performs one scoped GET and validates identity,
+publisher and headline; it does not write preflight, set variables or certify
+independence. Candidate comments cannot be reused as final-main receipts.
