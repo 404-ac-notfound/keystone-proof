@@ -1,0 +1,116 @@
+{
+  "repository": "404-ac-notfound/keystone-proof",
+  "pilot_id": "UNASSIGNED",
+  "seed_issue": null,
+  "launch_login": "404-ac-notfound",
+  "request_login": "404-ac-notfound",
+  "controller_author": "Magic",
+  "approved_expiry_ceiling": "2026-10-23T00:00:00Z",
+  "owner_authorization": null,
+  "environment": {
+    "status": "UNKNOWN",
+    "id": null,
+    "evidence": null
+  },
+  "connected_user_access": "UNKNOWN",
+  "managed_review_configuration": "VERIFIED",
+  "paid_review_credits": "OFF_UNVERIFIED",
+  "old_oauth_retirement": {
+    "secret_absence": "VERIFIED",
+    "issuer_revocation": "VERIFIED",
+    "evidence": "OWNER_ATTESTED: Andrew 11 Oct 21:42 MYT GitHub secret deleted; about 22:03 MYT both inference-only Claude Code tokens from 9 Oct revoked on claude.ai Authorization tokens; new K-14 token created about 21:41 MYT kept",
+    "verification_basis": "OWNER_ATTESTED by Andrew; not an independent API secret-metadata check"
+  },
+  "independent_isolation": [
+    {
+      "seat": "Urahara",
+      "status": "PENDING",
+      "controller_sha": null,
+      "evidence": null,
+      "comment_body_sha256": null
+    },
+    {
+      "seat": "Kobe",
+      "status": "PENDING",
+      "controller_sha": null,
+      "evidence": null,
+      "comment_body_sha256": null
+    }
+  ],
+  "author_credential": {
+    "fresh": true,
+    "expires_at": null,
+    "evidence": "OWNER_ATTESTED: Andrew 11 Oct 21:42 MYT provisioning; about 22:03 MYT fresh K-14 token created about 21:41 MYT kept while both old 9 Oct tokens revoked",
+    "protected_environment": {
+      "name": "k14-author-owner-approved",
+      "status": "VERIFIED",
+      "environment_only": true,
+      "deployment_branch": "main",
+      "unattended_policy": "VERIFIED",
+      "evidence": "API_VERIFIED main-only/branch_policy only; OWNER_ATTESTED environment-only placement; owner-environment-evidence.json",
+      "can_admins_bypass": true,
+      "id": 24011236134
+    },
+    "verification_basis": "OWNER_ATTESTED provisioning; provider expiry unknown; owner revocation bound recorded separately. Exact issuance, use-until and terminal/cancel retirement acceptance still pending.",
+    "created_at": null,
+    "use_until": null,
+    "retirement": {
+      "owner": "404-ac-notfound",
+      "on_terminal": true,
+      "on_cancel": true,
+      "evidence": null
+    },
+    "revocation_bound": {
+      "basis": "OWNER_REVOCATION_BOUND",
+      "owner": "404-ac-notfound",
+      "revoke_by": "2026-10-22T00:00:00Z",
+      "evidence": "Andrew K-14 relay KEYSTONE-K14-RELAY-20261010, 12 Oct 2026: \"Andrew revokes by 2026-10-22\". Conservative stop at 22 Oct 08:00 MYT; provider expiry is not shown on claude.ai and remains unknown."
+    }
+  },
+  "request_credential": {
+    "expires_at": null,
+    "evidence": "OWNER_ATTESTED: Andrew authenticated report 2026-10-11T13:42:00Z; owner-gates-20261011.md",
+    "protected_environment": {
+      "name": "k14-review-owner-approved",
+      "status": "VERIFIED",
+      "environment_only": true,
+      "deployment_branch": "main",
+      "unattended_policy": "VERIFIED",
+      "evidence": "API_VERIFIED main-only/branch_policy only; OWNER_ATTESTED environment-only placement; owner-environment-evidence.json",
+      "can_admins_bypass": true,
+      "id": 24011239056
+    },
+    "verification_basis": "OWNER_ATTESTED provisioning; exact UTC issuance/provider expiry and owner-approved use-until/retirement acceptance still unreported",
+    "reported_scope": {
+      "repository": "404-ac-notfound/keystone-proof",
+      "pull_requests": "read/write",
+      "issues": "read/write",
+      "validity_days": 30
+    },
+    "created_at": null,
+    "use_until": null,
+    "retirement": {
+      "owner": "404-ac-notfound",
+      "on_terminal": true,
+      "on_cancel": true,
+      "evidence": null
+    }
+  },
+  "max_reviews": 2,
+  "max_author_revisions": 1,
+  "diff_caps": {
+    "files": 50,
+    "changed_lines": 1000,
+    "bytes": 131072
+  },
+  "managed_review_configuration_evidence": {
+    "verification_basis": "OWNER_ATTESTED",
+    "source": "Andrew typed report in Magic chat, 2026-10-11 about 22:03 MYT / 14:03 UTC",
+    "repository": "404-ac-notfound/keystone-proof",
+    "automatic_review": "ON",
+    "review": "Follow personal preferences",
+    "trigger": "On PR open",
+    "exhaustive_review": "Follow personal preferences",
+    "live_bot_draft_pr_support": "UNPROVEN"
+  }
+}

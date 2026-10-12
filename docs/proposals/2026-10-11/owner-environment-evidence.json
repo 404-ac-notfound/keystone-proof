@@ -1,0 +1,158 @@
+{
+  "checked_at_utc": "2026-10-11T13:50:33.796690+00:00",
+  "method": "Unauthenticated public GitHub GETs; repository visibility also read through GitHub connector",
+  "repository": {
+    "full_name": "404-ac-notfound/keystone-proof",
+    "private": false,
+    "visibility": "public"
+  },
+  "environment_reads": [
+    {
+      "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/environments/k14-author-owner-approved",
+      "status": 200,
+      "data": {
+        "id": 24011236134,
+        "node_id": "EN_kwDOVCAT988AAAAFly5jJg",
+        "name": "k14-author-owner-approved",
+        "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/environments/k14-author-owner-approved",
+        "html_url": "https://github.com/404-ac-notfound/keystone-proof/deployments/activity_log?environments_filter=k14-author-owner-approved",
+        "created_at": "2026-10-11T13:31:36Z",
+        "updated_at": "2026-10-11T13:31:36Z",
+        "can_admins_bypass": true,
+        "protection_rules": [
+          {
+            "id": 68422753,
+            "node_id": "GA_kwDOVCAT984EFAxh",
+            "type": "branch_policy"
+          }
+        ],
+        "deployment_branch_policy": {
+          "protected_branches": false,
+          "custom_branch_policies": true
+        }
+      }
+    },
+    {
+      "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/environments/k14-author-owner-approved/deployment-branch-policies",
+      "status": 200,
+      "data": {
+        "total_count": 1,
+        "branch_policies": [
+          {
+            "id": 62685036,
+            "node_id": "MDE2OkdhdGVCcmFuY2hQb2xpY3k2MjY4NTAzNg==",
+            "name": "main",
+            "type": "branch"
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/environments/k14-review-owner-approved",
+      "status": 200,
+      "data": {
+        "id": 24011239056,
+        "node_id": "EN_kwDOVCAT988AAAAFly5ukA",
+        "name": "k14-review-owner-approved",
+        "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/environments/k14-review-owner-approved",
+        "html_url": "https://github.com/404-ac-notfound/keystone-proof/deployments/activity_log?environments_filter=k14-review-owner-approved",
+        "created_at": "2026-10-11T13:31:40Z",
+        "updated_at": "2026-10-11T13:31:40Z",
+        "can_admins_bypass": true,
+        "protection_rules": [
+          {
+            "id": 68422759,
+            "node_id": "GA_kwDOVCAT984EFAxn",
+            "type": "branch_policy"
+          }
+        ],
+        "deployment_branch_policy": {
+          "protected_branches": false,
+          "custom_branch_policies": true
+        }
+      }
+    },
+    {
+      "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/environments/k14-review-owner-approved/deployment-branch-policies",
+      "status": 200,
+      "data": {
+        "total_count": 1,
+        "branch_policies": [
+          {
+            "id": 62685044,
+            "node_id": "MDE2OkdhdGVCcmFuY2hQb2xpY3k2MjY4NTA0NA==",
+            "name": "main",
+            "type": "branch"
+          }
+        ]
+      }
+    }
+  ],
+  "runtime_reads": [
+    {
+      "path": "/actions/workflows",
+      "status": 200,
+      "data": {
+        "total_count": 1,
+        "workflows": [
+          {
+            "id": 379347479,
+            "node_id": "W_kwDOVCAT984WnGIX",
+            "name": "k14-pilot",
+            "path": ".github/workflows/k14-pilot.yml",
+            "state": "active",
+            "created_at": "2026-10-09T06:49:23.000Z",
+            "updated_at": "2026-10-09T06:49:23.000Z",
+            "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/actions/workflows/379347479",
+            "html_url": "https://github.com/404-ac-notfound/keystone-proof/blob/main/.github/workflows/k14-pilot.yml",
+            "badge_url": "https://github.com/404-ac-notfound/keystone-proof/workflows/k14-pilot/badge.svg"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/git/ref/heads/main",
+      "status": 200,
+      "data": {
+        "ref": "refs/heads/main",
+        "node_id": "REF_kwDOVCAT969yZWZzL2hlYWRzL21haW4",
+        "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/git/refs/heads/main",
+        "object": {
+          "sha": "453e20497c019562a660dd260c6eff098b8ea2a2",
+          "type": "commit",
+          "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/git/commits/453e20497c019562a660dd260c6eff098b8ea2a2"
+        }
+      }
+    },
+    {
+      "path": "/git/ref/heads/job/1",
+      "status": 200,
+      "data": {
+        "ref": "refs/heads/job/1",
+        "node_id": "REF_kwDOVCAT97ByZWZzL2hlYWRzL2pvYi8x",
+        "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/git/refs/heads/job/1",
+        "object": {
+          "sha": "a2835704abaf06a7348ef892ca57a14669996ed3",
+          "type": "commit",
+          "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/git/commits/a2835704abaf06a7348ef892ca57a14669996ed3"
+        }
+      }
+    },
+    {
+      "path": "/git/ref/heads/evidence/1",
+      "status": 200,
+      "data": {
+        "ref": "refs/heads/evidence/1",
+        "node_id": "REF_kwDOVCAT97VyZWZzL2hlYWRzL2V2aWRlbmNlLzE",
+        "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/git/refs/heads/evidence/1",
+        "object": {
+          "sha": "f4c05e58f1cc9e03703f736589a94a148109cc4d",
+          "type": "commit",
+          "url": "https://api.github.com/repos/404-ac-notfound/keystone-proof/git/commits/f4c05e58f1cc9e03703f736589a94a148109cc4d"
+        }
+      }
+    }
+  ],
+  "secret_evidence_basis": "OWNER_ATTESTED in Andrew authenticated chat report 2026-10-11T13:42:00Z; no secret values or metadata queried",
+  "codex_account_inventory": "NOT_EXPOSED; existence/ID UNKNOWN"
+}

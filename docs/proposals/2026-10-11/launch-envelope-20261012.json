@@ -1,0 +1,18 @@
+{
+  "state": "PREPARATION_ONLY_NOT_READY_TO_SET",
+  "relay": "KEYSTONE-K14-RELAY-20261010",
+  "repository": "404-ac-notfound/keystone-proof",
+  "variables": {
+    "K14_ENABLED": "true",
+    "K14_APPROVED_SHA": null,
+    "K14_EXPIRES_AT": "2026-10-22T00:00:00Z",
+    "K14_PREFLIGHT_JSON": null,
+    "K14_CASH_CHECKED_AT": null,
+    "K14_CASH_STOP_VERIFIED": "true",
+    "K14_INCLUDED_MINUTES": "125"
+  },
+  "instructions": "See launch-envelope-20261012.md; nulls and unverified proposed values forbid setting. Generate launch-variables.json from completed evidence; K14_ENABLED last on launch yes.",
+  "acceptance_scope": "K14_TRANSPORT_SUBTEST",
+  "k23_final_acceptance": "BLOCKED_NOT_IMPLEMENTED",
+  "acceptance_gaps_document": "final-acceptance-alignment-20261012.md"
+}
