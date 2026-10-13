@@ -16,8 +16,8 @@ REPO = "404-ac-notfound/keystone-proof"
 VERIFIER = "chatgpt-codex-connector[bot]"
 APPROVED_CONTROLLER_AUTHORS = frozenset({"Magic"})
 REVIEW_PUBLISHER = "404-ac-notfound"
-# Preserve the original UTC pilot boundary; provider lifetime cannot extend it.
-PILOT_CEILING = "2026-10-23T00:00:00Z"
+# Andrew's resumed pilot stops no later than 22 Oct; owner JSON cannot extend it.
+PILOT_CEILING = "2026-10-22T00:00:00Z"
 ROOT = Path(__file__).resolve().parent
 SHA = re.compile(r"^[0-9a-f]{40}$")
 BODY_DIGEST = re.compile(r"^[0-9a-f]{64}$")
@@ -46,6 +46,38 @@ def utc(value):
 
 def now_utc():
     return dt.datetime.now(dt.timezone.utc)
+
+
+def request_expiry_bounds(credential):
+    """Return use-validity lower bound and lifetime upper bound, not guessed expiry.
+
+    Legacy exact timestamps remain supported. DATE evidence covers all civil
+    timezones UTC-12..UTC+14; no timezone inference or provider header is trusted.
+    """
+    precision = credential.get("expiry_precision", "EXACT")
+    require(precision in ("EXACT", "DATE"), "unknown request expiry precision")
+    exact = credential.get("expires_at")
+    date = credential.get("provider_expiry_date")
+    require(credential.get("display_timezone") is None,
+            "timezone-specific expiry admission unsupported")
+    if precision == "EXACT":
+        require(date is None, "exact expiry conflicts with provider date")
+        expiry = utc(exact)
+        return expiry, expiry
+    require(exact is None and isinstance(date, str)
+            and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", date),
+            "DATE expiry requires only a strict provider date")
+    require(isinstance(credential.get("provider_expiry_evidence"), str)
+            and credential["provider_expiry_evidence"].strip()
+            and credential.get("validity_bound_basis") == "DATE_EARLIEST_INSTANT",
+            "provider date evidence / validity-bound basis missing")
+    try:
+        midnight = dt.datetime.combine(dt.date.fromisoformat(date), dt.time(), dt.timezone.utc)
+        earliest = midnight - dt.timedelta(hours=14)
+        latest = midnight + dt.timedelta(days=1, hours=12)
+    except (ValueError, OverflowError) as exc:
+        raise Stop("invalid provider expiry date") from exc
+    return earliest, latest
 
 
 def validate_config_shape(c):
@@ -81,7 +113,7 @@ def gates(c, e, now=None):
             and c["pilot_id"] != "UNASSIGNED", "pilot not assigned")
     expiry = utc(e.get("K14_EXPIRES_AT"))
     require(now < expiry <= utc(c.get("approved_expiry_ceiling")) <= utc(PILOT_CEILING),
-            "expired or extended beyond approved envelope / 23 October ceiling")
+            "expired or extended beyond approved envelope / 22 October ceiling")
     approval = c.get("owner_authorization") or {}
     require(approval.get("source") and approval.get("quote") and approval.get("approved_sha") == sha,
             "owner authorization absent or wrong revision")
@@ -121,12 +153,17 @@ def gates(c, e, now=None):
     for kind in ("author_credential", "request_credential"):
         credential = c.get(kind, {})
         issued = utc(credential.get("created_at"))
+        if kind == "author_credential" and credential.get("revocation_bound"):
+            require(utc(credential["revocation_bound"].get("revoke_by")) <= utc(PILOT_CEILING),
+                    "author revocation bound exceeds 22 October ceiling")
         if kind == "author_credential" and credential.get("expires_at") is None:
             bound = credential.get("revocation_bound", {})
             require(bound.get("basis") == "OWNER_REVOCATION_BOUND"
                     and bound.get("owner") == c.get("launch_login") and bound.get("evidence"),
                     "author credential unknown expiry requires owner revocation bound")
             validity_bound = utc(bound.get("revoke_by"))
+        elif kind == "request_credential":
+            validity_bound, lifetime_bound = request_expiry_bounds(credential)
         else:
             validity_bound = utc(credential.get("expires_at"))
         use_until = utc(credential.get("use_until"))
@@ -138,7 +175,8 @@ def gates(c, e, now=None):
                 and retirement.get("on_terminal") is True and retirement.get("on_cancel") is True,
                 kind + " terminal/cancel/use-until revoke-and-delete plan unverified")
         if kind == "request_credential":
-            require(dt.timedelta(0) < validity_bound - issued <= dt.timedelta(days=30),
+            require(issued < validity_bound and
+                    dt.timedelta(0) < lifetime_bound - issued <= dt.timedelta(days=30),
                     "request credential exceeds 30 days from issuance")
     require(c["author_credential"].get("fresh") is True, "fresh author OAuth not evidenced")
     for kind, name in (("author_credential", "k14-author-owner-approved"),
@@ -444,6 +482,9 @@ def receipt(c):
             "records": records, "jobs": [{k: j.get(k) for k in ("id", "name", "started_at", "completed_at", "conclusion")}
                                         for j in jobs], "independent_isolation": c["independent_isolation"],
             "old_oauth_retirement": c["old_oauth_retirement"],
+            "request_credential_validity": {key: c["request_credential"].get(key) for key in
+                ("created_at", "expires_at", "expiry_precision", "provider_expiry_date",
+                 "provider_expiry_evidence", "display_timezone", "validity_bound_basis", "use_until")},
             "owner_touches_after_launch": "UNKNOWN_PENDING_INDEPENDENT_AUDIT",
             "api_spend": "NO_API_PATH_INVOKED; billing evidence pending", "actions_minutes": "UNKNOWN_FINAL_USAGE_PENDING",
             "fresh_credential_retirement": "PENDING_OWNER_METADATA",

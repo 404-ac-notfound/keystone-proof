@@ -6,6 +6,16 @@
 **Standard:** [KEYSTONE PR #21](https://github.com/404-ac-notfound/KEYSTONE/pull/21) (merged), [active project-closure standard](https://github.com/404-ac-notfound/KEYSTONE/blob/main/cabinet/project-closure-standard.md), subordinate to doctrine §6.
 **Durable truth:** this file in keystone-proof. The checklist below is its view, not a second register. No authoritative mirror is created in KEYSTONE.
 
+**14 Oct continuation (candidate only):** Installed main f9ce391 has the two
+post-merge PASS comments 6118168624 / 6122025361 on PR4; seed #7 and pilot
+K14-20261013-01 are prepared, with no claims/attempts and no new live run.
+PR4 blocker 6132513411 remains unresolved: date-only provider expiry does
+not prove the 30-day lifetime; terminal/cancel retirement evidence is incomplete.
+See [inactive expiry candidate](expiry-precision-candidate-20261014.md).
+FU-CREDENTIALS stays BLOCKED; candidate code is IMPLEMENTED only, pending
+independent reviews, owner merge approval and both new final-main rechecks.
+This paragraph records the continuation, not closure or an installed revision.
+
 Approved scope sources: [V3 as amended 6](https://github.com/404-ac-notfound/KEYSTONE/blob/main/cabinet/thread-handoffs/2026-10-07/K14-PILOT-ENVELOPE-PROPOSAL-V3.md), [joint AGREED closure, #33](https://github.com/404-ac-notfound/KEYSTONE/issues/33#issuecomment-6103037544), and Andrew's current authenticated K-14 instructions. Existing source item keys are reused. Implementation preferences do not silently become new approved requirements.
 
 Andrew's current 12 Oct instruction: “approve installation. and go ahead and push the review ask of the installation.” This authorizes the installation revision on draft PR #4 and review dispatch. It does not authorize PR merge, switch enablement, credentials, live run, PR #3 closure or K23 completion. Prior accidental UI approval is invalid and retracted; this is a new direct owner instruction.

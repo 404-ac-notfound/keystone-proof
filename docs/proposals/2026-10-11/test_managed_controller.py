@@ -229,7 +229,7 @@ class Gates(unittest.TestCase):
     def test_october_ceiling_cannot_be_extended_by_config(self):
         c, e = fixture()
         c["approved_expiry_ceiling"] = e["K14_EXPIRES_AT"] = "2026-10-23T00:00:01Z"
-        with self.assertRaisesRegex(m.Stop, "23 October ceiling"):
+        with self.assertRaisesRegex(m.Stop, "22 October ceiling"):
             m.gates(c, e, NOW)
         c["approved_expiry_ceiling"] = "2026-10-23T00:00:01Z"
         e["K14_EXPIRES_AT"] = EXPIRES
