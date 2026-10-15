@@ -5,7 +5,7 @@
   "launch_login": "404-ac-notfound",
   "request_login": "404-ac-notfound",
   "controller_author": "Magic",
-  "approved_expiry_ceiling": "2026-10-23T00:00:00Z",
+  "approved_expiry_ceiling": "2026-10-22T00:00:00Z",
   "owner_authorization": null,
   "environment": {
     "status": "UNKNOWN",
