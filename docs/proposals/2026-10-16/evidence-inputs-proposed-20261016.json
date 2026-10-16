@@ -1,0 +1,44 @@
+{
+  "state": "BLOCKED_PROPOSAL_NOT_FOR_ACTIONS",
+  "source_main_sha": "9d1639983326670e96a1c07349ca653a906fcc76",
+  "pilot_id": "K14-20261013-01",
+  "seed_issue": 7,
+  "deadline_no_later_than": "2026-10-19T10:00:00Z",
+  "outer_ceiling": "2026-10-22T00:00:00Z",
+  "proposed_capacity": {
+    "basis": "PUBLIC_STANDARD_RUNNER_FREE_UNLIMITED",
+    "runner": "ubuntu-24.04",
+    "repository_visibility": "public",
+    "pilot_reserved_minutes": 125,
+    "displayed_remaining_balance": null
+  },
+  "proposed_creation_bounds": {
+    "request_credential": {
+      "token_id": 21163019,
+      "actual_created_at": null,
+      "creation_lower_bound": "2026-10-14T10:00:00Z",
+      "creation_upper_bound": "2026-10-15T02:35:20Z",
+      "creation_notification_at": "2026-10-15T02:35:20Z",
+      "expiry_precision": "DATE",
+      "provider_expiry_date": "2026-10-20",
+      "expires_at": null,
+      "use_until": "2026-10-19T10:00:00Z",
+      "lifetime_maximum_hours": 170
+    },
+    "author_credential": {
+      "actual_created_at": null,
+      "creation_lower_bound": "2026-10-10T10:00:00Z",
+      "creation_upper_bound": "2026-10-12T12:00:00Z",
+      "expires_at": null,
+      "use_until": "2026-10-19T10:00:00Z",
+      "revocation_bound": "2026-10-22T00:00:00Z"
+    }
+  },
+  "remaining": [
+    "Actual bounded-evidence technical disposition and Andrew adoption before any lower-bound created_at encoding",
+    "Fresh account/managed-route evidence and applicable image/runtime admission",
+    "Complete actual preflight JSON and offline validator",
+    "Authorized final readback then bounded launch"
+  ],
+  "warning": "Not a launch configuration. Do not pass this wrapper to the helper or set Actions variables from it."
+}
