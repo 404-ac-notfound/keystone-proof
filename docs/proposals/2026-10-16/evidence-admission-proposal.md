@@ -12,7 +12,7 @@ https://docs.github.com/en/actions/reference/runners/github-hosted-runners
 https://docs.github.com/en/billing/concepts/product-billing/github-actions
 
 Magic freshly read repository metadata: private=false, visibility=public.
-Every runs-on in installed k14-managed.yml is ubuntu-24.04, a documented standard public runner. The 13 job timeout caps sum to 127 minutes; the existing >=125 gate is the approved minimum reserve, not a claim that all possible job timeout maxima total125. Preserve actual job timeouts unchanged.
+Every runs-on in installed k14-managed.yml is ubuntu-24.04, a documented standard public runner. The 13 job timeout caps sum to 117 minutes, within the existing 125-minute minimum reserve (117 <= 125). Preserve actual job timeouts unchanged. Factual correction after Urahara's review6229000429 of original proposal4cd3089; no evidence-admission policy or runtime change.
 
 Disposition: the missing included-minute counter is NOT missing evidence of a private-plan balance for this public standard-runner route. Document capacity_basis=PUBLIC_STANDARD_RUNNER_FREE_UNLIMITED, provider source, current public-repo read and workflow SHA. A proposed K14_INCLUDED_MINUTES=125 denotes the existing bounded pilot reservation from that entitlement; it must NOT be described as a displayed remaining balance. This is a proposed source-backed interpretation of the existing minimum, not a change to runners or increased spend. Confirm this interpretation in the bounded evidence-admission review before setting variables. Scheduling/concurrency/image availability and storage are separate: free minutes do not guarantee a VM, unlimited storage, or bypass current $0 stops. If repo visibility or runner class changes, this basis stops applying.
 
