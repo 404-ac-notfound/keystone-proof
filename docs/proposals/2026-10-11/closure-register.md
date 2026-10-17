@@ -20,6 +20,8 @@ Approved scope sources: [V3 as amended 6](https://github.com/404-ac-notfound/KEY
 
 Andrew's current 12 Oct instruction: “approve installation. and go ahead and push the review ask of the installation.” This authorizes the installation revision on draft PR #4 and review dispatch. It does not authorize PR merge, switch enablement, credentials, live run, PR #3 closure or K23 completion. Prior accidental UI approval is invalid and retracted; this is a new direct owner instruction.
 
+**17 October runner-readiness discovery (candidate only):** GitHub now publishes Ubuntu24 image20261012.334.1 (source7e7dc1bcc0ef464e5e315a2b4c33609590c6cffe), while installed main9d16399 admits only20261004.327.1. A newer scheduled image fails before checkout; no live runner was probed and publication alone does not prove which VM will be assigned. A separately prepared pinned-refresh candidate updates installed/template image checks and runner manifest only, with matching test expectations and old-image rejection coverage. Controller, credential/cash/cap logic and runtime executable pins remain unchanged. Candidate is not adopted/merged/launched; new candidate reviews, Andrew's merge approval and both actual-new-main rechecks are required if it is used. Existing9d16399 PASSes are preserved historical evidence, not certification of changed runtime pins. FU-PREFLIGHT/FU-REVIEW/FU-MERGE/FU-LIVE remain unresolved.
+
 ## Requirements — source → implementation → evidence → verification → follow-up
 
 The installed candidate SHA is the current PR #4 head recorded in its description. Do not embed it in preflight before final main exists. Candidate reviews certify only their exact historical SHAs; final-main review and owner approval must bind actual installed main.
