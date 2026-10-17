@@ -35,13 +35,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -78,13 +78,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -135,13 +135,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -186,13 +186,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -229,13 +229,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -276,13 +276,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -324,13 +324,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -388,13 +388,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -444,13 +444,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -487,13 +487,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -534,13 +534,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -584,13 +584,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -639,13 +639,13 @@ jobs:
 
         test "${ImageOS:-}" = ubuntu24
 
-        test "${ImageVersion:-}" = 20261004.327.1
+        test "${ImageVersion:-}" = 20261012.334.1
 
         test "$(uname -m)" = x86_64
 
         test "$(/usr/bin/python3 --version)" = ''Python 3.12.3''
 
-        echo ''Admitted exact runner image 20261004.327.1; changed images stop before checkout.''
+        echo ''Admitted exact runner image 20261012.334.1; changed images stop before checkout.''
 
         '
     - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09

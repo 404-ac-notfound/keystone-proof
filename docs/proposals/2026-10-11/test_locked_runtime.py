@@ -95,7 +95,7 @@ class Bootstrap(unittest.TestCase):
 
     def test_changed_image_stops_before_checkout(self):
         jobs = yaml.load((ROOT / "k14-managed.yml.disabled").read_text(), Loader=yaml.BaseLoader)["jobs"]
-        for version in ("", "20261011.999.1"):
+        for version in ("", "20261004.327.1", "20261011.999.1"):
             result = subprocess.run(["bash", "-c", jobs["guard"]["steps"][0]["run"]],
                                     env={**os.environ, "ImageOS": "ubuntu24", "ImageVersion": version}, capture_output=True)
             self.assertNotEqual(result.returncode, 0)
@@ -103,3 +103,4 @@ class Bootstrap(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
