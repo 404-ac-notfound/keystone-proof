@@ -1,0 +1,45 @@
+{
+  "state": "PARTIAL_VALIDATION_PASS_LAUNCH_BLOCKED",
+  "checked_at": "2026-10-17T07:22:48.273072+00:00",
+  "source_main": "9d1639983326670e96a1c07349ca653a906fcc76",
+  "verified_real_comment_captures": [
+    {
+      "seat": "Kobe",
+      "comment_id": 6185618381,
+      "controller_sha": "9d1639983326670e96a1c07349ca653a906fcc76",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6185618381",
+      "comment_body_sha256": "55aae667b386b5affea9aed2e4943bfee4eca0124d345366f9926a919a9f3d31"
+    },
+    {
+      "seat": "Urahara",
+      "comment_id": 6207773248,
+      "controller_sha": "9d1639983326670e96a1c07349ca653a906fcc76",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6207773248",
+      "comment_body_sha256": "de1fb29f80f5e08bb5a81b728316c8ee619b40419f1c71231d5b436ba91b4c0a"
+    }
+  ],
+  "credential_interval_checks": [
+    {
+      "kind": "author_credential",
+      "provider_expiry": "UNKNOWN",
+      "separate_revocation_bound_preserved": true
+    },
+    {
+      "kind": "request_credential",
+      "worst_case_lifetime_hours": 170.0,
+      "earliest_expiry": "2026-10-19T10:00:00+00:00",
+      "latest_expiry": "2026-10-21T12:00:00+00:00"
+    }
+  ],
+  "schema_valid": true,
+  "expected_generator_stop": "fresh cash-stop verification required",
+  "full_preflight_pass": false,
+  "variables_generated": false,
+  "runtime_started": false,
+  "pending": [
+    "explicit bound adoption/attestation or confirmed owner direction",
+    "fresh account cash/credits and managed-route readback",
+    "applicable hosted runtime image admission",
+    "authenticated Actions-variable setter"
+  ]
+}
