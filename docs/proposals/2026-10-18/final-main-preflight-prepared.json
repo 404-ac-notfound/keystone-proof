@@ -1,0 +1,223 @@
+{
+  "repository": "404-ac-notfound/keystone-proof",
+  "pilot_id": "K14-20261013-01",
+  "seed_issue": 7,
+  "launch_login": "404-ac-notfound",
+  "request_login": "404-ac-notfound",
+  "controller_author": "Magic",
+  "approved_expiry_ceiling": "2026-10-22T00:00:00Z",
+  "owner_authorization": {
+    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246474877",
+    "quote": "If Urahara is good with it, then I approve. Can you run it by Urahara in this thread first? Thank you.",
+    "approved_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+    "controller_author": "Magic",
+    "binding_basis": "Owner conditional approval of candidateaa81f6b; actual Urahara and accepted-Claude PASS; resulting merge tree byte-identical to approved candidate. No additional live-run gate waived."
+  },
+  "environment": {
+    "status": "UNKNOWN",
+    "id": null,
+    "evidence": null
+  },
+  "connected_user_access": "UNKNOWN",
+  "managed_review_configuration": "VERIFIED",
+  "paid_review_credits": "OFF_UNVERIFIED",
+  "old_oauth_retirement": {
+    "secret_absence": "VERIFIED",
+    "issuer_revocation": "VERIFIED",
+    "evidence": "OWNER_ATTESTED: Andrew 11 Oct 21:42 MYT GitHub secret deleted; about 22:03 MYT both inference-only Claude Code tokens from 9 Oct revoked on claude.ai Authorization tokens; new K-14 token created about 21:41 MYT kept",
+    "verification_basis": "OWNER_ATTESTED by Andrew; not an independent API secret-metadata check"
+  },
+  "independent_isolation": [
+    {
+      "seat": "Kobe",
+      "status": "PENDING",
+      "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+      "evidence": null,
+      "comment_body_sha256": null
+    },
+    {
+      "seat": "Urahara",
+      "status": "PENDING",
+      "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+      "evidence": null,
+      "comment_body_sha256": null
+    }
+  ],
+  "author_credential": {
+    "fresh": true,
+    "expires_at": null,
+    "evidence": "OWNER_ATTESTED: Andrew 11 Oct 21:42 MYT provisioning; about 22:03 MYT fresh K-14 token created about 21:41 MYT kept while both old 9 Oct tokens revoked",
+    "protected_environment": {
+      "name": "k14-author-owner-approved",
+      "status": "VERIFIED",
+      "environment_only": true,
+      "deployment_branch": "main",
+      "unattended_policy": "VERIFIED",
+      "evidence": "API_VERIFIED main-only/branch_policy only; OWNER_ATTESTED environment-only placement; owner-environment-evidence.json",
+      "can_admins_bypass": true,
+      "id": 24011236134,
+      "admin_bypass_acceptance": {
+        "accepted": true,
+        "source": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6209135341",
+        "quote": "I accept admin bypass on both environments and terminal/cancel/deadline retirement for both credentials."
+      },
+      "launch_recheck": "PENDING"
+    },
+    "verification_basis": "Owner-relayed11Oct provisioning evidence; conservative civil-day bounds accepted in Urahara review6229000429 and owner conditional adoption recorded6246474877. Provider issuance/expiry unknown. Fresh launch readback still pending.",
+    "created_at": "2026-10-10T10:00:00Z",
+    "use_until": "2026-10-19T10:00:00Z",
+    "retirement": {
+      "owner": "404-ac-notfound",
+      "on_terminal": true,
+      "on_cancel": true,
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6209135341; Andrew acceptance quoted at13:52MYT16Oct"
+    },
+    "revocation_bound": {
+      "basis": "OWNER_REVOCATION_BOUND",
+      "owner": "404-ac-notfound",
+      "revoke_by": "2026-10-22T00:00:00Z",
+      "evidence": "Andrew K-14 relay KEYSTONE-K14-RELAY-20261010, 12 Oct 2026: \"Andrew revokes by 2026-10-22\". Conservative stop at 22 Oct 08:00 MYT; provider expiry is not shown on claude.ai and remains unknown."
+    },
+    "creation_precision": "BOUNDED",
+    "creation_lower_bound": "2026-10-10T10:00:00Z",
+    "creation_upper_bound": "2026-10-12T12:00:00Z",
+    "creation_evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6208982458",
+    "created_at_semantics": "CONSERVATIVE_LOWER_BOUND_NOT_ACTUAL_ISSUANCE"
+  },
+  "request_credential": {
+    "expires_at": null,
+    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6208982458",
+    "protected_environment": {
+      "name": "k14-review-owner-approved",
+      "status": "VERIFIED",
+      "environment_only": true,
+      "deployment_branch": "main",
+      "unattended_policy": "VERIFIED",
+      "evidence": "API_VERIFIED main-only/branch_policy only; OWNER_ATTESTED environment-only placement; owner-environment-evidence.json",
+      "can_admins_bypass": true,
+      "id": 24011239056,
+      "admin_bypass_acceptance": {
+        "accepted": true,
+        "source": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6209135341",
+        "quote": "I accept admin bypass on both environments and terminal/cancel/deadline retirement for both credentials."
+      },
+      "launch_recheck": "PENDING"
+    },
+    "verification_basis": "Jarvis owner-session readback16Oct13:43MYT, DATE expiry and conservative bounds accepted in Urahara review6229000429 and owner conditional adoption recorded6246474877. No exact issuance-time claim. Fresh launch readback still pending.",
+    "reported_scope": {
+      "repository": "404-ac-notfound/keystone-proof",
+      "metadata": "read",
+      "pull_requests": "read/write",
+      "issues": "read/write",
+      "user_permissions": "none"
+    },
+    "created_at": "2026-10-14T10:00:00Z",
+    "use_until": "2026-10-19T10:00:00Z",
+    "retirement": {
+      "owner": "404-ac-notfound",
+      "on_terminal": true,
+      "on_cancel": true,
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6209135341; Andrew acceptance quoted at13:52MYT16Oct"
+    },
+    "creation_precision": "BOUNDED",
+    "creation_lower_bound": "2026-10-14T10:00:00Z",
+    "creation_upper_bound": "2026-10-15T02:35:20Z",
+    "creation_notification_at": "2026-10-15T02:35:20Z",
+    "created_at_semantics": "CONSERVATIVE_LOWER_BOUND_NOT_ACTUAL_ISSUANCE",
+    "creation_evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6208982458",
+    "expiry_precision": "DATE",
+    "provider_expiry_date": "2026-10-20",
+    "provider_expiry_evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6208982458",
+    "display_timezone": null,
+    "validity_bound_basis": "DATE_EARLIEST_INSTANT",
+    "token_id": 21163019,
+    "token_name": "k14-review-request-20261015"
+  },
+  "max_reviews": 2,
+  "max_author_revisions": 1,
+  "diff_caps": {
+    "files": 50,
+    "changed_lines": 1000,
+    "bytes": 131072
+  },
+  "managed_review_configuration_evidence": {
+    "verification_basis": "OWNER_ATTESTED",
+    "source": "Andrew typed report in Magic chat, 2026-10-11 about 22:03 MYT / 14:03 UTC",
+    "repository": "404-ac-notfound/keystone-proof",
+    "automatic_review": "ON",
+    "review": "Follow personal preferences",
+    "trigger": "On PR open",
+    "exhaustive_review": "Follow personal preferences",
+    "live_bot_draft_pr_support": "UNPROVEN"
+  },
+  "launch_preparation_status": "BLOCKED_PENDING_ACTUAL_NEW_MAIN_REVIEWS_AND_FRESH_ACCOUNT_EVIDENCE",
+  "launch_preparation_evidence": {
+    "source_main": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+    "existing_launch_go": "https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6126573426",
+    "merge_approval": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246474877",
+    "completion_direction": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6231154702",
+    "evidence_delta_pass": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6229000429",
+    "reviewed_proposal": "4cd3089a15d19000b8b90ee5cf219621e466a22a",
+    "factual_correction": "3c927e5b4ec7f752c1b9dc8d8b33d1a4c47d3b3a",
+    "adoption_status": "OWNER_CONDITIONAL_ADOPTION_RECORDED",
+    "adoption_evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246474877",
+    "historical_source_main": "9d1639983326670e96a1c07349ca653a906fcc76"
+  },
+  "capacity_evidence": {
+    "basis": "PUBLIC_STANDARD_RUNNER_FREE_UNLIMITED",
+    "reserved_pilot_minutes": 125,
+    "displayed_remaining_balance": null,
+    "runner": "ubuntu-24.04",
+    "source": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+    "condition": "Recheck public repo and standard-runner class immediately before launch; storage/image/queue are separate.",
+    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6229000429"
+  },
+  "live_account_evidence": {
+    "status": "PENDING_FRESH_READBACK",
+    "github_checked_at": null,
+    "codex_checked_at": null,
+    "claude_checked_at": null,
+    "route_checked_at": null,
+    "evidence": null,
+    "claude_historical_off": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6212516541",
+    "codex_github_historical": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6209135341"
+  },
+  "evidence_admission": {
+    "basis": "OWNER_ATTESTED_BOUNDED_CREATION",
+    "status": "OWNER_CONDITIONAL_ADOPTION_RECORDED",
+    "review": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6229000429",
+    "rule": "created_at is the conservative LOWER bound, not actual issuance. Check intervals offline and preserve this whole JSON durably.",
+    "owner_source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246474877"
+  },
+  "credential_retirement": {
+    "old_request_token_id": 20953582,
+    "revoked_at_reported": "2026-10-15T05:38:00Z",
+    "timestamp_precision": "MINUTE_REPORT",
+    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6185290737",
+    "source": "Jarvis owner-account readback report, not independent Magic inspection"
+  },
+  "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+  "historical_independent_isolation": [
+    {
+      "seat": "Kobe",
+      "status": "PASS",
+      "controller_sha": "9d1639983326670e96a1c07349ca653a906fcc76",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6185618381",
+      "comment_body_sha256": "55aae667b386b5affea9aed2e4943bfee4eca0124d345366f9926a919a9f3d31"
+    },
+    {
+      "seat": "Urahara",
+      "status": "PASS",
+      "controller_sha": "9d1639983326670e96a1c07349ca653a906fcc76",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6207773248",
+      "comment_body_sha256": "de1fb29f80f5e08bb5a81b728316c8ee619b40419f1c71231d5b436ba91b4c0a"
+    }
+  ],
+  "pending_reviews_packet": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246479171",
+  "launch_blockers": [
+    "Actual Urahara final-main PASS comment/body hash at1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+    "Actual accepted-Claude final-main PASS comment/body hash at1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+    "Fresh environment/route/connected-user/credits-OFF/cash<=2h account evidence; old historical dates are not fresh",
+    "Exact hosted-image/CLI/runtime admission at permitted execution; enable-last/readback and all original launch gates"
+  ]
+}
