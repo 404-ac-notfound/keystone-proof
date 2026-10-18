@@ -670,7 +670,7 @@ class Workflow(unittest.TestCase):
         for name, j in jobs.items():
             with self.subTest(job=name):
                 self.assertEqual(j["runs-on"], "ubuntu-24.04")
-                self.assertIn('test "${ImageVersion:-}" = 20261004.327.1', j["steps"][0]["run"])
+                self.assertIn('test "${ImageVersion:-}" = 20261012.334.1', j["steps"][0]["run"])
                 self.assertNotIn("uses", j["steps"][0])
                 if name in ("request1", "request2", "verify1", "verify2", "author", "revise", "finalcheck", "receipt"):
                     self.assertEqual(set(j["permissions"].values()), {"read"})
@@ -711,3 +711,4 @@ class Workflow(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+

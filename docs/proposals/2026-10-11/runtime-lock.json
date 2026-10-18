@@ -2,8 +2,8 @@
   "runner": {
     "label": "ubuntu-24.04",
     "image_os": "ubuntu24",
-    "image_version": "20261004.327.1",
-    "source_commit": "e3fe113a581eb9a44ca43f479b69f9c93f36df34"
+    "image_version": "20261012.334.1",
+    "source_commit": "7e7dc1bcc0ef464e5e315a2b4c33609590c6cffe"
   },
   "python": {
     "executable": "/usr/bin/python3",
