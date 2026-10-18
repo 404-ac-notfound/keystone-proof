@@ -29,18 +29,18 @@
   },
   "independent_isolation": [
     {
-      "seat": "Kobe",
-      "status": "PENDING",
+      "seat": "Urahara",
+      "status": "PASS",
       "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
-      "evidence": null,
-      "comment_body_sha256": null
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246527351",
+      "comment_body_sha256": "828e6dee231f813c637977a982379efb293a08e59a2bd3896b40d1e56b02e6d2"
     },
     {
-      "seat": "Urahara",
-      "status": "PENDING",
+      "seat": "Kobe",
+      "status": "PASS",
       "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
-      "evidence": null,
-      "comment_body_sha256": null
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246559739",
+      "comment_body_sha256": "95bdefae681367e9da62d2559ee09b5007fd29001fa4e58efb615f0db4737809"
     }
   ],
   "author_credential": {
@@ -150,7 +150,7 @@
     "exhaustive_review": "Follow personal preferences",
     "live_bot_draft_pr_support": "UNPROVEN"
   },
-  "launch_preparation_status": "BLOCKED_PENDING_ACTUAL_NEW_MAIN_REVIEWS_AND_FRESH_ACCOUNT_EVIDENCE",
+  "launch_preparation_status": "BLOCKED_PENDING_FRESH_ACCOUNT_AND_RUNTIME_EVIDENCE",
   "launch_preparation_evidence": {
     "source_main": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
     "existing_launch_go": "https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6126573426",
@@ -215,9 +215,29 @@
   ],
   "pending_reviews_packet": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246479171",
   "launch_blockers": [
-    "Actual Urahara final-main PASS comment/body hash at1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
-    "Actual accepted-Claude final-main PASS comment/body hash at1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
     "Fresh environment/route/connected-user/credits-OFF/cash<=2h account evidence; old historical dates are not fresh",
     "Exact hosted-image/CLI/runtime admission at permitted execution; enable-last/readback and all original launch gates"
-  ]
+  ],
+  "final_main_review_evidence": {
+    "status": "VERIFIED_EXACT_COMMENT_BINDINGS",
+    "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+    "comments": [
+      {
+        "seat": "Urahara",
+        "comment_id": 6246527351,
+        "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+        "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246527351",
+        "comment_body_sha256": "828e6dee231f813c637977a982379efb293a08e59a2bd3896b40d1e56b02e6d2"
+      },
+      {
+        "seat": "Kobe",
+        "comment_id": 6246559739,
+        "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+        "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246559739",
+        "comment_body_sha256": "95bdefae681367e9da62d2559ee09b5007fd29001fa4e58efb615f0db4737809"
+      }
+    ],
+    "independence": "Same actual reviewers as candidate; independent of author Magic, not extra independent opinions. Kobe disclosed first-line-only exposure after checks; Urahara wrote before Kobe return.",
+    "limits": "Account/environment/cash evidence and hosted runtime admission are not covered; nonblocking issues10-12 stay open."
+  }
 }
