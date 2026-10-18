@@ -24,11 +24,30 @@
       "chee-cube-club"
     ],
     "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250248235",
-    "readiness": "UNVERIFIED_DETAIL_NOT_OPENED",
+    "readiness": "NOT_EXPOSED",
     "image_container_id": null,
-    "internet_setting": "UNKNOWN",
+    "internet_setting": {
+      "reported": "ON",
+      "reported_allowlist": [
+        "Package managers",
+        "api.github.com"
+      ],
+      "effective_published_configuration": "UNVERIFIED_POSSIBLY_DRAFT"
+    },
     "checked_at_reported": "2026-10-18T13:00:00Z",
-    "timestamp_precision": "APPROXIMATE"
+    "timestamp_precision": "APPROXIMATE",
+    "followup_evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250350289",
+    "detail_view": "Edit environment panel in existing Set up KEYSTONE task",
+    "task_url": "https://chatgpt.com/local/01a12bbf-6ab2-7214-befd-8ddbb32b90b3",
+    "publishing_status": "Couldn't confirm publishing status... Needs attention",
+    "install_script": "Not set",
+    "start_skill": "Not set",
+    "reported_task_python": "3.12.14",
+    "time_evidence": {
+      "reported_range_myt": "18Oct21:10–21:25",
+      "completion_time": "UNRESOLVED_RANGE_EXTENDS_BEYOND_RECEIPT_TIME",
+      "freshness_not_renewed": true
+    }
   },
   "connected_user_access": "UNKNOWN",
   "managed_review_configuration": "VERIFIED",
@@ -298,10 +317,9 @@
   ],
   "pending_reviews_packet": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246479171",
   "launch_blockers": [
-    "Codex environment detail/readiness/image-container identifier/internet setting not inspected; UNKNOWN remains UNKNOWN",
-    "Actual connected GitHub user/access in managed Codex route not shown; connector identity is not Codex account identity",
-    "General paid-continuation toggle not shown; review-credit use explicitly OFF. Resolve applicability from actual account detail without inventing a toggle",
-    "Full preflight then exact hosted-image/CLI admission, enable-last/readback and original gates; no launch variables generated"
+    "Codex effective published configuration/readiness unverified; editor says Needs attention and allowlist may be draft; actual managed-review environment association unresolved",
+    "Owner/repository App installation scope evidenced, but actual connected-user authorization binding for current Codex managed-review route remains UNKNOWN",
+    "Full preflight and permitted exact GitHub hosted-image/CLI admission, enable-last/readback and original launch gates remain; no smoke task or gate change approved by this receipt"
   ],
   "final_main_review_evidence": {
     "status": "VERIFIED_EXACT_COMMENT_BINDINGS",
@@ -324,5 +342,44 @@
     ],
     "independence": "Same actual reviewers as candidate; independent of author Magic, not extra independent opinions. Kobe disclosed first-line-only exposure after checks; Urahara wrote before Kobe return.",
     "limits": "Account/environment/cash evidence and hosted runtime admission are not covered; nonblocking issues10-12 stay open."
+  },
+  "connection_installation_evidence": {
+    "status": "OWNER_REPOSITORY_INSTALLATION_SCOPE_VERIFIED_BY_OWNER_REPORT",
+    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250350289",
+    "owner": "404-ac-notfound",
+    "installation_id": 161479376,
+    "repository_selection": "All repositories",
+    "includes": "404-ac-notfound/keystone-proof",
+    "permissions": {
+      "read": [
+        "checks",
+        "statuses",
+        "metadata"
+      ],
+      "read_write": [
+        "actions",
+        "code",
+        "issues",
+        "pull_requests",
+        "workflows"
+      ]
+    },
+    "last_used": "within the last week",
+    "current_codex_linked_user": "NOT_EXPOSED",
+    "plugin_version": "0.1.12"
+  },
+  "historical_environment_task_evidence": {
+    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250350289",
+    "name": "Set up KEYSTONE",
+    "displayed_time": "Monday 12:15–12:55 AM",
+    "date_timezone": "UNRESOLVED",
+    "key_stone_review_head": "0ac3db5f",
+    "proof_candidate": "d712b74",
+    "offline_tests": 55,
+    "reported_errors": [
+      "PR36 posting api.github.com 403 Forbidden",
+      "storage.googleapis.com blocked"
+    ],
+    "scope": "Historical; not fresh readiness or current managed-review failure proof"
   }
 }
