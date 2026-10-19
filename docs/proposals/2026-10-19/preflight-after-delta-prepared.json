@@ -95,15 +95,15 @@
       },
       "launch_recheck": "OWNER_ACCOUNT_REPORTED_VERIFIED",
       "launch_recheck_evidence": {
-        "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250248235",
-        "checked_at": "2026-10-18T12:56:00Z",
+        "source": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259584718",
+        "checked_at": "2026-10-19T04:19:10Z",
         "basis": "ANDREW_RELAYED_JARVIS_GH_API",
         "main_only": true,
         "reviewers": 0,
         "wait_timer": 0,
         "can_admins_bypass": true,
-        "secret_count": 1,
-        "repository_secret_count": 0
+        "repository_secret_count": 0,
+        "repository_variable_count": 0
       }
     },
     "verification_basis": "Owner-relayed11Oct provisioning evidence; conservative civil-day bounds accepted in Urahara review6229000429 and owner conditional adoption recorded6246474877. Provider issuance/expiry unknown. Fresh launch readback still pending.",
@@ -146,15 +146,15 @@
       },
       "launch_recheck": "OWNER_ACCOUNT_REPORTED_VERIFIED",
       "launch_recheck_evidence": {
-        "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250248235",
-        "checked_at": "2026-10-18T12:56:00Z",
+        "source": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259584718",
+        "checked_at": "2026-10-19T04:19:10Z",
         "basis": "ANDREW_RELAYED_JARVIS_GH_API",
         "main_only": true,
         "reviewers": 0,
         "wait_timer": 0,
         "can_admins_bypass": true,
-        "secret_count": 1,
-        "repository_secret_count": 0
+        "repository_secret_count": 0,
+        "repository_variable_count": 0
       }
     },
     "verification_basis": "Jarvis owner-session readback16Oct13:43MYT, DATE expiry and conservative bounds accepted in Urahara review6229000429 and owner conditional adoption recorded6246474877. No exact issuance-time claim. Fresh launch readback still pending.",
@@ -195,6 +195,14 @@
       "last_use": "never used",
       "old_20953582": "404 absent",
       "intervals": "UNCHANGED"
+    },
+    "latest_list_readback": {
+      "source": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259584718",
+      "checked_at": "2026-10-19T04:19:28Z",
+      "provider_expiry_date": "2026-10-20",
+      "last_use": "never used",
+      "old_k14_token": "ABSENT",
+      "detail_scope": "NOT_RECHECKED_IN_THIS_BATCH"
     }
   },
   "max_reviews": 2,
@@ -206,20 +214,20 @@
   },
   "managed_review_configuration_evidence": {
     "verification_basis": "ANDREW_RELAYED_JARVIS_OWNER_ACCOUNT_OBSERVATION",
-    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250248235",
+    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259584718",
     "repository": "404-ac-notfound/keystone-proof",
-    "automatic_review": "ON",
-    "repo_overrides_personal": true,
+    "automatic_review": "Follow personal preferences",
     "personal_automatic_review": "OFF",
+    "effective_automatic_review": "OFF",
     "trigger": "On PR open",
-    "exhaustive_review": "Follow personal preferences (OFF)",
+    "exhaustive_review": "OFF",
     "use_credits_for_reviews": "OFF",
-    "instructions": "AGENTS.md",
-    "checked_at_reported": "2026-10-18T13:02:00Z",
-    "timestamp_precision": "APPROXIMATE",
-    "live_bot_draft_pr_support": "UNPROVEN"
+    "checked_at": "2026-10-19T04:19:48Z",
+    "pilot_route": "EXPLICIT_CONTROLLER_POST_OF_@codex_review",
+    "operation": "UNKNOWN_UNTIL_REAL_BOUND_RESPONSE",
+    "settings_change_requested": false
   },
-  "launch_preparation_status": "MERGED_PENDING_KOBE_MAIN_BINDING_AND_FRESH_ACCOUNT_EVIDENCE",
+  "launch_preparation_status": "PARTIAL_PREFLIGHT_VERIFIED_REVIEW_BINDINGS_PENDING_FRESH_INSTALLATION_AND_PAT_SCOPE",
   "launch_preparation_evidence": {
     "source_main": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
     "existing_launch_go": "https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6126573426",
@@ -244,35 +252,23 @@
   "live_account_evidence": {
     "status": "PARTIAL_FRESH_OWNER_ACCOUNT_READBACK",
     "verification_basis": "ANDREW_RELAYED_JARVIS_OWNER_ACCOUNT_OBSERVATION",
-    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6250248235",
-    "github_checked_at": "2026-10-18T12:57:00Z",
-    "codex_checked_at": "2026-10-18T13:03:00Z",
-    "claude_checked_at": "2026-10-18T13:00:00Z",
-    "route_checked_at": "2026-10-18T13:02:00Z",
-    "oldest_supporting_check": "2026-10-18T12:56:00Z",
-    "freshness_not_after": "2026-10-18T14:56:00Z",
-    "timestamp_precision": {
-      "github": "MINUTE_REPORT",
-      "codex": "APPROXIMATE",
-      "claude": "APPROXIMATE",
-      "route": "APPROXIMATE"
-    },
+    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259584718",
+    "github_checked_at": "2026-10-19T04:19:24Z",
+    "codex_checked_at": "2026-10-19T04:19:35Z",
+    "claude_checked_at": "2026-10-19T04:19:59Z",
+    "route_checked_at": "2026-10-19T04:19:48Z",
+    "oldest_supporting_check": "2026-10-19T04:19:10Z",
+    "freshness_not_after": "2026-10-19T06:19:10Z",
     "github": {
-      "plan": "Free",
-      "budgets": "5 budgets, each $0.00 Usage blocked",
-      "october_gross_usd": 0.2,
-      "october_net_billed_usd": 0,
-      "minutes_storage_figures": null
+      "plan": "Free + Copilot Free",
+      "budgets": "5 budgets each $0 Usage blocked",
+      "net_billed_usd": 0
     },
     "codex": {
       "plan": "Plus",
       "credits": 0,
-      "balance_usd": 0,
       "automatic_reload": "OFF",
-      "use_credits_for_reviews": "OFF",
-      "general_paid_continuation_toggle": "NOT_SHOWN",
-      "connected_github_username": "NOT_SHOWN",
-      "chatgpt_handle": "@andrewcza"
+      "use_credits_for_reviews": "OFF"
     },
     "claude": {
       "plan": "Pro",
@@ -283,7 +279,7 @@
       "cap_usd": 50,
       "spent_usd": 0
     },
-    "scope": "Partial evidence only; environment readiness and connected-user identity remain unverified. No absent toggle inferred."
+    "scope": "App installation scope and PAT detail-scope checks not supplied in this batch; older facts not retimestamped"
   },
   "evidence_admission": {
     "basis": "OWNER_ATTESTED_BOUNDED_CREATION",
@@ -318,9 +314,9 @@
   ],
   "pending_reviews_packet": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246479171",
   "launch_blockers": [
-    "Short actual-main Kobe delta binding required at6f1ce8c93454fc535d4158dea093a8f0d1169461",
-    "Fresh account/configuration receipt after review/main binding; proposed19Oct12:30MYT refresh/12:40 return if binding available; real oldest fact timestamp governs",
-    "Preflight helper full PASS before16:00MYT, adequate remaining freshness at launch, exact permitted runtime and all existing launch gates; no variables generated/installed"
+    "Fresh owner/App installation161479376 owner404-ac-notfound/proof inclusion readback with actual timestamp/source",
+    "Fresh PAT21163019 detail owner/proof-only/MetadataR/IssuesRW/PullsRW/no-user-permissions confirmation",
+    "Full preflight helper then enable-last/readback under account executor; oldest current fact expires19Oct14:19:10MYT,16:00 preflight deadline/18:00 stop retained"
   ],
   "final_main_review_evidence": {
     "status": "VERIFIED_EXACT_COMMENT_BINDINGS",
@@ -390,8 +386,8 @@
     "repo_review_configuration": {
       "status": "CONFIGURATION_ONLY",
       "repository": "404-ac-notfound/keystone-proof",
-      "evidence": null,
-      "checked_at": null
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259584718",
+      "checked_at": "2026-10-19T04:19:48Z"
     },
     "owner_app_installation_scope": {
       "status": "CONFIGURATION_ONLY",
@@ -404,10 +400,10 @@
   },
   "evidence_rule_delta_review": {
     "seat": "Kobe",
-    "status": "PENDING",
+    "status": "PASS",
     "controller_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
-    "evidence": null,
-    "comment_body_sha256": null
+    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259565797",
+    "comment_body_sha256": "14b8df939c4f5a0df4ec3910a437bb8c79aff0a16f762502cb7941e318e1e085"
   },
   "preflight_completed_at": null,
   "delta_candidate_review": {
@@ -424,5 +420,37 @@
     "helper_clock_crosscheck_required": true,
     "oldest_fact_plus_2h_effective_gate_limit": true,
     "notes": "Applied as assembly checks without unreviewed code edits; future gate job may still STOP on freshness/queue/runtime. No assumption fresh to18:00."
+  },
+  "partial_preflight_validation": {
+    "checked_at": "2026-10-19T04:22:33.509067+00:00",
+    "schema": "PASS",
+    "credential_intervals": "PASS",
+    "raw_baseline_and_delta_bindings": [
+      {
+        "seat": "Urahara",
+        "comment_id": 6246527351,
+        "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+        "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246527351",
+        "comment_body_sha256": "828e6dee231f813c637977a982379efb293a08e59a2bd3896b40d1e56b02e6d2"
+      },
+      {
+        "seat": "Kobe",
+        "comment_id": 6246559739,
+        "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+        "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246559739",
+        "comment_body_sha256": "95bdefae681367e9da62d2559ee09b5007fd29001fa4e58efb615f0db4737809"
+      },
+      {
+        "seat": "Kobe",
+        "comment_id": 6259565797,
+        "controller_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
+        "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259565797",
+        "comment_body_sha256": "14b8df939c4f5a0df4ec3910a437bb8c79aff0a16f762502cb7941e318e1e085"
+      }
+    ],
+    "full_preflight": "BLOCKED",
+    "first_stop": "configuration-only admission evidence missing",
+    "launch_variables_generated": false,
+    "actual_runtime_or_account_changes": false
   }
 }
