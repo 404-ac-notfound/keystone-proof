@@ -1,0 +1,29 @@
+{
+  "claude_version": "2.1.296",
+  "sha256": "24972e3bc859fab2b46ed4c1e51f7d6130f06d3bd550811a114640de3370d0de",
+  "session_id": "1ca5b5c3-9467-45c8-87de-14e935d984a2",
+  "look": 1,
+  "num_turns": 4,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 3739,
+    "cache_read_input_tokens": 6727,
+    "output_tokens": 365,
+    "output_tokens_details": {
+      "thinking_tokens": 0
+    },
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 3739,
+      "ephemeral_5m_input_tokens": 0
+    },
+    "inference_geo": "global",
+    "iterations": [],
+    "speed": "standard",
+    "fallback_credit": null
+  }
+}
