@@ -7,11 +7,12 @@
   "controller_author": "Magic",
   "approved_expiry_ceiling": "2026-10-22T00:00:00Z",
   "owner_authorization": {
-    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246474877",
-    "quote": "If Urahara is good with it, then I approve. Can you run it by Urahara in this thread first? Thank you.",
-    "approved_sha": null,
+    "source": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6259198586",
+    "quote": "APPROVED: the one-time evidence-rule change for this bounded pilot, with these conditions:",
+    "approved_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
     "controller_author": "Magic",
-    "binding_basis": "Owner conditional approval of candidateaa81f6b; actual Urahara and accepted-Claude PASS; resulting merge tree byte-identical to approved candidate. No additional live-run gate waived."
+    "binding_basis": "Scoped19Oct owner rule approval and current instruction to take merge step; reviewed candidate688e500 merged with expected-head guard, main tree equals reviewed tree51dafae2f311ad52fc4a6eb9bee65721f5cb0f4d; actual-main Kobe delta binding still required.",
+    "merge_readback": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259547768"
   },
   "environment": {
     "status": "UNKNOWN",
@@ -218,7 +219,7 @@
     "timestamp_precision": "APPROXIMATE",
     "live_bot_draft_pr_support": "UNPROVEN"
   },
-  "launch_preparation_status": "UNLAUNCHABLE_PENDING_KOBE_DELTA_AND_FRESH_ACCOUNT_EVIDENCE",
+  "launch_preparation_status": "MERGED_PENDING_KOBE_MAIN_BINDING_AND_FRESH_ACCOUNT_EVIDENCE",
   "launch_preparation_evidence": {
     "source_main": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
     "existing_launch_go": "https://github.com/404-ac-notfound/keystone-proof/pull/4#issuecomment-6126573426",
@@ -298,7 +299,7 @@
     "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/8#issuecomment-6185290737",
     "source": "Jarvis owner-account readback report, not independent Magic inspection"
   },
-  "controller_sha": null,
+  "controller_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
   "historical_independent_isolation": [
     {
       "seat": "Kobe",
@@ -317,9 +318,9 @@
   ],
   "pending_reviews_packet": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246479171",
   "launch_blockers": [
-    "Kobe delta review and actual final-main binding pending PR13; no baseline review relabelled",
-    "Fresh account/configuration facts must be collected AFTER delta review, with real times and sources; prior report timestamps expired",
-    "Green preflight required BEFORE19Oct16:00MYT; otherwise stand down. No variables generated, no actual approval SHA substituted in this draft"
+    "Short actual-main Kobe delta binding required at6f1ce8c93454fc535d4158dea093a8f0d1169461",
+    "Fresh account/configuration receipt after review/main binding; proposed19Oct12:30MYT refresh/12:40 return if binding available; real oldest fact timestamp governs",
+    "Preflight helper full PASS before16:00MYT, adequate remaining freshness at launch, exact permitted runtime and all existing launch gates; no variables generated/installed"
   ],
   "final_main_review_evidence": {
     "status": "VERIFIED_EXACT_COMMENT_BINDINGS",
@@ -404,9 +405,24 @@
   "evidence_rule_delta_review": {
     "seat": "Kobe",
     "status": "PENDING",
-    "controller_sha": null,
+    "controller_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
     "evidence": null,
     "comment_body_sha256": null
   },
-  "preflight_completed_at": null
+  "preflight_completed_at": null,
+  "delta_candidate_review": {
+    "controller_sha": "688e500137f4cea2eed6bdc5a0024af1444804ec",
+    "status": "PASS",
+    "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259498617",
+    "comment_body_sha256": "0f93f3a9bbfdf131ba4b859ba56e6d236a45bbfd9179d7d301e8753965d3146e",
+    "reviewed_tree": "51dafae2f311ad52fc4a6eb9bee65721f5cb0f4d",
+    "scope": "Independent delta only; not actual-main binding or live readiness"
+  },
+  "operational_note_controls": {
+    "allowlisted_configuration_admission_keys_only": true,
+    "fact_times_no_later_than_preflight_completion": true,
+    "helper_clock_crosscheck_required": true,
+    "oldest_fact_plus_2h_effective_gate_limit": true,
+    "notes": "Applied as assembly checks without unreviewed code edits; future gate job may still STOP on freshness/queue/runtime. No assumption fresh to18:00."
+  }
 }
