@@ -1,0 +1,51 @@
+{
+  "status": "PASS",
+  "scope": "ACTUAL_OFFLINE_PREFLIGHT_ONLY",
+  "preflight_completed_at": "2026-10-19T07:45:59.344463Z",
+  "first_pass_at": "2026-10-19T07:44:30.743860Z",
+  "controller_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
+  "review_bindings": [
+    {
+      "seat": "Urahara",
+      "comment_id": 6246527351,
+      "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246527351",
+      "comment_body_sha256": "828e6dee231f813c637977a982379efb293a08e59a2bd3896b40d1e56b02e6d2"
+    },
+    {
+      "seat": "Kobe",
+      "comment_id": 6246559739,
+      "controller_sha": "1b7e33adcd4b25ba11328cc7070c3dcafec50e76",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6246559739",
+      "comment_body_sha256": "95bdefae681367e9da62d2559ee09b5007fd29001fa4e58efb615f0db4737809"
+    },
+    {
+      "seat": "Kobe",
+      "comment_id": 6259565797,
+      "controller_sha": "6f1ce8c93454fc535d4158dea093a8f0d1169461",
+      "evidence": "https://github.com/404-ac-notfound/keystone-proof/pull/13#issuecomment-6259565797",
+      "comment_body_sha256": "14b8df939c4f5a0df4ec3910a437bb8c79aff0a16f762502cb7941e318e1e085"
+    }
+  ],
+  "credential_intervals": "PASS",
+  "configuration_admission_key_allowlist": "PASS",
+  "fact_times_before_helper_clock": "PASS",
+  "cash_oldest_checked_at": "2026-10-19T07:37:25Z",
+  "freshness_limit": "2026-10-19T09:37:25Z",
+  "completed_json_sha256": "a6f43b24c60bc24bc16e61cb7c0b7747539a3981df1b06c722a4c1298e61e62e",
+  "launch_values_file_sha256": "dd5ffb9ef426b1db41e9264f75d70856e33c8ec27cad0c04ebd5edcec5dae3d7",
+  "runtime_preflight_string_sha256": "32a0808e49103635516e06125e825999fe8652db24b345a954f7d41453dd45d2",
+  "runtime_preflight_bytes": 18418,
+  "installed_variables": false,
+  "enabled": false,
+  "ready_label_applied": false,
+  "live_run": false,
+  "runtime_admission": "PENDING_ACTUAL_HOST",
+  "transport_outcome": "NOT_RUN",
+  "limitations": [
+    "Auto-reload control not shown on Plus; review-credit use explicitly OFF; no blanket OFF invented",
+    "Reviewer/timer no new assertion; prior accepted policy retained; fresh main-only/admin-bypass/secret placement reported",
+    "Long/queued runs can BLOCK on2h freshness before18:00; no bypass",
+    "PAT Never used is historical12:19:28 per corrected report, not a fresh last-use assertion"
+  ]
+}
