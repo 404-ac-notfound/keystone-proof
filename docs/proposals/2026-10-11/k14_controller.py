@@ -18,6 +18,16 @@ APPROVED_CONTROLLER_AUTHORS = frozenset({"Magic"})
 REVIEW_PUBLISHER = "404-ac-notfound"
 # Andrew's resumed pilot stops no later than 22 Oct; owner JSON cannot extend it.
 PILOT_CEILING = "2026-10-22T00:00:00Z"
+# Owner-approved exception: one-time, this K-14 pilot only, expires at the 19 Oct 18:00 MYT stop.
+ADMISSION_PILOT = "K14-20261013-01"
+ADMISSION_STOP = "2026-10-19T10:00:00Z"
+PREFLIGHT_DEADLINE = "2026-10-19T08:00:00Z"
+ADMISSION_DECISION = "https://github.com/404-ac-notfound/keystone-proof/pull/9#issuecomment-6259198586"
+BASELINE_SHA = "1b7e33adcd4b25ba11328cc7070c3dcafec50e76"
+BASELINE_REVIEWS = {
+    "Urahara": (6246527351, "828e6dee231f813c637977a982379efb293a08e59a2bd3896b40d1e56b02e6d2"),
+    "Kobe": (6246559739, "95bdefae681367e9da62d2559ee09b5007fd29001fa4e58efb615f0db4737809"),
+}
 ROOT = Path(__file__).resolve().parent
 SHA = re.compile(r"^[0-9a-f]{40}$")
 BODY_DIGEST = re.compile(r"^[0-9a-f]{64}$")
@@ -98,6 +108,58 @@ def validate_config_shape(c):
             require(isinstance(c[key]["revocation_bound"], dict), key + " revocation bound must be an object")
 
 
+def configuration_admission(c, expiry, now):
+    """Configuration-only admission; unknown provider facts never become verified."""
+    admission = c.get("configuration_admission")
+    if admission is None:
+        return False
+    require(isinstance(admission, dict), "configuration admission must be an object")
+    require(c.get("pilot_id") == ADMISSION_PILOT and c.get("seed_issue") == 7
+            and c.get("repository") == REPO, "configuration admission is this pilot/repository only")
+    require(admission.get("one_time") is True and admission.get("owner_decision") == ADMISSION_DECISION
+            and admission.get("expires_at") == ADMISSION_STOP
+            and now < expiry <= utc(ADMISSION_STOP), "configuration admission absent/expired/extended")
+    require(c["environment"].get("status") == "UNKNOWN"
+            and c.get("connected_user_access") == "UNKNOWN", "unexposed provider facts must stay UNKNOWN")
+    for key in ("repo_review_configuration", "owner_app_installation_scope"):
+        fact = admission.get(key)
+        require(isinstance(fact, dict) and fact.get("status") == "CONFIGURATION_ONLY"
+                and fact.get("evidence") and fact.get("repository") == REPO,
+                "configuration-only admission evidence missing")
+        checked = utc(fact.get("checked_at"))
+        require(dt.timedelta(0) <= now - checked <= dt.timedelta(hours=2),
+                "configuration admission evidence stale/future")
+    install = admission["owner_app_installation_scope"]
+    require(install.get("owner") == REVIEW_PUBLISHER and install.get("installation_id") == 161479376,
+            "wrong owner/App installation scope")
+    completed = utc(c.get("preflight_completed_at"))
+    require(completed <= now and completed < utc(PREFLIGHT_DEADLINE),
+            "preflight not green before 16:00 MYT; stand down")
+    return True
+
+
+def isolation_receipts(c, sha, admitted):
+    """Keep exact baseline reviews; bind only the delta to the new launch SHA."""
+    baseline = c.get("independent_isolation", [])
+    if not admitted:
+        return baseline, sha, []
+    require(len(baseline) == 2 and {x.get("seat") for x in baseline} == set(BASELINE_REVIEWS),
+            "exact baseline review pair missing")
+    for r in baseline:
+        comment_id, digest = BASELINE_REVIEWS[r["seat"]]
+        require(r.get("status") == "PASS" and r.get("controller_sha") == BASELINE_SHA
+                and r.get("comment_body_sha256") == digest
+                and r.get("evidence") == f"https://github.com/{REPO}/pull/9#issuecomment-{comment_id}",
+                "baseline review binding changed")
+    delta = c.get("evidence_rule_delta_review")
+    require(isinstance(delta, dict) and delta.get("seat") == "Kobe" and delta.get("status") == "PASS"
+            and delta.get("controller_sha") == sha, "Kobe delta PASS required at final launch SHA")
+    require(isinstance(delta.get("evidence"), str) and ISOLATION_COMMENT.fullmatch(delta["evidence"])
+            and isinstance(delta.get("comment_body_sha256"), str)
+            and BODY_DIGEST.fullmatch(delta["comment_body_sha256"]), "delta comment URL/body digest missing")
+    return baseline, BASELINE_SHA, [delta]
+
+
 def gates(c, e, now=None):
     """Validate pinned owner config and runtime variables. No provider or isolation probes."""
     validate_config_shape(c)
@@ -114,13 +176,19 @@ def gates(c, e, now=None):
     expiry = utc(e.get("K14_EXPIRES_AT"))
     require(now < expiry <= utc(c.get("approved_expiry_ceiling")) <= utc(PILOT_CEILING),
             "expired or extended beyond approved envelope / 22 October ceiling")
+    if c.get("pilot_id") == ADMISSION_PILOT:
+        require(expiry <= utc(ADMISSION_STOP), "this pilot stops at 19 October 18:00 MYT")
+        completed = utc(c.get("preflight_completed_at"))
+        require(completed <= now and completed < utc(PREFLIGHT_DEADLINE),
+                "preflight not green before 16:00 MYT; stand down")
     approval = c.get("owner_authorization") or {}
     require(approval.get("source") and approval.get("quote") and approval.get("approved_sha") == sha,
             "owner authorization absent or wrong revision")
     require(type(c.get("seed_issue")) is int and c["seed_issue"] > 1, "fresh seed issue not assigned")
-    require(c.get("environment", {}).get("status") == "READY"
-            and c["environment"].get("evidence"), "Codex environment readiness UNKNOWN/not ready")
-    require(c.get("connected_user_access") == "VERIFIED"
+    admitted = configuration_admission(c, expiry, now)
+    require(admitted or (c.get("environment", {}).get("status") == "READY"
+            and c["environment"].get("evidence")), "Codex environment readiness UNKNOWN/not ready")
+    require((admitted or c.get("connected_user_access") == "VERIFIED")
             and c.get("managed_review_configuration") == "VERIFIED", "managed path access/configuration unverified")
     require(c.get("paid_review_credits") == "OFF_VERIFIED", "paid credit continuation unverified")
     retired = c.get("old_oauth_retirement", {})
@@ -132,9 +200,9 @@ def gates(c, e, now=None):
     require(isinstance(controller_author, str) and controller_author in APPROVED_CONTROLLER_AUTHORS
             and approval.get("controller_author") == controller_author,
             "controller author must be identified, approved and bound to owner authorization")
-    isolated = c.get("independent_isolation", [])
+    isolated, review_sha, _delta = isolation_receipts(c, sha, admitted)
     isolated = (len(isolated) == 2 and {x.get("seat") for x in isolated} == {"Urahara", "Kobe"}
-                and all(x.get("status") == "PASS" and x.get("controller_sha") == sha
+                and all(x.get("status") == "PASS" and x.get("controller_sha") == review_sha
                         and x.get("seat") != c.get("controller_author") and x.get("evidence") for x in isolated))
     # Installation/merge produces the final launch SHA. Candidate checks cannot
     # substitute for both assigned checkers' receipts bound to that exact SHA.
@@ -225,10 +293,19 @@ def api(path, method="GET", payload=None, token=None, paginate=False, raw=False,
 
 
 def verify_isolation_comments(c, sha, get=None):
+    admitted = c.get("configuration_admission") is not None
+    baseline, review_sha, delta = isolation_receipts(c, sha, admitted)
+    verified = verify_review_comments(baseline, review_sha, get)
+    if delta:
+        verified += verify_review_comments(delta, sha, get)
+    return verified
+
+
+def verify_review_comments(receipts, sha, get=None):
     """Read real pinned comments. Their publisher is owner-trusted, not a proof of seat independence."""
     get = get or api
     verified = []
-    for receipt in c["independent_isolation"]:
+    for receipt in receipts:
         link = ISOLATION_COMMENT.fullmatch(receipt["evidence"])
         require(link is not None, "invalid isolation comment URL")
         issue, comment_id = link.groups()
@@ -479,6 +556,10 @@ def receipt(c):
     records = {str(p.relative_to(arts)): json.loads(p.read_text()) for p in arts.rglob("*.json")}
     jobs = api(f"repos/{REPO}/actions/runs/{os.environ['GITHUB_RUN_ID']}/jobs?per_page=100", paginate=True, page_key="jobs")
     data = {"pilot_id": c["pilot_id"], "controller_sha": os.environ["GITHUB_SHA"], "environment": c["environment"],
+            "connected_user_access": c.get("connected_user_access"),
+            "configuration_admission": c.get("configuration_admission"),
+            "preflight_completed_at": c.get("preflight_completed_at"),
+            "evidence_rule_delta_review": c.get("evidence_rule_delta_review"),
             "records": records, "jobs": [{k: j.get(k) for k in ("id", "name", "started_at", "completed_at", "conclusion")}
                                         for j in jobs], "independent_isolation": c["independent_isolation"],
             "old_oauth_retirement": c["old_oauth_retirement"],
@@ -548,3 +629,4 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
