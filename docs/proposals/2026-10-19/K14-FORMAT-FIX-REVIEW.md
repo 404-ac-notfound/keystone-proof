@@ -50,7 +50,7 @@ The summary body digest is
 be38bea9f65afb9dab76b1ed81ff074d598ef82d300de7cec784e042ab199fa2.
 
 Baseline controller blob verified7e7b2c9e5063039208e5fdad22c1c4acd88cb897.
-Before changes87/87 offline tests passed. After changes98/98 passed on
+Before changes87/87 offline tests passed. The first candidate passed98/98 on
 Python3.12.14 using unittest discovery under docs/proposals/2026-10-11.
 All existing test files and their87 tests are unchanged. Tests inject API/clock and perform
 no network, provider request, account change or workflow launch. This is not the
@@ -70,3 +70,23 @@ than inferring missing provider fields. No provider calls, account changes, merg
 new launch or claim reset. Post a scoped exact-head verdict on the candidate PR.
 
 The next pilot remains a separately approved proposal; see K14-NEXT-PILOT-PLAN.md.
+
+## Follow-up to Kobe PASS6265091018
+
+Kobe independently passed headff09e330 on19Oct18:26MYT (98 tests onPython3.13.16),
+reviewed tree6f214b2e43c7672a996054b0cb2ae4b4bf68f961. Preserve that receipt at its
+original head; it is not silently rebound to this follow-up.
+
+N1: corrected proposed caps73min plus10min queues plus15min retirement =98min,
+with15:05 latest-launch retained conservatively. Timing remains unimplemented and
+outside the parser PASS. N5: validation metadata now covers the register and
+distinguishes the original test capture from the later reconciliation.
+
+N4 follow-up: classify now checks CHANGES_REQUESTED before filtering empty bodies.
+A bound empty/whitespace change-request review therefore dominates a clean summary;
+empty COMMENTED remains non-findings. Two new offline regressions cover this delta.
+Request only a narrow follow-up review of these changes, preserving the full prior
+PASS. N3 theoretical non-object/float-ID inputs remain documented in Kobe's receipt;
+no provider schema or identity admission is broadened.
+
+Follow-up validation:100/100 offline tests pass onPython3.12.14 (87 unchanged,13 new).

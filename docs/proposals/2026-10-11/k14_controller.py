@@ -509,6 +509,9 @@ def review_record(kind, post, req, now=None):
 
 
 def classify(posts):
+    # A submitted change-request verdict is substantive even with no prose.
+    if any(p.get("state") == "CHANGES_REQUESTED" for p in posts):
+        return "REVIEW-WITH-FINDINGS"
     substantive = [p for p in posts if (p.get("body") or "").strip()]
     if any(p["kind"] == "inline" or FINDING.search(p["body"]) or p.get("state") == "CHANGES_REQUESTED" for p in substantive):
         return "REVIEW-WITH-FINDINGS"

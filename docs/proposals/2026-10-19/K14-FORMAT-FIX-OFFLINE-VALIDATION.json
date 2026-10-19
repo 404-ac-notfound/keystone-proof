@@ -1,21 +1,35 @@
 {
-  "checked_at": "2026-10-19T10:07:03.282969+00:00",
+  "checked_at": "2026-10-19T10:32:14.154469+00:00",
   "python": "3.12.14",
   "baseline_tests": 87,
-  "candidate_tests": 98,
+  "candidate_tests": 100,
   "result": "OK",
   "command": "python -m unittest discover -s k14-format-fix/docs/proposals/2026-10-11 -p 'test_*.py' -q",
   "unchanged_existing_tests": true,
   "changed_existing_paths": [
-    "docs/proposals/2026-10-11/k14_controller.py"
+    "docs/proposals/2026-10-11/k14_controller.py",
+    "docs/proposals/2026-10-11/closure-register.md"
   ],
   "network_or_provider_calls": false,
   "locked_host_runtime_verified": false,
   "files": {
-    "docs/proposals/2026-10-11/k14_controller.py": "31e8fc405844a690aa2f0532c70303939f95dabdbaffcd46879593b875feed5f",
-    "docs/proposals/2026-10-11/test_managed_summary.py": "4cce3cbb741ebcbf2852b37486d24f8926a17f320d6f2ef1ad129fe262874b37",
+    "docs/proposals/2026-10-11/k14_controller.py": "27ea80a87ab6039dee74c199fc98bee4292e78caa3586700f234eab12ac346fa",
+    "docs/proposals/2026-10-11/test_managed_summary.py": "ef26bfc78ef1435805b9ae53110665c0c92de5b42253a5497fffaeee4830b399",
     "docs/proposals/2026-10-11/fixtures/managed-review-39227996178.json": "2a13c161e13ea0d490d1415b67ef8cea58b8f5dd5c318f84c4e237318185b313",
-    "docs/proposals/2026-10-19/K14-FORMAT-FIX-REVIEW.md": "f9b1d1c750fa59a7215caee301bcf8d785eef258e8f843f3f3172bc2495a2755",
-    "docs/proposals/2026-10-19/K14-NEXT-PILOT-PLAN.md": "383459092467fc9f9e3e71ee7c3272cf52864d7ddd7de411700f8b9e522548bb"
+    "docs/proposals/2026-10-19/K14-FORMAT-FIX-REVIEW.md": "2148dc4dfd5b07642c73a5b0e4336da44041de58f6522b450c99dafa6dc4267a",
+    "docs/proposals/2026-10-19/K14-NEXT-PILOT-PLAN.md": "164417df19e99112a06ccc1fd07797cd5b089e429e8b71bdc4716f2b4192af5d",
+    "docs/proposals/2026-10-11/closure-register.md": "4735cb3dec04ebfe8f8207f2235a607abe11d2108ad46f15c1581bb1aa95b5e8"
+  },
+  "new_tests": 13,
+  "previous_validation": {
+    "head": "8702b13565a1d41cf46ec1dc733f4377ccc5f07e",
+    "checked_at": "2026-10-19T10:07:03.282969+00:00",
+    "candidate_tests": 98,
+    "scope": "Code/test capture preceded closure-register reconciliation in ff09e330"
+  },
+  "independent_review": {
+    "comment_id": 6265091018,
+    "head": "ff09e330acb7fef02184d43a2d7894c3dc31a1b6",
+    "status": "PASS_AT_PRIOR_HEAD; narrow follow-up pending"
   }
 }

@@ -15,7 +15,7 @@ still PARTIAL/BLOCKED: no transport or end-to-end PASS, no K23 activation.
 | Receipt / bounds | Current net billed$0 accepted at17:53–17:54; GitHub October gross$0.40 offset$0.40; no final transport PASS | Delayed-metering checks20Oct/period-close remain proposed, not assigned/scheduled; no future zero-billing guarantee |
 | FU-REVIEW / Item7 | Baseline pair, delta and actual-main binding6259565797 preserved; terminal audit accepted within scope | New exact-head format-fix delta review required; prior unchanged-code reviews not repeated |
 | FU-PREFLIGHT / Item3 readiness | Prior preflight green15:45:59, actual launch17:09:57; evidence expiry17:37:25 caused poll stop17:37:42 | Runtime readiness/linked username UNKNOWN; old one-time admission expired18:00. New pilot needs separate fresh admission, credentials, identities and reviewed timing |
-| New discovery / issue15 | Format-fix IMPLEMENTED CANDIDATE,98 offline tests including87 unchanged; no live validation | Strict v1 full-SHA summary parser and stable observation; independent review pending. See ../2026-10-19/K14-FORMAT-FIX-REVIEW.md |
+| New discovery / issue15 | Format-fix IMPLEMENTED CANDIDATE,100 offline tests including87 unchanged; no live validation | Strict v1 full-SHA summary parser and stable observation; independent review pending. See ../2026-10-19/K14-FORMAT-FIX-REVIEW.md |
 | FU-ORDER / FU-K23 | HELD: no transport PASS, canary, adoption or continuity acceptance inferred | Next-pilot proposal only: ../2026-10-19/K14-NEXT-PILOT-PLAN.md; owner launch approval still separate |
 
 Audit corrections6264610277 preserve stray documentation bot mentions and canned

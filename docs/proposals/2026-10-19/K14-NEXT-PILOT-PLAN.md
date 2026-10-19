@@ -48,8 +48,8 @@ profile simply because the parser regression passes.
 
 Proposed narrow timing delta for review: author/revise job caps8min each (currently
 12); each poll deadline12min (currently30), verify jobs14min (currently32); retain
-all other caps. Total job caps would be83min including receipt; reserve10min for
-queues/provisioning and15min for retirement =108min. This trades a greater chance
+all other caps. Total job caps would be73min including receipt; reserve10min for
+queues/provisioning and15min for retirement =98min. This trades a greater chance
 of an honest BLOCKED timeout for a feasible2h envelope. The only observed provider
 response was about77s after request; one run is not a reliability estimate.
 No timing code/workflow changes are implemented by the format-fix candidate.
@@ -58,9 +58,13 @@ If approved and independently reviewed, a provisional20Oct schedule is:
 
 - Oldest account check no earlier than14:55MYT; complete packet/preflight by15:00.
 - Launch no later than15:05 only if all required validity windows have at least
- 108min remaining at the actual label action; otherwise stand down.
+ 98min remaining at the actual label action; otherwise stand down.
 - Ordinary2h freshness would stop use no later than16:55 for that batch. The
  outer18:00 limit does not extend freshness. Credential use bounds may be earlier.
+- The15:05 operational latest-launch remains conservative: an oldest14:55 check
+  leaves110min at15:05,12min beyond the corrected98min envelope. The budget alone
+  would permit15:17 under those exact facts; this proposal keeps15:05 and does not
+  authorize using that extra slack as a later launch.
 - Recheck full budget at actual launch. Queue overruns still fail closed at the
  existing freshness/credential/stop gates; do not refresh mutable evidence midrun.
 

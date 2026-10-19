@@ -115,6 +115,18 @@ class ManagedSummary(unittest.TestCase):
     def test_poll_emits_real_summary_receipt_and_excludes_short_sha(self):
         self.run_poll()
 
+    def test_empty_change_request_dominates_clean_summary(self):
+        summary = m.review_record("issue", SUMMARY, REQ, NOW)
+        for body in ("", " \n\t"):
+            review = {"kind": "review", "state": "CHANGES_REQUESTED", "body": body}
+            with self.subTest(body=body):
+                self.assertEqual(m.classify([summary, review]), "REVIEW-WITH-FINDINGS")
+
+    def test_empty_commented_review_does_not_become_findings(self):
+        summary = m.review_record("issue", SUMMARY, REQ, NOW)
+        review = {"kind": "review", "state": "COMMENTED", "body": ""}
+        self.assertEqual(m.classify([summary, review]), "REVIEW-CLEAN")
+
     def test_poll_resets_settle_time_after_incomplete_observation(self):
         self.run_poll(interrupt=True)
 
