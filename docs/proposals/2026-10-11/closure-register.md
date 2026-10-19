@@ -1,5 +1,16 @@
 # K-14 project closure register and follow-up view
 
+## 19 October configuration-admission amendment — current candidate checkpoint
+
+Owner approval6259198586 authorizes **one-time, this K-14 pilot only, expires at the 19 Oct 18:00 MYT stop.** [Candidate and acceptance details](../2026-10-19/ONE-TIME-CONFIGURATION-ADMISSION.md). This dated section supersedes older pending review/adoption descriptions below only for this amendment; historical evidence stays preserved. No K14 transport closure is claimed.
+
+| Requirement | Current state / implementation | Evidence / next owner |
+|---|---|---|
+| Item3 readiness / FU-PREFLIGHT | IMPLEMENTED CANDIDATE: configuration-only admission for proof/seed7/pilotK14-20261013-01; runtime readiness and linked username UNKNOWN; exact owner decision and fresh separately timed configuration facts required | Author87 offline tests PASS; Kobe independent delta review pending, then Jarvis refreshes expired account evidence; no launch JSON or actual preflight PASS |
+| Item7 isolation / FU-REVIEW | Baseline final-main pair preserved exactly: Urahara6246527351 and Kobe6246559739 at1b7e33adcd4b25ba11328cc7070c3dcafec50e76; separate Kobe delta PASS required at new actual launch SHA | Both old body digests pinned, raw verifier retained; no old review relabelled. Kobe owns delta and narrow post-merge binding |
+| Item4 bounds / FU-LIVE | Existing caps/no-rerun/$0/retirement unchanged; new preflight stand-down19Oct16:00MYT, hard stop18:00; access/runtime failure BLOCKED, no extra smoke | Gate/helper deadline tests and BLOCKED receipt regressions PASS offline; actual transport, independent audit and retirement remain BLOCKED pending authorized execution |
+
+
 **Reconciled:** 12 Oct 2026, installation preparation / before independent handoff.
 **Overall K-14 closure:** PARTIAL — no live transport PASS or final-main proof.
 **Point guard / author:** Magic. **verifier:** yes — Urahara and Kobe.
@@ -76,3 +87,4 @@ The installed candidate SHA is the current PR #4 head recorded in its descriptio
 | FU-K23 | K23 boundary | OPEN: separate R1/R2 adoption and real end-to-end continuity/image implementation/proof; K14 does not close it | Andrew / appointed K23 PG |
 
 Reconcile this register at review receipts, material discoveries, owner decisions and phase close. A GitHub Actions success badge or candidate PASS cannot upgrade a live requirement to VERIFIED. K-14 is not COMPLETE while a material row is IMPLEMENTED, PARTIAL or BLOCKED. No second register, new board automation, Jarvis project-content role or retrospective reconstruction is introduced.
+

@@ -4,12 +4,16 @@ import argparse
 import json
 from pathlib import Path
 
-from k14_controller import gates, require, utc, validate_config_shape
+from k14_controller import gates, require, utc, validate_config_shape, now_utc, PREFLIGHT_DEADLINE, ADMISSION_PILOT
 
 
 def build(preflight, main_sha, expires_at, cash_checked_at, included_minutes,
           cash_stop_verified, now=None):
     validate_config_shape(preflight)
+    if preflight.get("configuration_admission") is not None or preflight.get("pilot_id") == ADMISSION_PILOT:
+        now = now or now_utc()
+        require(now < utc(PREFLIGHT_DEADLINE), "16:00 MYT preflight deadline reached; stand down")
+        preflight = {**preflight, "preflight_completed_at": now.isoformat().replace("+00:00", "Z")}
     require(cash_stop_verified is True, "fresh cash-stop verification required")
     require(type(included_minutes) is int, "included minutes must be an integer")
     author = preflight.get("author_credential", {})
@@ -51,3 +55,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
