@@ -1,5 +1,23 @@
 # K-14 project closure register and follow-up view
 
+## 20 October 10:22 MYT — N6 fix required; PR16 merge HOLD
+
+Andrew's current instruction supersedes the earlier merge recommendation at
+90b885b: FIX N6 before merge, then obtain Kobe PASS on the new exact head. Prior
+Kobe reviews and Urahara technical readiness remain at their actual revisions;
+they do not authorize this changed head. No merge or pilot is performed here.
+
+| Requirement / follow-up | Current disposition | Evidence / next gate |
+|---|---|---|
+| DISC-N6 / revision admission | IMPLEMENTED CANDIDATE: empty/summary-only feedback cannot start revision | `actionable_findings`, poll admission/artifact filtering and prepare-stage record/artifact equality; 11 new regressions; independent verification PENDING — Kobe |
+| FU-REVIEW / Item7 | New exact-head N6 delta review required; earlier PASSes preserved | Prior comments6265091018/6265666951 and Urahara6265970346; 111 offline tests pass onPython3.12.14; hosted3.12.3 not exercised |
+| FU-MERGE | HOLD: Andrew's merge yes conditional on N6 fix AND Kobe PASS at final current head | No merge yet; do not bind any old tree to the new head. Main K14 coordination session has also been told HOLD |
+| FU-LIVE / FU-CREDENTIALS / FU-PREFLIGHT | BLOCKED / unchanged; K14 remains off on accepted prior attestation | No variable/credential read or write, provider call, launch or admission extension. Existing one-time admission expired; timing proposal stays unimplemented |
+
+The sections below retain historical state; this N6 requirement is an additional
+merge precondition now, not merely a pre-pilot residual or an accepted risk.
+Overall K14 remains PARTIAL/BLOCKED; issue15 is not live-verified or closed.
+
 ## 19 October 18:01 MYT — audited attempt CLOSED-BLOCKED; scoped successor work
 
 This latest section supersedes stale current-status statements below; historical

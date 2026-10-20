@@ -90,3 +90,51 @@ PASS. N3 theoretical non-object/float-ID inputs remain documented in Kobe's rece
 no provider schema or identity admission is broadened.
 
 Follow-up validation:100/100 offline tests pass onPython3.12.14 (87 unchanged,13 new).
+
+## 20 October 10:22 MYT — N6 must be fixed before merge
+
+Andrew selected FIX, not risk acceptance, for residual N6 from Kobe PR16
+comment6265666951 and Urahara comment6265970346. His prior merge yes is now
+conditional on N6 being fixed and Kobe passing the new exact head. The main K14
+session was told HOLD. This candidate push does not authorize a merge or pilot.
+
+The previous classifier's empty CHANGES_REQUESTED precedence remains a veto of
+CLEAN, but is no longer enough to emit revision admission. A new pure
+`actionable_findings` selector consumes only already-bound review records. It
+excludes empty/whitespace bodies, managed summaries (accepted or unsupported),
+clean/no-findings prose and priority/header/SHA-only text. Supported nonempty
+inline, P0-P3/prose findings or change-request text supply the revision body.
+This is syntactic supported-text admission, not a semantic judge of advice.
+
+`poll` turns a findings classification with no such text into NO-VERDICT, resets
+its settle window and keeps waiting within the unchanged 30-minute bound for
+late inline/prose findings. If none arrives it ends NO-VERDICT, so the workflow
+never schedules its revision job and the run remains BLOCKED. A clean summary
+beside the empty request cannot turn that veto into CLEAN or revision input.
+The findings artifact contains only the selected actionable text, not every
+record body. Clean or timed-out outcomes write an empty artifact.
+
+`prepare --look 2` independently requires actionable text from the stored bound
+records and an exact (outer-whitespace-normalized) match to the downloaded first
+findings artifact, before `current`, source API reads or author input writes.
+An empty, summary-only or mismatched artifact ends BLOCKED. It passes only the
+validated findings text to the author; the existing one-revision cap remains.
+
+Eleven new offline tests in `test_actionable_findings.py` cover both required
+negative cases through the real poll and actual `out/findings.md`: empty request
+alone, and empty request beside the captured clean summary (each also whitespace
+only). They cover clean/no-findings change-request prose, findings arriving late
+and settling for60s, positive prose change requests, marker/header/SHA-only
+bodies, summary bodies containing priority annotations, prepare-stage negative
+cases before any API or author write, mismatched artifacts, and a valid prepare.
+All 100 existing test cases/files at90b885b remain unchanged; final candidate
+has111 passing offline tests onPython3.12.14. APIs, clocks and author operations
+are mocked; test processes are launched without credential environment variables.
+The locked hosted3.12.3 runtime is not exercised. pytest/actionlint/zizmor are not
+installed in this session; existing workflow/runtime/seed files are byte-identical.
+
+No workflow, cap, identity binding, schema, timing, admission, credential, variable,
+launch, claim or seed change is made. K14 stays off; the existing expired admission
+and proposed/unimplemented timing envelope remain unchanged. No live-variable or
+credential inspection occurred. N6 is IMPLEMENTED, pending Kobe's independent
+exact-head verification; no prior review is rebound and no transport PASS claimed.

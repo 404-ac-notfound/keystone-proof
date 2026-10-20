@@ -522,6 +522,37 @@ def classify(posts):
     return "NO-VERDICT"
 
 
+def actionable_findings(posts):
+    """Revision input from bound findings only, never summary/status prose.
+
+    Callers supply review_record() output, already bound to this request/head.
+    A change-request state alone is a veto of CLEAN, not revision material.
+    This checks the supported textual signals, not natural-language truth.
+    """
+    bodies = []
+    for post in posts:
+        body = (post.get("body") or "").strip()
+        if (not body or "summary_verdict" in post
+                or post.get("bound_by") in {"codex-review-state:v1", "unaccepted_summary_state"}
+                or "codex-review-state:" in body):
+            continue
+        if not (post.get("kind") == "inline" or FINDING.search(body)
+                or post.get("state") == "CHANGES_REQUESTED"):
+            continue
+        clean_text = CLEAN.search(body) or re.search(r"\bno (?:actionable )?findings\b", body, re.I)
+        if clean_text and not FINDING.search(body):
+            continue
+        # Bare priority/header markers or a SHA alone are not actionable text.
+        payload = re.sub(r"<!--.*?-->", "", body, flags=re.S)
+        payload = FINDING.sub("", payload)
+        payload = CLEAN.sub("", payload)
+        payload = re.sub(r"\bno (?:actionable )?findings\b", "", payload, flags=re.I)
+        payload = re.sub(r"(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])", "", payload)
+        if any(char.isalnum() for char in payload):
+            bodies.append(body)
+    return "\n\n".join(bodies)
+
+
 def poll(c, req):
     deadline = time.monotonic() + 30 * 60
     result = {**req, "verifier_login": VERIFIER, "verdict": "NO-VERDICT", "reason": "timeout/unsupported response"}
@@ -539,6 +570,10 @@ def poll(c, req):
                 if record:
                     records.append(record)
         verdict = classify(records)
+        if verdict == "REVIEW-WITH-FINDINGS" and not actionable_findings(records):
+            # Keep polling for late inline/prose findings; never admit an
+            # empty/summary-only revision or reinterpret the veto as CLEAN.
+            verdict = "NO-VERDICT"
         snapshot = json.dumps(records, sort_keys=True)
         if verdict == "NO-VERDICT" or snapshot != last_snapshot:
             first_verdict = None
@@ -554,7 +589,9 @@ def poll(c, req):
         time.sleep(min(30, max(0, deadline - time.monotonic())))
     result["checks"] = api(f"repos/{REPO}/commits/{req['head']}/check-runs?per_page=100")
     emit(result, "verdict")
-    Path("out/findings.md").write_text("\n\n".join(p["body"] for p in result.get("posts", [])))
+    Path("out/findings.md").write_text(
+        actionable_findings(result.get("posts", []))
+        if result["verdict"] == "REVIEW-WITH-FINDINGS" else "")
 
 
 def guard(c):
@@ -580,11 +617,15 @@ def prepare(c, look):
     if look == 2:
         prior = json.loads(Path(".pilot/first/verdict.json").read_text())
         require(prior["verdict"] == "REVIEW-WITH-FINDINGS", "revision not admitted")
+        findings = actionable_findings(prior.get("posts", []))
+        require(bool(findings), "revision requires actionable bound findings")
+        supplied = Path(".pilot/first/findings.md").read_text().strip()
+        require(supplied == findings, "revision findings artifact mismatch")
         current(c, prior["pr"], prior["head"], prior["base"])
         blob = api(f"repos/{REPO}/contents/calc.py?ref={prior['head']}")
         import base64
         Path("calc.py").write_bytes(base64.b64decode(blob["content"]))
-        Path(".pilot/findings.md").write_text(Path(".pilot/first/findings.md").read_text())
+        Path(".pilot/findings.md").write_text(findings)
 
 
 def finish_author(c, look):
