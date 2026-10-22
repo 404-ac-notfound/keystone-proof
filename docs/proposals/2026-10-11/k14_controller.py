@@ -410,6 +410,10 @@ def request(c, claim, token, run_id, get=None):
 
 
 def bind(kind, post, head, request_time):
+    # Versioned summary metadata has its own strict parser; never fall back to
+    # finding a SHA or CLEAN phrase anywhere in an unsupported/malformed state.
+    if kind == "issue" and "codex-review-state:" in (post.get("body") or ""):
+        return None
     if post.get("user", {}).get("login") != VERIFIER:
         return None
     stamp = post.get("submitted_at") if kind == "review" else post.get("created_at")
@@ -429,19 +433,131 @@ def bind(kind, post, head, request_time):
     return "full_reviewed_sha" if re.search(r"(?<![0-9a-f])" + head + r"(?![0-9a-f])", post.get("body") or "") else None
 
 
+def managed_summary(post, req, now=None):
+    """Parse the observed v1 issue-summary schema, within one request's PR/head.
+
+    The provider exposes no request-id/base in this schema. Correlation rests on
+    the same-PR endpoint, creation after our single request, exact full head,
+    and current()'s unchanged base/head checks; it is not a provider request ACK.
+    """
+    body = post.get("body") or ""
+    try:
+        require(post.get("user", {}).get("login") == VERIFIER
+                and post["user"].get("type") == "Bot"
+                and post.get("performed_via_github_app", {}).get("id") == 1144995,
+                "summary publisher mismatch")
+        require(type(post.get("id")) is int and post["id"] > 0
+                and post.get("issue_url") == f"https://api.github.com/repos/{REPO}/issues/{req['pr']}"
+                and post.get("html_url") == f"https://github.com/{REPO}/pull/{req['pr']}#issuecomment-{post['id']}",
+                "summary PR mismatch")
+        require(SHA.fullmatch(req["head"]) and SHA.fullmatch(req["base"]), "invalid request SHAs")
+        require(utc(req["request_created_at"]) <= utc(post.get("created_at"))
+                <= utc(post.get("updated_at")) <= (now or now_utc()), "summary clock mismatch")
+        require(body.startswith("<!-- codex-pull-request-review-summary -->\n")
+                and body.count("codex-review-state:") == 1, "ambiguous summary marker")
+        matches = re.findall(r"<!-- codex-review-state:v1 (\{[^\n]*\}) -->", body)
+        require(len(matches) == 1, "unsupported summary state")
+
+        def unique_keys(pairs):
+            result = {}
+            for key, value in pairs:
+                require(key not in result, "duplicate summary key")
+                result[key] = value
+            return result
+
+        state = json.loads(matches[0], object_pairs_hook=unique_keys)
+        require(isinstance(state, dict) and set(state) == {"code_review", "security_review"},
+                "unsupported summary root")
+        review, security = state["code_review"], state["security_review"]
+        keys = {"commit_sha", "has_any_findings", "has_unresolved_findings", "status"}
+        require(isinstance(review, dict) and set(review) == keys
+                and isinstance(security, dict) and set(security) == keys
+                and all(value is None for value in security.values()), "unsupported review schema/scope")
+        require(review["commit_sha"] == req["head"] and review["status"] == "completed"
+                and type(review["has_any_findings"]) is bool
+                and type(review["has_unresolved_findings"]) is bool
+                and not (review["has_unresolved_findings"] and not review["has_any_findings"]),
+                "incomplete/conflicting summary")
+        # A findings flag alone supplies no actionable revision text. Bound
+        # inline/prose findings still dominate classification when they arrive.
+        return "NO-VERDICT" if review["has_any_findings"] else "REVIEW-CLEAN"
+    except (Stop, ValueError, TypeError, KeyError, AttributeError):
+        return "NO-VERDICT"
+
+
+def review_record(kind, post, req, now=None):
+    """Keep a versioned summary as a veto even when its state cannot be read."""
+    versioned = kind == "issue" and "codex-review-state:" in (post.get("body") or "")
+    if versioned:
+        if post.get("user", {}).get("login") != VERIFIER:
+            return None
+        # Only records fetched from this request's PR endpoint reach this path.
+        # An invalid bot summary blocks CLEAN, without borrowing another post.
+        binding = "codex-review-state:v1"
+    else:
+        binding = bind(kind, post, req["head"], req["request_created_at"])
+    if not binding:
+        return None
+    record = {"kind": kind, "id": post["id"], "login": VERIFIER,
+              "body": post.get("body") or "", "state": post.get("state"),
+              "bound_by": binding, "url": post.get("html_url")}
+    if versioned:
+        record["summary_verdict"] = managed_summary(post, req, now)
+        if record["summary_verdict"] == "NO-VERDICT":
+            record["bound_by"] = "unaccepted_summary_state"
+    return record
+
+
 def classify(posts):
+    # A submitted change-request verdict is substantive even with no prose.
+    if any(p.get("state") == "CHANGES_REQUESTED" for p in posts):
+        return "REVIEW-WITH-FINDINGS"
     substantive = [p for p in posts if (p.get("body") or "").strip()]
     if any(p["kind"] == "inline" or FINDING.search(p["body"]) or p.get("state") == "CHANGES_REQUESTED" for p in substantive):
         return "REVIEW-WITH-FINDINGS"
-    if substantive and all(CLEAN.search(p["body"]) for p in substantive):
+    if substantive and all(p.get("summary_verdict") == "REVIEW-CLEAN"
+                           if "summary_verdict" in p else CLEAN.search(p["body"])
+                           for p in substantive):
         return "REVIEW-CLEAN"
     return "NO-VERDICT"
+
+
+def actionable_findings(posts):
+    """Revision input from bound findings only, never summary/status prose.
+
+    Callers supply review_record() output, already bound to this request/head.
+    A change-request state alone is a veto of CLEAN, not revision material.
+    This checks the supported textual signals, not natural-language truth.
+    """
+    bodies = []
+    for post in posts:
+        body = (post.get("body") or "").strip()
+        if (not body or "summary_verdict" in post
+                or post.get("bound_by") in {"codex-review-state:v1", "unaccepted_summary_state"}
+                or "codex-review-state:" in body):
+            continue
+        if not (post.get("kind") == "inline" or FINDING.search(body)
+                or post.get("state") == "CHANGES_REQUESTED"):
+            continue
+        clean_text = CLEAN.search(body) or re.search(r"\bno (?:actionable )?findings\b", body, re.I)
+        if clean_text and not FINDING.search(body):
+            continue
+        # Bare priority/header markers or a SHA alone are not actionable text.
+        payload = re.sub(r"<!--.*?-->", "", body, flags=re.S)
+        payload = FINDING.sub("", payload)
+        payload = CLEAN.sub("", payload)
+        payload = re.sub(r"\bno (?:actionable )?findings\b", "", payload, flags=re.I)
+        payload = re.sub(r"(?<![0-9a-f])[0-9a-f]{40}(?![0-9a-f])", "", payload)
+        if any(char.isalnum() for char in payload):
+            bodies.append(body)
+    return "\n\n".join(bodies)
 
 
 def poll(c, req):
     deadline = time.monotonic() + 30 * 60
     result = {**req, "verifier_login": VERIFIER, "verdict": "NO-VERDICT", "reason": "timeout/unsupported response"}
     first_verdict = None
+    last_snapshot = None
     while time.monotonic() < deadline:
         gates(c, os.environ)
         current(c, req["pr"], req["head"], req["base"])
@@ -450,14 +566,21 @@ def poll(c, req):
                            ("inline", f"pulls/{req['pr']}/comments"),
                            ("issue", f"issues/{req['pr']}/comments")):
             for p in api(f"repos/{REPO}/{path}?per_page=100", paginate=True):
-                binding = bind(kind, p, req["head"], req["request_created_at"])
-                if binding:
-                    records.append({"kind": kind, "id": p["id"], "login": VERIFIER,
-                                    "body": p.get("body") or "", "state": p.get("state"),
-                                    "bound_by": binding, "url": p.get("html_url")})
+                record = review_record(kind, p, req)
+                if record:
+                    records.append(record)
         verdict = classify(records)
+        if verdict == "REVIEW-WITH-FINDINGS" and not actionable_findings(records):
+            # Keep polling for late inline/prose findings; never admit an
+            # empty/summary-only revision or reinterpret the veto as CLEAN.
+            verdict = "NO-VERDICT"
+        snapshot = json.dumps(records, sort_keys=True)
+        if verdict == "NO-VERDICT" or snapshot != last_snapshot:
+            first_verdict = None
+        last_snapshot = snapshot
         if verdict != "NO-VERDICT":
-            first_verdict = first_verdict or time.monotonic()
+            if first_verdict is None:
+                first_verdict = time.monotonic()
             # Allow inline findings to arrive after their parent review; re-read before accepting.
             if time.monotonic() - first_verdict >= 60:
                 current(c, req["pr"], req["head"], req["base"])
@@ -466,7 +589,9 @@ def poll(c, req):
         time.sleep(min(30, max(0, deadline - time.monotonic())))
     result["checks"] = api(f"repos/{REPO}/commits/{req['head']}/check-runs?per_page=100")
     emit(result, "verdict")
-    Path("out/findings.md").write_text("\n\n".join(p["body"] for p in result.get("posts", [])))
+    Path("out/findings.md").write_text(
+        actionable_findings(result.get("posts", []))
+        if result["verdict"] == "REVIEW-WITH-FINDINGS" else "")
 
 
 def guard(c):
@@ -492,11 +617,15 @@ def prepare(c, look):
     if look == 2:
         prior = json.loads(Path(".pilot/first/verdict.json").read_text())
         require(prior["verdict"] == "REVIEW-WITH-FINDINGS", "revision not admitted")
+        findings = actionable_findings(prior.get("posts", []))
+        require(bool(findings), "revision requires actionable bound findings")
+        supplied = Path(".pilot/first/findings.md").read_text().strip()
+        require(supplied == findings, "revision findings artifact mismatch")
         current(c, prior["pr"], prior["head"], prior["base"])
         blob = api(f"repos/{REPO}/contents/calc.py?ref={prior['head']}")
         import base64
         Path("calc.py").write_bytes(base64.b64decode(blob["content"]))
-        Path(".pilot/findings.md").write_text(Path(".pilot/first/findings.md").read_text())
+        Path(".pilot/findings.md").write_text(findings)
 
 
 def finish_author(c, look):

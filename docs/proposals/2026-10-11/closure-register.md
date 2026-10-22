@@ -1,5 +1,45 @@
 # K-14 project closure register and follow-up view
 
+## 20 October 10:22 MYT — N6 fix required; PR16 merge HOLD
+
+Andrew's current instruction supersedes the earlier merge recommendation at
+90b885b: FIX N6 before merge, then obtain Kobe PASS on the new exact head. Prior
+Kobe reviews and Urahara technical readiness remain at their actual revisions;
+they do not authorize this changed head. No merge or pilot is performed here.
+
+| Requirement / follow-up | Current disposition | Evidence / next gate |
+|---|---|---|
+| DISC-N6 / revision admission | IMPLEMENTED CANDIDATE: empty/summary-only feedback cannot start revision | `actionable_findings`, poll admission/artifact filtering and prepare-stage record/artifact equality; 11 new regressions; independent verification PENDING — Kobe |
+| FU-REVIEW / Item7 | New exact-head N6 delta review required; earlier PASSes preserved | Prior comments6265091018/6265666951 and Urahara6265970346; 111 offline tests pass onPython3.12.14; hosted3.12.3 not exercised |
+| FU-MERGE | HOLD: Andrew's merge yes conditional on N6 fix AND Kobe PASS at final current head | No merge yet; do not bind any old tree to the new head. Main K14 coordination session has also been told HOLD |
+| FU-LIVE / FU-CREDENTIALS / FU-PREFLIGHT | BLOCKED / unchanged; K14 remains off on accepted prior attestation | No variable/credential read or write, provider call, launch or admission extension. Existing one-time admission expired; timing proposal stays unimplemented |
+
+The sections below retain historical state; this N6 requirement is an additional
+merge precondition now, not merely a pre-pilot residual or an accepted risk.
+Overall K14 remains PARTIAL/BLOCKED; issue15 is not live-verified or closed.
+
+## 19 October 18:01 MYT — audited attempt CLOSED-BLOCKED; scoped successor work
+
+This latest section supersedes stale current-status statements below; historical
+reviews/decisions remain intact. Andrew approved closing this attempt as BLOCKED
+and scoped fix/offline testing/independent review, with the next pilot plan prepared
+and no launch. Owner-disposition receipt: PR13 comment6264653591. Overall K14 is
+still PARTIAL/BLOCKED: no transport or end-to-end PASS, no K23 activation.
+
+| Requirement / followup | Current disposition | Evidence / next gate |
+|---|---|---|
+| FU-LIVE / Item3 invocation | AttemptK14-20261013-01, seed7, run39227996178 CLOSED-BLOCKED; real author and managed response observed; no accepted verdict/finalcheck | Terminal audit6264578276 and packet80bf6f9; claims/attempt refs consumed permanently; issue15 open |
+| FU-CREDENTIALS / Item6 | Both GitHub environment copies deleted, PAT and Claude issuer token retired; enable=false, on Jarvis attestation accepted by Kobe | Final account receipt6264527911; retirement manual, +7m50s switch/secrets and +15m05s Claude after terminal; no automatic/immediate claim |
+| Receipt / bounds | Current net billed$0 accepted at17:53–17:54; GitHub October gross$0.40 offset$0.40; no final transport PASS | Delayed-metering checks20Oct/period-close remain proposed, not assigned/scheduled; no future zero-billing guarantee |
+| FU-REVIEW / Item7 | Baseline pair, delta and actual-main binding6259565797 preserved; terminal audit accepted within scope | New exact-head format-fix delta review required; prior unchanged-code reviews not repeated |
+| FU-PREFLIGHT / Item3 readiness | Prior preflight green15:45:59, actual launch17:09:57; evidence expiry17:37:25 caused poll stop17:37:42 | Runtime readiness/linked username UNKNOWN; old one-time admission expired18:00. New pilot needs separate fresh admission, credentials, identities and reviewed timing |
+| New discovery / issue15 | Format-fix IMPLEMENTED CANDIDATE,100 offline tests including87 unchanged; no live validation | Strict v1 full-SHA summary parser and stable observation; independent review pending. See ../2026-10-19/K14-FORMAT-FIX-REVIEW.md |
+| FU-ORDER / FU-K23 | HELD: no transport PASS, canary, adoption or continuity acceptance inferred | Next-pilot proposal only: ../2026-10-19/K14-NEXT-PILOT-PLAN.md; owner launch approval still separate |
+
+Audit corrections6264610277 preserve stray documentation bot mentions and canned
+replies, launch freshness slack and manual retirement lag. No zero-touch claim.
+The scoped successor changes no caps, expiry exception, workflow or account state.
+
 ## 19 October configuration-admission amendment — current candidate checkpoint
 
 Owner approval6259198586 authorizes **one-time, this K-14 pilot only, expires at the 19 Oct 18:00 MYT stop.** [Candidate and acceptance details](../2026-10-19/ONE-TIME-CONFIGURATION-ADMISSION.md). This dated section supersedes older pending review/adoption descriptions below only for this amendment; historical evidence stays preserved. No K14 transport closure is claimed.
