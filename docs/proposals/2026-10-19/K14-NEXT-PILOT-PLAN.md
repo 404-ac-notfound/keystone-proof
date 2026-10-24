@@ -1,5 +1,15 @@
 # Next K14 pilot proposal — NOT LAUNCHABLE
 
+## 24 October successor
+
+The dated 20 October schedule below is historical and unusable. The format/N6
+fix was merged in PR16 at 01ef736; the next preparation branch implements the
+73-minute cap proposal and 98-minute launch budget, subject to independent
+review and owner merge approval. It extends no ceiling or admission.
+See [current readiness candidate](../2026-10-24/K14-READINESS-CANDIDATE.md).
+The earlier sections preserve the proposal as it stood on 19 October.
+
+
 ## Status and owner decision
 
 Andrew approved the prior attempt's CLOSED-BLOCKED disposition and scoped

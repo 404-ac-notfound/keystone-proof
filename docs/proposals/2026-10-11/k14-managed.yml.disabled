@@ -65,7 +65,7 @@ jobs:
     - guard
     if: needs.guard.outputs.admitted == 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 8
     permissions:
       contents: read
       pull-requests: read
@@ -263,7 +263,7 @@ jobs:
     - request1
     if: needs.request1.result == 'success'
     runs-on: ubuntu-24.04
-    timeout-minutes: 32
+    timeout-minutes: 14
     permissions:
       contents: read
       pull-requests: read
@@ -311,7 +311,7 @@ jobs:
     - verify1
     if: needs.verify1.outputs.verdict == 'REVIEW-WITH-FINDINGS'
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 8
     permissions:
       contents: read
       pull-requests: read
@@ -521,7 +521,7 @@ jobs:
     - request2
     if: needs.request2.result == 'success'
     runs-on: ubuntu-24.04
-    timeout-minutes: 32
+    timeout-minutes: 14
     permissions:
       contents: read
       pull-requests: read

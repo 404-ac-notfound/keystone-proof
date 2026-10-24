@@ -1,5 +1,27 @@
 # K-14 project closure register and follow-up view
 
+## 24 October — readiness preparation; launch remains prohibited
+
+Andrew instructed Magic to finish KEYSTONE before importing projects, then said
+“Let's get it done.” This authorizes preparation; it does not replace exact-head
+review, owner merge approval, credential authority or a fresh launch admission.
+This section supersedes the historical PR16 HOLD status below only as stated.
+
+| Requirement / discovery | Current state | Evidence / next owner |
+|---|---|---|
+| DISC-N6 / FU-MERGE | VERIFIED merged 22 Oct at `01ef736eb9514f9386f63c8c8a565ced79ab2ac9`; candidate tree `7a346eac54ebdbc484316a8d480ae0c3dc02ad21` | PR16 comments 6328521485, 6329606359, 6334715443, 6334727165. Named-mode acceptance was Andrew's scoped decision. Requested narrow Kobe main binding is not posted as of readback. |
+| DISC-TIMING / Item4 | IMPLEMENTED CANDIDATE: 73 minutes job caps + 10 queue + 15 retirement = 98; launch budget checked offline and before claim writes | Current preparation branch; independent review pending. Queue/retirement allowances are planning reserves, not guarantees. |
+| DISC-CRLF / revision admission | IMPLEMENTED CANDIDATE: normalize bound finding newlines before artifact creation and comparison | CRLF/CR poll-to-prepare regression, including rejection of appended unbound text; independent review pending. |
+| FU-LIVE / FU-CREDENTIALS / FU-PREFLIGHT | BLOCKED: expired 22 Oct ceiling and 19 Oct UNKNOWN admission remain unchanged | No fresh launch date, credentials, account evidence, seed or operator admitted. No account reads or writes performed. Magic prepares a concrete admission only after reviews/operator availability. |
+| FU-ORDER / FU-K23 | BLOCKED: K14 live PASS → separately approved second-repo canary → green KEYSTONE/#32 adoption → full K23 creative acceptance | Existing approved order preserved; approved R1 requires plan/Kobe/Urahara/Shaq/image delivery, not just calculator success. No project imported. |
+
+Validation: base 111 offline tests PASS; current candidate 117 PASS on Python3.12.14.
+The first baseline attempt omitted HOME and had one fixture/runtime error;
+re-running with the documented cleared environment retaining PATH/HOME passed.
+No hosted runtime, Actions or provider execution. Current reviewer packet:
+[readiness proposal](../2026-10-24/K14-READINESS-CANDIDATE.md).
+
+
 ## 20 October 10:22 MYT — N6 fix required; PR16 merge HOLD
 
 Andrew's current instruction supersedes the earlier merge recommendation at

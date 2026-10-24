@@ -58,7 +58,7 @@ class ActionableFindings(unittest.TestCase):
                 result, findings, elapsed = self.run_poll(body)
                 self.assertEqual(result['verdict'], 'NO-VERDICT')
                 self.assertEqual(findings, '')
-                self.assertEqual(elapsed, 1800)
+                self.assertEqual(elapsed, 720)
 
     def test_empty_change_request_beside_clean_summary_never_admits_revision(self):
         for body in ('', ' \n\t'):
@@ -66,7 +66,7 @@ class ActionableFindings(unittest.TestCase):
                 result, findings, elapsed = self.run_poll(body, summary=True)
                 self.assertEqual(result['verdict'], 'NO-VERDICT')
                 self.assertEqual(findings, '')
-                self.assertEqual(elapsed, 1800)
+                self.assertEqual(elapsed, 720)
 
     def test_clean_text_change_request_cannot_supply_revision_material(self):
         for text in ('No issues found.', 'No findings.', 'No actionable findings.'):
@@ -116,7 +116,7 @@ class ActionableFindings(unittest.TestCase):
                 api.return_value = {'content': base64.b64encode(b'def add(a,b): return a+b+1\n').decode()}
                 if admitted:
                     m.prepare(c, 2)
-                    self.assertEqual(Path('.pilot/findings.md').read_text(), supplied.strip())
+                    self.assertEqual(Path('.pilot/findings.md').read_text(), supplied.replace("\r\n", "\n").replace("\r", "\n").strip())
                     current.assert_called_once_with(c, REQ['pr'], HEAD, BASE)
                     api.assert_called_once()
                 else:
@@ -149,3 +149,13 @@ class ActionableFindings(unittest.TestCase):
         text = '[P1] Remove the extra + 1 from calc.py.'
         record = m.review_record('review', change_request(text), REQ, NOW)
         self.run_prepare([record], text)
+
+    def test_crlf_and_cr_findings_survive_poll_then_prepare(self):
+        for newline in ('\r\n', '\r'):
+            text = '[P1] Remove the extra + 1.' + newline + 'Return a + b.'
+            with self.subTest(newline=repr(newline)):
+                result, findings, _ = self.run_poll(text, summary=True)
+                self.assertEqual(result['verdict'], 'REVIEW-WITH-FINDINGS')
+                self.assertEqual(findings, text.replace(newline, '\n'))
+                self.run_prepare(result['posts'], findings)
+                self.run_prepare(result['posts'], findings + '\nUNBOUND', admitted=False)
