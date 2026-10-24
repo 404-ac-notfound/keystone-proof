@@ -28,6 +28,8 @@ BASELINE_REVIEWS = {
     "Urahara": (6246527351, "828e6dee231f813c637977a982379efb293a08e59a2bd3896b40d1e56b02e6d2"),
     "Kobe": (6246559739, "95bdefae681367e9da62d2559ee09b5007fd29001fa4e58efb615f0db4737809"),
 }
+POLL_SECONDS = 12 * 60
+LAUNCH_BUDGET_MINUTES = 98  # 73 job caps + 10 queue + 15 retirement
 ROOT = Path(__file__).resolve().parent
 SHA = re.compile(r"^[0-9a-f]{40}$")
 BODY_DIGEST = re.compile(r"^[0-9a-f]{64}$")
@@ -531,7 +533,7 @@ def actionable_findings(posts):
     """
     bodies = []
     for post in posts:
-        body = (post.get("body") or "").strip()
+        body = (post.get("body") or "").replace("\r\n", "\n").replace("\r", "\n").strip()
         if (not body or "summary_verdict" in post
                 or post.get("bound_by") in {"codex-review-state:v1", "unaccepted_summary_state"}
                 or "codex-review-state:" in body):
@@ -554,7 +556,7 @@ def actionable_findings(posts):
 
 
 def poll(c, req):
-    deadline = time.monotonic() + 30 * 60
+    deadline = time.monotonic() + POLL_SECONDS
     result = {**req, "verifier_login": VERIFIER, "verdict": "NO-VERDICT", "reason": "timeout/unsupported response"}
     first_verdict = None
     last_snapshot = None
@@ -594,8 +596,29 @@ def poll(c, req):
         if result["verdict"] == "REVIEW-WITH-FINDINGS" else "")
 
 
+def launch_budget(c, e, now=None):
+    """Launch-only check; never demand a whole-run reserve during an active poll.
+
+    Called after gates validates config/evidence. No network or state mutation.
+    Queue allowance is bounded planning slack, not a scheduling guarantee.
+    """
+    now = now or now_utc()
+    ends = [utc(e["K14_EXPIRES_AT"]), utc(c["approved_expiry_ceiling"]),
+            utc(PILOT_CEILING), utc(e["K14_CASH_CHECKED_AT"]) + dt.timedelta(hours=2)]
+    for key in ("author_credential", "request_credential"):
+        ends.append(utc(c[key]["use_until"]))
+    admission = c.get("configuration_admission")
+    if admission is not None:
+        ends.append(utc(admission["expires_at"]))
+        for key in ("repo_review_configuration", "owner_app_installation_scope"):
+            ends.append(utc(admission[key]["checked_at"]) + dt.timedelta(hours=2))
+    require(min(ends) - now >= dt.timedelta(minutes=LAUNCH_BUDGET_MINUTES),
+            "less than 98 minutes remain for jobs, queue and retirement; stand down")
+
+
 def guard(c):
     sha = gates(c, os.environ)
+    launch_budget(c, os.environ)
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
     require(event.get("action") == "labeled" and event.get("label", {}).get("name") == "ready"
             and event.get("sender", {}).get("login") == c["launch_login"]
@@ -604,6 +627,9 @@ def guard(c):
     # Both pure gates pass before read-only evidence calls; all comments verify
     # before the first claim write or any author/review provider invocation.
     verify_isolation_comments(c, sha)
+    # Account for time spent fetching review evidence before consuming identity.
+    gates(c, os.environ)
+    launch_budget(c, os.environ)
     # This global pilot claim stops duplicate labels and new issues reusing the pilot id.
     api(f"repos/{REPO}/git/refs", "POST", {"ref": f"refs/heads/k14-claims/{c['pilot_id']}", "sha": sha})
     base = api(f"repos/{REPO}/git/ref/heads/main")["object"]["sha"]

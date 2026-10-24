@@ -4,7 +4,7 @@ import argparse
 import json
 from pathlib import Path
 
-from k14_controller import gates, require, utc, validate_config_shape, now_utc, PREFLIGHT_DEADLINE, ADMISSION_PILOT
+from k14_controller import gates, require, utc, validate_config_shape, now_utc, launch_budget, PREFLIGHT_DEADLINE, ADMISSION_PILOT
 
 
 def build(preflight, main_sha, expires_at, cash_checked_at, included_minutes,
@@ -34,6 +34,7 @@ def build(preflight, main_sha, expires_at, cash_checked_at, included_minutes,
     }
     gates(preflight, {**variables, "GH_REPO": preflight.get("repository"),
                      "GITHUB_RUN_ATTEMPT": "1", "GITHUB_SHA": main_sha}, now)
+    launch_budget(preflight, variables, now)
     return variables
 
 
